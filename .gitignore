@@ -24,3 +24,7 @@ npm-debug.log*
 
 # vercel
 .vercel
+
+# env: ignora todos menos la plantilla
+.env*
+!.env.example
