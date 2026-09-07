@@ -1,15 +1,17 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Toast from "@/components/Toast";
+import { AlarmClock, Check, Clock, Pill } from "lucide-react";
+import Toast, { type ToastTone } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useToday } from "@/lib/today";
+import { ACCENTS } from "@/lib/theme";
 
 interface Medication {
   id: number;
   name: string;
   dose: string;
   time: string;
-  imageEmoji: string;
   color: string;
 }
 
@@ -19,85 +21,119 @@ interface MedLog {
   takenAt: string | null;
 }
 
-interface MedicationListProps {
-  date: string;
+/**
+ * El color de cada medicamento viene de la base de datos. Se usa en tres
+ * intensidades (relleno, borde, trazo) añadiendo alfa hexadecimal.
+ */
+function shades(hex: string) {
+  return { tint: `${hex}1A`, line: `${hex}45`, ink: hex };
 }
 
-export default function MedicationList({ date }: MedicationListProps) {
+export default function MedicationList() {
+  const date = useToday();
   const [medications, setMedications] = useState<Medication[]>([]);
   const [logs, setLogs] = useState<MedLog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<{ msg: string; emoji: string } | null>(null);
+  const [toast, setToast] = useState<{ msg: string; tone: ToastTone } | null>(null);
   const [confirm, setConfirm] = useState<{ medId: number; medName: string } | null>(null);
   const [snoozed, setSnoozed] = useState<Set<number>>(new Set());
 
   const fetchData = useCallback(async () => {
+    if (!date) return;
     try {
       const [medsRes, logsRes] = await Promise.all([
         fetch("/api/medicamentos"),
         fetch(`/api/medicamentos/logs?date=${date}`),
       ]);
-      if (medsRes.ok) setMedications(await medsRes.json() as Medication[]);
-      if (logsRes.ok) setLogs(await logsRes.json() as MedLog[]);
+      if (medsRes.ok) setMedications((await medsRes.json()) as Medication[]);
+      if (logsRes.ok) setLogs((await logsRes.json()) as MedLog[]);
     } catch {
-      // ignore
+      // se deja la lista como esté
     } finally {
       setLoading(false);
     }
   }, [date]);
 
   useEffect(() => {
+    // La carga es asíncrona: el estado se actualiza después del await, no
+    // de forma síncrona dentro del efecto, así que no encadena renders.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchData();
   }, [fetchData]);
 
   const markTaken = async (medId: number) => {
     setConfirm(null);
-    const prev = [...logs];
-    setLogs((l) => {
-      const existing = l.find((log) => log.medicationId === medId);
-      if (existing) return l.map((log) => log.medicationId === medId ? { ...log, taken: true, takenAt: new Date().toISOString() } : log);
-      return [...l, { medicationId: medId, taken: true, takenAt: new Date().toISOString() }];
+    if (!date) return;
+    const previous = [...logs];
+
+    setLogs((current) => {
+      const stamp = new Date().toISOString();
+      const exists = current.find((log) => log.medicationId === medId);
+      if (exists) {
+        return current.map((log) =>
+          log.medicationId === medId ? { ...log, taken: true, takenAt: stamp } : log,
+        );
+      }
+      return [...current, { medicationId: medId, taken: true, takenAt: stamp }];
     });
+
     try {
       await fetch("/api/medicamentos/logs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ medicationId: medId, date, taken: true }),
       });
-      setToast({ msg: "¡Medicamento registrado!", emoji: "✅" });
+      setToast({ msg: "Medicamento registrado", tone: "success" });
     } catch {
-      setLogs(prev);
-      setToast({ msg: "Error. Intenta de nuevo.", emoji: "❌" });
+      setLogs(previous);
+      setToast({ msg: "No se pudo guardar. Intenta de nuevo.", tone: "error" });
     }
   };
 
   const handleSnooze = (medId: number) => {
     setSnoozed((prev) => new Set([...prev, medId]));
-    setToast({ msg: "Recordatorio en 10 minutos", emoji: "⏰" });
+    setToast({ msg: "Te recordamos en 10 minutos", tone: "info" });
     setTimeout(() => {
-      setSnoozed((prev) => { const s = new Set(prev); s.delete(medId); return s; });
-    }, 600000); // 10 min
+      setSnoozed((prev) => {
+        const next = new Set(prev);
+        next.delete(medId);
+        return next;
+      });
+    }, 600_000);
   };
 
   const isTaken = (medId: number) =>
-    logs.find((l) => l.medicationId === medId)?.taken ?? false;
+    logs.find((log) => log.medicationId === medId)?.taken ?? false;
 
-  if (loading) {
+  if (loading || !date) {
     return (
-      <div className="flex justify-center py-8" aria-busy="true" aria-label="Cargando medicamentos">
-        <div className="w-12 h-12 rounded-full border-4 border-red-500 border-t-transparent animate-spin"></div>
+      <div
+        className="flex justify-center items-center"
+        style={{ minHeight: "8rem" }}
+        aria-busy="true"
+        aria-label="Cargando medicamentos"
+      >
+        <span
+          className="animate-spin"
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "999px",
+            border: "3px solid var(--line)",
+            borderTopColor: "var(--blue-ink)",
+            display: "block",
+          }}
+        />
       </div>
     );
   }
 
   if (medications.length === 0) {
     return (
-      <div className="text-center py-8">
-        <p className="text-gray-500 font-semibold" style={{ fontSize: "1.1rem" }}>
-          No hay medicamentos registrados.
-        </p>
-        <p className="text-gray-400 mt-2" style={{ fontSize: "0.95rem" }}>
-          Consulta a tu médico para agregar medicamentos.
+      <div className="card p-6 text-center">
+        <p style={{ fontSize: "0.95rem", fontWeight: 700 }}>No hay medicamentos registrados.</p>
+        <p className="mt-1.5" style={{ fontSize: "0.8rem", color: "var(--ink-mute)" }}>
+          Consulta a tu médico para agregarlos.
         </p>
       </div>
     );
@@ -105,103 +141,129 @@ export default function MedicationList({ date }: MedicationListProps) {
 
   return (
     <>
-      <div className="flex flex-col gap-4" role="list" aria-label="Lista de medicamentos">
-        {medications.map((med) => {
+      <ul className="flex flex-col gap-3 list-none p-0 m-0" aria-label="Medicamentos de hoy">
+        {medications.map((med, i) => {
           const taken = isTaken(med.id);
           const isSnoozed = snoozed.has(med.id);
+          const tone = taken ? ACCENTS.green : shades(med.color);
 
           return (
-            <div
+            <li
               key={med.id}
-              role="listitem"
-              className="rounded-2xl p-4 border-2 transition-all"
+              className="card p-3.5 animate-rise"
               style={{
-                backgroundColor: taken ? "#F0FDF4" : "#FFF5F5",
-                borderColor: taken ? "#86EFAC" : med.color,
-                opacity: taken ? 0.85 : 1,
+                animationDelay: `${i * 45}ms`,
+                backgroundColor: taken ? "var(--surface-soft)" : "var(--surface)",
               }}
-              aria-label={`${med.name}, ${med.dose}, a las ${med.time}. Estado: ${taken ? "tomado" : "pendiente"}`}
+              aria-label={`${med.name}, ${med.dose}, a las ${med.time}. ${taken ? "Tomado" : "Pendiente"}`}
             >
-              <div className="flex items-center gap-4">
-                {/* Emoji */}
-                <div
-                  className="flex-shrink-0 flex items-center justify-center rounded-2xl"
-                  style={{ width: 72, height: 72, fontSize: "2.2rem", backgroundColor: taken ? "#DCFCE7" : "#FEE2E2" }}
+              <div className="flex items-center gap-3.5">
+                <span
+                  className="tile"
+                  style={{
+                    width: 58,
+                    height: 58,
+                    borderRadius: "0.85rem",
+                    backgroundColor: tone.tint,
+                    borderColor: tone.line,
+                  }}
                   aria-hidden="true"
                 >
-                  {med.imageEmoji}
-                </div>
-                {/* Info */}
+                  {taken ? (
+                    <Check size={26} strokeWidth={2.6} color={tone.ink} />
+                  ) : (
+                    <Pill size={26} strokeWidth={1.8} color={tone.ink} />
+                  )}
+                </span>
+
                 <div className="flex-1 min-w-0">
-                  <div className="font-extrabold text-gray-900" style={{ fontSize: "1.15rem" }}>
+                  <div
+                    style={{
+                      fontSize: "1rem",
+                      fontWeight: 800,
+                      color: taken ? "var(--ink-mute)" : "var(--ink)",
+                      textDecoration: taken ? "line-through" : "none",
+                    }}
+                  >
                     {med.name}
                   </div>
-                  <div className="text-gray-600 font-medium" style={{ fontSize: "1rem" }}>
-                    💊 {med.dose}
-                  </div>
-                  <div className="text-gray-500 font-medium" style={{ fontSize: "0.95rem" }}>
-                    🕐 {med.time}
-                  </div>
-                </div>
-                {/* Status badge */}
-                {taken && (
                   <div
-                    className="flex-shrink-0 flex items-center justify-center rounded-full font-bold text-white bg-green-500"
-                    style={{ width: 48, height: 48, fontSize: "1.3rem" }}
-                    aria-label="Tomado"
+                    className="mt-0.5"
+                    style={{ fontSize: "0.78rem", fontWeight: 500, color: "var(--ink-mute)" }}
                   >
-                    ✓
+                    {med.dose}
                   </div>
-                )}
+                  <span className="pill mt-2">
+                    <Clock size={13} strokeWidth={2.2} aria-hidden="true" />
+                    {med.time}
+                  </span>
+                </div>
               </div>
 
-              {/* Action buttons */}
               {!taken && (
-                <div className="flex gap-3 mt-4">
+                <div className="flex gap-2.5 mt-3.5">
                   <button
                     onClick={() => setConfirm({ medId: med.id, medName: med.name })}
-                    className="flex-1 rounded-2xl font-extrabold text-white bg-green-600 hover:bg-green-700 active:scale-95 transition-all"
-                    style={{ minHeight: "60px", fontSize: "1.05rem" }}
+                    className="flex-1 pressable flex items-center justify-center gap-2"
+                    style={{
+                      minHeight: "3.2rem",
+                      borderRadius: "var(--r-md)",
+                      backgroundColor: "var(--green-ink)",
+                      color: "#fff",
+                      border: "none",
+                      fontSize: "0.92rem",
+                      fontWeight: 800,
+                    }}
                     aria-label={`Marcar ${med.name} como tomado`}
                   >
-                    ✅ Ya lo tomé
+                    <Check size={18} strokeWidth={2.6} aria-hidden="true" />
+                    Ya lo tomé
                   </button>
+
                   <button
                     onClick={() => handleSnooze(med.id)}
                     disabled={isSnoozed}
-                    className="flex-1 rounded-2xl font-bold text-orange-700 bg-orange-100 hover:bg-orange-200 disabled:opacity-60 active:scale-95 transition-all border-2 border-orange-300"
-                    style={{ minHeight: "60px", fontSize: "1rem" }}
-                    aria-label={isSnoozed ? "Recordatorio activado para 10 minutos" : `Recordar en 10 min para ${med.name}`}
+                    className="pressable flex items-center justify-center gap-2"
+                    style={{
+                      minHeight: "3.2rem",
+                      paddingInline: "1rem",
+                      borderRadius: "var(--r-md)",
+                      backgroundColor: "var(--surface-soft)",
+                      border: "1px solid var(--line-strong)",
+                      color: "var(--ink-soft)",
+                      fontSize: "0.88rem",
+                      fontWeight: 700,
+                      opacity: isSnoozed ? 0.55 : 1,
+                    }}
+                    aria-label={
+                      isSnoozed
+                        ? "Recordatorio ya activado"
+                        : `Recordar ${med.name} en 10 minutos`
+                    }
                   >
-                    {isSnoozed ? "⏰ En 10 min" : "⏰ 10 min"}
+                    <AlarmClock size={17} strokeWidth={2.2} aria-hidden="true" />
+                    10 min
                   </button>
                 </div>
               )}
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ul>
 
-      {/* Confirm dialog */}
       {confirm && (
         <ConfirmDialog
-          message={`¿Tomaste "${confirm.medName}"?`}
+          message={`¿Tomaste ${confirm.medName}?`}
           onConfirm={() => void markTaken(confirm.medId)}
           onCancel={() => setConfirm(null)}
-          confirmLabel="✅ Sí, lo tomé"
-          cancelLabel="❌ Cancelar"
-          emoji="💊"
+          confirmLabel="Sí, ya lo tomé"
+          cancelLabel="Todavía no"
+          icon={Pill}
+          accent="blue"
         />
       )}
 
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.msg}
-          emoji={toast.emoji}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.msg} tone={toast.tone} onClose={() => setToast(null)} />}
     </>
   );
 }

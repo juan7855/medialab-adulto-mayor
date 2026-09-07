@@ -1,36 +1,42 @@
-import BackButton from "./BackButton";
+import type { LucideIcon } from "lucide-react";
+import AppBar from "./AppBar";
+import IconTile from "./IconTile";
+import type { AccentName } from "@/lib/theme";
 
 interface PageHeaderProps {
   title: string;
-  emoji: string;
-  color: string;
+  subtitle?: string;
+  icon: LucideIcon;
+  accent: AccentName;
   backHref?: string;
   backLabel?: string;
 }
 
+/** Barra de navegación + título de sección con su cuadro de icono. */
 export default function PageHeader({
   title,
-  emoji,
-  color,
+  subtitle,
+  icon,
+  accent,
   backHref = "/",
   backLabel = "Inicio",
 }: PageHeaderProps) {
   return (
-    <header
-      className="sticky top-0 z-40 w-full shadow-md"
-      style={{ backgroundColor: color }}
-      role="banner"
-    >
-      <div className="flex items-center gap-3 px-4 py-3">
-        <BackButton href={backHref} label={backLabel} />
-        <div className="flex items-center gap-2 ml-2">
-          <span style={{ fontSize: "1.8rem" }} aria-hidden="true">{emoji}</span>
-          <h1
-            className="font-extrabold text-white"
-            style={{ fontSize: "1.5rem", textShadow: "0 1px 3px rgba(0,0,0,0.3)" }}
-          >
-            {title}
-          </h1>
+    <header role="banner">
+      <AppBar backHref={backHref} backLabel={backLabel} showHome={backHref !== "/"} />
+
+      <div className="flex items-center gap-3 px-4 pt-5 pb-1">
+        <IconTile icon={icon} accent={accent} size={58} strokeWidth={1.7} />
+        <div className="min-w-0">
+          <h1 style={{ fontSize: "1.55rem", fontWeight: 800 }}>{title}</h1>
+          {subtitle && (
+            <p
+              className="mt-0.5"
+              style={{ fontSize: "0.85rem", color: "var(--ink-mute)", fontWeight: 500 }}
+            >
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
     </header>

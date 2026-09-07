@@ -1,8 +1,25 @@
-export const RECIPES = [
+import { Salad, Soup, Wheat, type LucideIcon } from "lucide-react";
+import type { AccentName } from "@/lib/theme";
+
+export interface Recipe {
+  id: string;
+  name: string;
+  icon: LucideIcon;
+  accent: AccentName;
+  time: string;
+  difficulty: string;
+  servings: string;
+  ingredients: string[];
+  steps: string[];
+  tip: string;
+}
+
+export const RECIPES: Recipe[] = [
   {
     id: "sopa-verduras",
     name: "Sopa de Verduras",
-    emoji: "🥣",
+    icon: Soup,
+    accent: "orange" as const,
     time: "30 min",
     difficulty: "Fácil",
     servings: "4 porciones",
@@ -31,7 +48,8 @@ export const RECIPES = [
   {
     id: "ensalada-atun",
     name: "Ensalada con Atún",
-    emoji: "🥗",
+    icon: Salad,
+    accent: "green" as const,
     time: "15 min",
     difficulty: "Muy fácil",
     servings: "2 porciones",
@@ -59,7 +77,8 @@ export const RECIPES = [
   {
     id: "avena-fruta",
     name: "Avena con Fruta",
-    emoji: "🍓",
+    icon: Wheat,
+    accent: "amber" as const,
     time: "10 min",
     difficulty: "Muy fácil",
     servings: "1 porción",

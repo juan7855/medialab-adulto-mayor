@@ -1,149 +1,150 @@
+import { HeartPulse, ListChecks, Phone, Siren, Stethoscope, UserRound, type LucideIcon } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
-import Link from "next/link";
+import SectionTitle from "@/components/SectionTitle";
+import IconTile from "@/components/IconTile";
+import type { AccentName } from "@/lib/theme";
 
-const CONTACTS = [
-  { name: "Dr. García", role: "Médico de cabecera", phone: "555-0101", emoji: "👨‍⚕️", color: "#2563EB", bg: "#DBEAFE" },
-  { name: "María (Hija)", role: "Familiar", phone: "555-0202", emoji: "👩", color: "#16A34A", bg: "#DCFCE7" },
-  { name: "Carlos (Hijo)", role: "Familiar", phone: "555-0303", emoji: "👨", color: "#7C3AED", bg: "#EDE9FE" },
-  { name: "Enfermera Sofía", role: "Cuidadora", phone: "555-0404", emoji: "👩‍⚕️", color: "#DC2626", bg: "#FEE2E2" },
+const CONTACTS: {
+  name: string;
+  role: string;
+  phone: string;
+  icon: LucideIcon;
+  accent: AccentName;
+}[] = [
+  { name: "Dr. García", role: "Médico de cabecera", phone: "555-0101", icon: Stethoscope, accent: "blue" },
+  { name: "María (Hija)", role: "Familiar", phone: "555-0202", icon: UserRound, accent: "green" },
+  { name: "Carlos (Hijo)", role: "Familiar", phone: "555-0303", icon: UserRound, accent: "purple" },
+  { name: "Enfermera Sofía", role: "Cuidadora", phone: "555-0404", icon: HeartPulse, accent: "orange" },
+];
+
+const STEPS = [
+  "Mantén la calma",
+  "Llama al 911",
+  "Avisa a un familiar",
+  "No te muevas si sientes dolor",
 ];
 
 export default function EmergenciaPage() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFF5F5" }}>
+    <div className="min-h-screen pb-10">
       <PageHeader
         title="Emergencia"
-        emoji="🆘"
-        color="#DC2626"
+        subtitle="Pide ayuda rápido"
+        icon={Siren}
+        accent="red"
         backHref="/"
         backLabel="Inicio"
       />
 
-      <main
-        className="px-4 py-5 flex flex-col gap-5"
-        style={{ maxWidth: "480px", margin: "0 auto" }}
-        role="main"
-      >
-        {/* 911 big button */}
-        <div
-          className="rounded-3xl p-5 shadow-xl"
-          style={{ backgroundColor: "#DC2626", border: "4px solid #991B1B" }}
-          role="region"
-          aria-label="Llamada de emergencia"
+      <main className="px-4 pt-4 flex flex-col gap-7" role="main">
+        {/* Llamada al 911 */}
+        <a
+          href="tel:911"
+          className="pressable flex flex-col items-center justify-center gap-2 p-6"
+          style={{
+            backgroundColor: "var(--red-ink)",
+            borderRadius: "var(--r-xl)",
+            boxShadow: "var(--shadow-lg)",
+            textDecoration: "none",
+            color: "#fff",
+            minHeight: "8rem",
+          }}
+          aria-label="Llamar al número de emergencias 911"
         >
-          <h2
-            className="font-extrabold text-white text-center mb-4"
-            style={{ fontSize: "1.3rem" }}
-          >
-            🚨 Emergencia médica
-          </h2>
-          <a
-            href="tel:911"
-            role="button"
-            aria-label="Llamar al número de emergencias 911"
-            className="flex items-center justify-center gap-3 w-full rounded-3xl font-extrabold text-red-700 bg-white hover:bg-red-50 active:scale-95 transition-all shadow-lg"
-            style={{ minHeight: "96px", fontSize: "2rem", textDecoration: "none" }}
-          >
-            <span aria-hidden="true">📞</span>
-            <span>LLAMAR AL 911</span>
-          </a>
-        </div>
+          <Phone size={34} strokeWidth={2} aria-hidden="true" />
+          <span style={{ fontSize: "1.5rem", fontWeight: 800, letterSpacing: "-0.02em" }}>
+            Llamar al 911
+          </span>
+          <span style={{ fontSize: "0.78rem", fontWeight: 600, opacity: 0.85 }}>
+            Emergencia médica
+          </span>
+        </a>
 
-        {/* Instruction card */}
-        <div
-          className="rounded-3xl p-5 shadow flex items-start gap-3"
-          style={{ backgroundColor: "#FEF9C3", border: "2px solid #FCD34D" }}
-          role="note"
-          aria-label="Qué hacer en una emergencia"
-        >
-          <span style={{ fontSize: "1.5rem" }} aria-hidden="true">📋</span>
-          <div>
-            <p className="font-extrabold text-yellow-900 mb-2" style={{ fontSize: "1.05rem" }}>
-              En caso de emergencia:
-            </p>
-            <ol className="list-decimal list-inside flex flex-col gap-1">
-              {[
-                "Mantén la calma",
-                "Llama al 911",
-                "Avisa a un familiar",
-                "No te muevas si sientes dolor",
-              ].map((step, i) => (
-                <li key={i} className="font-semibold text-yellow-800" style={{ fontSize: "1rem" }}>
-                  {step}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
+        {/* Qué hacer */}
+        <section aria-label="Qué hacer en una emergencia">
+          <SectionTitle icon={ListChecks} accent="amber">
+            Qué hacer
+          </SectionTitle>
 
-        {/* Contacts */}
-        <section aria-label="Contactos de emergencia">
-          <h2
-            className="font-extrabold text-gray-800 mb-3 px-1"
-            style={{ fontSize: "1.25rem" }}
-          >
-            📞 Mis contactos
-          </h2>
-          <div className="flex flex-col gap-4">
-            {CONTACTS.map((contact) => (
-              <a
-                key={contact.phone}
-                href={`tel:${contact.phone}`}
-                aria-label={`Llamar a ${contact.name}, ${contact.role}, teléfono ${contact.phone}`}
-                className="flex items-center gap-4 rounded-3xl p-4 shadow-md active:scale-95 transition-transform"
-                style={{
-                  backgroundColor: contact.bg,
-                  border: `2px solid ${contact.color}40`,
-                  textDecoration: "none",
-                  minHeight: "96px",
-                }}
-              >
-                {/* Avatar */}
-                <div
-                  className="flex-shrink-0 flex items-center justify-center rounded-2xl"
-                  style={{ width: 72, height: 72, fontSize: "2.5rem", backgroundColor: "white" }}
+          <ol className="card flex flex-col gap-3 mt-3 p-4 list-none m-0">
+            {STEPS.map((step, i) => (
+              <li key={step} className="flex items-center gap-3">
+                <span
+                  className="tile"
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "999px",
+                    backgroundColor: "var(--amber-tint)",
+                    borderColor: "var(--amber-line)",
+                    color: "var(--amber-ink)",
+                    fontSize: "0.8rem",
+                    fontWeight: 800,
+                  }}
                   aria-hidden="true"
                 >
-                  {contact.emoji}
-                </div>
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="font-extrabold text-gray-900" style={{ fontSize: "1.15rem" }}>
-                    {contact.name}
-                  </div>
-                  <div className="text-gray-600 font-medium" style={{ fontSize: "0.95rem" }}>
-                    {contact.role}
-                  </div>
-                  <div
-                    className="font-bold mt-1"
-                    style={{ fontSize: "1rem", color: contact.color }}
-                  >
-                    📞 {contact.phone}
-                  </div>
-                </div>
-                {/* Call icon */}
-                <div
-                  className="flex-shrink-0 flex items-center justify-center rounded-2xl text-white font-bold"
-                  style={{ width: 56, height: 56, backgroundColor: contact.color, fontSize: "1.5rem" }}
-                  aria-hidden="true"
-                >
-                  📞
-                </div>
-              </a>
+                  {i + 1}
+                </span>
+                <span style={{ fontSize: "0.9rem", fontWeight: 600 }}>{step}</span>
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
 
-        {/* Back */}
-        <Link
-          href="/"
-          role="button"
-          aria-label="Volver al inicio"
-          className="flex items-center justify-center gap-2 w-full rounded-3xl font-bold text-gray-700 bg-white border-2 border-gray-300 hover:bg-gray-50 active:scale-95 transition-all shadow"
-          style={{ minHeight: "72px", fontSize: "1.15rem", textDecoration: "none" }}
-        >
-          ◀ Volver al Inicio
-        </Link>
+        {/* Contactos */}
+        <section aria-label="Contactos de emergencia">
+          <SectionTitle icon={Phone} accent="red">
+            Mis contactos
+          </SectionTitle>
+
+          <ul className="flex flex-col gap-3 mt-3 list-none p-0 m-0">
+            {CONTACTS.map((contact) => (
+              <li key={contact.phone}>
+                <a
+                  href={`tel:${contact.phone}`}
+                  className="card pressable flex items-center gap-3.5 p-3.5"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                  aria-label={`Llamar a ${contact.name}, ${contact.role}, teléfono ${contact.phone}`}
+                >
+                  <IconTile icon={contact.icon} accent={contact.accent} size={54} strokeWidth={1.8} />
+
+                  <span className="flex-1 min-w-0">
+                    <span className="block" style={{ fontSize: "1rem", fontWeight: 800 }}>
+                      {contact.name}
+                    </span>
+                    <span
+                      className="block mt-0.5"
+                      style={{ fontSize: "0.74rem", fontWeight: 500, color: "var(--ink-mute)" }}
+                    >
+                      {contact.role}
+                    </span>
+                    <span
+                      className="block mt-0.5"
+                      style={{ fontSize: "0.8rem", fontWeight: 700, color: "var(--ink-soft)" }}
+                    >
+                      {contact.phone}
+                    </span>
+                  </span>
+
+                  <span
+                    className="tile"
+                    style={{
+                      width: 46,
+                      height: 46,
+                      borderRadius: "999px",
+                      backgroundColor: "var(--green-ink)",
+                      borderColor: "var(--green-ink)",
+                      color: "#fff",
+                    }}
+                    aria-hidden="true"
+                  >
+                    <Phone size={20} strokeWidth={2.3} />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
       </main>
     </div>
   );

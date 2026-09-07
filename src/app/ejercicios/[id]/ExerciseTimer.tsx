@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Pause, Play, RotateCcw } from "lucide-react";
 import Toast from "@/components/Toast";
+import { ACCENTS, type AccentName } from "@/lib/theme";
 
 interface ExerciseTimerProps {
   totalSeconds: number;
   exerciseName: string;
   exerciseId: string;
+  accent: AccentName;
 }
 
 function formatTime(seconds: number): string {
@@ -19,144 +22,174 @@ export default function ExerciseTimer({
   totalSeconds,
   exerciseName,
   exerciseId,
+  accent,
 }: ExerciseTimerProps) {
   const [timeLeft, setTimeLeft] = useState(totalSeconds);
   const [running, setRunning] = useState(false);
   const [finished, setFinished] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const stopTimer = useCallback(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-  }, []);
+  /** El tiempo restante también vive en un ref para poder decidir el final
+   *  dentro del callback del intervalo, sin encadenar efectos. */
+  const remainingRef = useRef(totalSeconds);
 
-  useEffect(() => {
-    if (running) {
-      intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            setRunning(false);
-            setFinished(true);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      stopTimer();
-    }
-    return stopTimer;
-  }, [running, stopTimer]);
+  const tone = ACCENTS[accent];
+  const activeColor = finished ? ACCENTS.green.ink : tone.ink;
+
+  const complete = useCallback(() => {
+    setRunning(false);
+    setFinished(true);
+    setToast("¡Ejercicio completado!");
+
+    fetch("/api/ejercicios/log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ exerciseName, exerciseId }),
+    }).catch(() => {});
+  }, [exerciseName, exerciseId]);
 
   useEffect(() => {
-    if (finished) {
-      setToast("¡Ejercicio completado! 🎉");
-      // Save to DB
-      fetch("/api/ejercicios/log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ exerciseName, exerciseId }),
-      }).catch(() => {});
-    }
-  }, [finished, exerciseName, exerciseId]);
+    if (!running) return;
 
-  const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
-  const radius = 70;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (progress / 100) * circumference;
+    const id = setInterval(() => {
+      remainingRef.current -= 1;
+      setTimeLeft(Math.max(remainingRef.current, 0));
+
+      if (remainingRef.current <= 0) {
+        clearInterval(id);
+        complete();
+      }
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [running, complete]);
+
+  const restart = () => {
+    remainingRef.current = totalSeconds;
+    setTimeLeft(totalSeconds);
+    setFinished(false);
+  };
 
   const handleStartPause = () => {
     if (finished) {
-      setTimeLeft(totalSeconds);
-      setFinished(false);
+      restart();
       setRunning(true);
-    } else {
-      setRunning((r) => !r);
+      return;
     }
+    setRunning((r) => !r);
   };
 
   const handleReset = () => {
     setRunning(false);
-    setFinished(false);
-    setTimeLeft(totalSeconds);
+    restart();
   };
 
+  const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
+  const radius = 76;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
   return (
-    <div className="flex flex-col items-center gap-6 py-4">
-      {/* Circular timer */}
-      <div className="relative flex items-center justify-center" aria-live="polite" aria-label={`Tiempo: ${formatTime(timeLeft)}`}>
-        <svg width="180" height="180" viewBox="0 0 180 180" aria-hidden="true">
+    <div className="flex flex-col items-center gap-6 px-4 py-6">
+      {/* Anillo de progreso */}
+      <div
+        className="relative flex items-center justify-center"
+        aria-live="polite"
+        aria-label={`Tiempo restante: ${formatTime(timeLeft)}`}
+      >
+        <svg width="190" height="190" viewBox="0 0 190 190" aria-hidden="true">
           <circle
-            cx="90"
-            cy="90"
+            cx="95"
+            cy="95"
             r={radius}
             fill="none"
-            stroke="#E5E7EB"
-            strokeWidth="12"
+            strokeWidth="9"
+            style={{ stroke: "var(--line)" }}
           />
           <circle
-            cx="90"
-            cy="90"
+            cx="95"
+            cy="95"
             r={radius}
             fill="none"
-            stroke={finished ? "#16A34A" : "#2563EB"}
-            strokeWidth="12"
+            strokeWidth="9"
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
-            transform="rotate(-90 90 90)"
-            style={{ transition: "stroke-dashoffset 0.8s ease" }}
+            transform="rotate(-90 95 95)"
+            style={{
+              stroke: activeColor,
+              transition: "stroke-dashoffset 0.8s ease, stroke 0.3s ease",
+            }}
           />
         </svg>
+
         <div className="absolute text-center">
           <div
-            className="font-extrabold text-gray-900"
-            style={{ fontSize: "2.2rem", letterSpacing: "-0.02em" }}
+            style={{
+              fontSize: "2.4rem",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              fontVariantNumeric: "tabular-nums",
+            }}
           >
             {formatTime(timeLeft)}
           </div>
-          <div className="text-gray-500 font-medium" style={{ fontSize: "0.85rem" }}>
-            {finished ? "¡Listo!" : running ? "En curso" : "Pausado"}
+          <div
+            className="mt-0.5"
+            style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--ink-mute)" }}
+          >
+            {finished ? "¡Listo!" : running ? "En curso" : "En pausa"}
           </div>
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="flex gap-4 w-full px-4">
+      {/* Controles */}
+      <div className="flex gap-2.5 w-full">
         <button
           onClick={handleStartPause}
-          className="flex-1 rounded-2xl font-extrabold text-white transition-all active:scale-95"
+          className="flex-1 pressable flex items-center justify-center gap-2"
           style={{
-            minHeight: "72px",
-            fontSize: "1.3rem",
-            backgroundColor: finished ? "#16A34A" : running ? "#DC2626" : "#2563EB",
+            minHeight: "3.6rem",
+            borderRadius: "var(--r-md)",
+            backgroundColor: activeColor,
+            color: "#fff",
+            fontSize: "1.02rem",
+            fontWeight: 800,
+            border: "none",
           }}
-          aria-label={finished ? "Reiniciar ejercicio" : running ? "Pausar temporizador" : "Iniciar temporizador"}
+          aria-label={finished ? "Repetir ejercicio" : running ? "Pausar" : "Iniciar"}
         >
-          {finished ? "🔄 Repetir" : running ? "⏸ Pausar" : "▶ Iniciar"}
+          {finished ? (
+            <RotateCcw size={20} strokeWidth={2.3} aria-hidden="true" />
+          ) : running ? (
+            <Pause size={20} strokeWidth={2.3} aria-hidden="true" />
+          ) : (
+            <Play size={20} strokeWidth={2.3} aria-hidden="true" />
+          )}
+          {finished ? "Repetir" : running ? "Pausar" : "Iniciar"}
         </button>
+
         {!finished && (
           <button
             onClick={handleReset}
-            className="rounded-2xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-95 border-2 border-gray-300 transition-all"
-            style={{ minHeight: "72px", minWidth: "88px", fontSize: "1.1rem" }}
+            className="pressable flex items-center justify-center"
+            style={{
+              minWidth: "3.6rem",
+              minHeight: "3.6rem",
+              borderRadius: "var(--r-md)",
+              backgroundColor: "var(--surface-soft)",
+              border: "1px solid var(--line-strong)",
+              color: "var(--ink-soft)",
+            }}
             aria-label="Reiniciar temporizador"
           >
-            🔁
+            <RotateCcw size={20} strokeWidth={2.2} aria-hidden="true" />
           </button>
         )}
       </div>
 
       {toast && (
-        <Toast
-          message={toast}
-          emoji="🎉"
-          onClose={() => setToast(null)}
-          duration={3000}
-        />
+        <Toast message={toast} tone="success" onClose={() => setToast(null)} duration={3000} />
       )}
     </div>
   );

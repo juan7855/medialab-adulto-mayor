@@ -1,75 +1,82 @@
+import Link from "next/link";
+import { CalendarDays, ChevronRight, Pill, Siren } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import SectionTitle from "@/components/SectionTitle";
 import MedicationList from "./MedicationList";
 import MedicationHistory from "./MedicationHistory";
-import Link from "next/link";
 
 export default function MedicamentosPage() {
-  const today = new Date().toISOString().split("T")[0];
-
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFF5F5" }}>
+    <div className="min-h-screen pb-10">
       <PageHeader
         title="Medicamentos"
-        emoji="💊"
-        color="#DC2626"
+        subtitle="Tus pastillas, a su hora"
+        icon={Pill}
+        accent="blue"
         backHref="/"
         backLabel="Inicio"
       />
 
-      <main
-        className="px-4 py-5 flex flex-col gap-5"
-        style={{ maxWidth: "480px", margin: "0 auto" }}
-        role="main"
-      >
-        {/* Emergency contact */}
+      <main className="px-4 pt-4 flex flex-col gap-7" role="main">
+        {/* Medicamentos de hoy */}
+        <section aria-label="Medicamentos de hoy">
+          <SectionTitle icon={Pill} accent="blue">
+            Hoy
+          </SectionTitle>
+          <div className="mt-3">
+            <MedicationList />
+          </div>
+        </section>
+
+        {/* Historial */}
+        <section aria-label="Historial de los últimos 7 días">
+          <SectionTitle icon={CalendarDays} accent="purple">
+            Últimos 7 días
+          </SectionTitle>
+          <div className="mt-3">
+            <MedicationHistory />
+          </div>
+        </section>
+
+        {/* Emergencia */}
         <Link
           href="/emergencia"
-          role="button"
-          aria-label="Botón de emergencia: llamar a familiar o médico"
-          className="flex items-center justify-center gap-3 w-full rounded-3xl shadow-lg active:scale-95 transition-transform"
+          className="pressable flex items-center gap-3.5 p-4"
           style={{
-            backgroundColor: "#FF4500",
-            border: "3px solid #CC3700",
-            minHeight: "72px",
+            backgroundColor: "var(--red-tint)",
+            border: "1px solid var(--red-line)",
+            borderRadius: "var(--r-lg)",
             textDecoration: "none",
-            padding: "0 20px",
+            color: "inherit",
           }}
+          aria-label="Emergencia: llamar a un familiar o al 911"
         >
-          <span style={{ fontSize: "2rem" }} aria-hidden="true">🆘</span>
-          <span className="font-extrabold text-white" style={{ fontSize: "1.25rem" }}>
-            EMERGENCIA – Llamar ayuda
+          <span
+            className="tile"
+            style={{
+              width: 48,
+              height: 48,
+              backgroundColor: "var(--surface)",
+              borderColor: "var(--red-line)",
+              borderRadius: "0.8rem",
+            }}
+            aria-hidden="true"
+          >
+            <Siren size={24} strokeWidth={1.9} color="var(--red-ink)" />
           </span>
+          <span className="flex-1 min-w-0">
+            <span className="block" style={{ fontSize: "1rem", fontWeight: 800 }}>
+              Emergencia
+            </span>
+            <span
+              className="block mt-0.5"
+              style={{ fontSize: "0.76rem", fontWeight: 500, color: "var(--ink-soft)" }}
+            >
+              Llamar a un familiar o al 911
+            </span>
+          </span>
+          <ChevronRight size={22} strokeWidth={2.2} color="var(--red-ink)" aria-hidden="true" />
         </Link>
-
-        {/* Medications of the day */}
-        <section
-          className="rounded-3xl p-5 shadow"
-          style={{ backgroundColor: "white" }}
-          aria-label="Medicamentos de hoy"
-        >
-          <h2
-            className="font-extrabold text-gray-800 mb-4"
-            style={{ fontSize: "1.25rem" }}
-          >
-            💊 Medicamentos de hoy
-          </h2>
-          <MedicationList date={today} />
-        </section>
-
-        {/* History */}
-        <section
-          className="rounded-3xl p-5 shadow"
-          style={{ backgroundColor: "white" }}
-          aria-label="Historial de los últimos 7 días"
-        >
-          <h2
-            className="font-extrabold text-gray-800 mb-4"
-            style={{ fontSize: "1.25rem" }}
-          >
-            📅 Historial (7 días)
-          </h2>
-          <MedicationHistory />
-        </section>
       </main>
     </div>
   );

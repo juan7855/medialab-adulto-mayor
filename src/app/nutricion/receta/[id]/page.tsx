@@ -1,134 +1,152 @@
 import { notFound } from "next/navigation";
+import { Carrot, Clock, ListChecks, Lightbulb, Utensils } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import SectionTitle from "@/components/SectionTitle";
 import { RECIPES } from "../data";
+import { ACCENTS } from "@/lib/theme";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
 export async function generateStaticParams() {
-  return RECIPES.map((r) => ({ id: r.id }));
+  return RECIPES.map((recipe) => ({ id: recipe.id }));
 }
 
-export default async function RecetaPage({ params }: Props) {
+export default async function RecipeDetailPage({ params }: Props) {
   const { id } = await params;
   const recipe = RECIPES.find((r) => r.id === id);
   if (!recipe) return notFound();
 
+  const tone = ACCENTS[recipe.accent];
+  const Icon = recipe.icon;
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#F0FDF4" }}>
+    <div className="min-h-screen pb-10">
       <PageHeader
         title={recipe.name}
-        emoji={recipe.emoji}
-        color="#16A34A"
+        subtitle={`${recipe.difficulty} · ${recipe.servings}`}
+        icon={recipe.icon}
+        accent={recipe.accent}
         backHref="/nutricion"
         backLabel="Nutrición"
       />
 
-      <main
-        className="px-4 py-5 flex flex-col gap-5"
-        style={{ maxWidth: "480px", margin: "0 auto" }}
-        role="main"
-      >
-        {/* Info */}
+      <main className="px-4 pt-3 flex flex-col gap-5" role="main">
+        {/* Portada */}
         <div
-          className="rounded-3xl p-5 shadow flex items-center gap-4"
-          style={{ backgroundColor: "white" }}
-          role="region"
-          aria-label="Información de la receta"
+          className="flex items-center justify-center"
+          style={{
+            height: 130,
+            backgroundColor: tone.tint,
+            border: `1px solid ${tone.line}`,
+            borderRadius: "var(--r-lg)",
+          }}
+          aria-hidden="true"
         >
-          <div
-            className="flex-shrink-0 flex items-center justify-center rounded-2xl"
-            style={{ width: 80, height: 80, fontSize: "2.8rem", backgroundColor: "#DCFCE7" }}
-            aria-hidden="true"
-          >
-            {recipe.emoji}
-          </div>
-          <div>
-            <h2 className="font-extrabold text-gray-900" style={{ fontSize: "1.2rem" }}>
-              {recipe.name}
-            </h2>
-            <div className="flex flex-wrap gap-2 mt-2">
-              <span className="bg-green-100 text-green-700 rounded-full px-3 py-0.5 font-bold" style={{ fontSize: "0.85rem" }}>
-                ⏱ {recipe.time}
-              </span>
-              <span className="bg-blue-100 text-blue-700 rounded-full px-3 py-0.5 font-bold" style={{ fontSize: "0.85rem" }}>
-                {recipe.difficulty}
-              </span>
-              <span className="bg-yellow-100 text-yellow-700 rounded-full px-3 py-0.5 font-bold" style={{ fontSize: "0.85rem" }}>
-                🍽 {recipe.servings}
-              </span>
-            </div>
-          </div>
+          <Icon size={54} strokeWidth={1.3} color={tone.ink} />
         </div>
 
-        {/* Ingredients */}
-        <section
-          className="rounded-3xl p-5 shadow"
-          style={{ backgroundColor: "white" }}
-          aria-label="Ingredientes"
-        >
-          <h3
-            className="font-extrabold text-gray-800 mb-4"
-            style={{ fontSize: "1.2rem" }}
+        {/* Metadatos */}
+        <div className="flex flex-wrap gap-2 px-1">
+          <span className="pill">
+            <Clock size={13} strokeWidth={2.2} aria-hidden="true" />
+            {recipe.time}
+          </span>
+          <span className="pill">
+            <Utensils size={13} strokeWidth={2.2} aria-hidden="true" />
+            {recipe.servings}
+          </span>
+          <span
+            className="pill"
+            style={{ backgroundColor: tone.tint, borderColor: tone.line, color: tone.ink }}
           >
-            🛒 Ingredientes
-          </h3>
-          <ul className="flex flex-col gap-2" aria-label={`Ingredientes de ${recipe.name}`}>
-            {recipe.ingredients.map((ing, i) => (
+            {recipe.difficulty}
+          </span>
+        </div>
+
+        {/* Ingredientes */}
+        <section aria-label="Ingredientes">
+          <SectionTitle icon={Carrot} accent={recipe.accent}>
+            Ingredientes
+          </SectionTitle>
+
+          <ul className="card flex flex-col gap-2.5 mt-3 p-4 list-none m-0">
+            {recipe.ingredients.map((ingredient) => (
               <li
-                key={i}
-                className="flex items-start gap-3 rounded-2xl p-3"
-                style={{ backgroundColor: "#F0FDF4", fontSize: "1.05rem" }}
+                key={ingredient}
+                className="flex items-start gap-2.5"
+                style={{ fontSize: "0.9rem", fontWeight: 500 }}
               >
-                <span className="text-green-500 font-bold flex-shrink-0" aria-hidden="true">●</span>
-                <span className="font-medium text-gray-800">{ing}</span>
+                <span
+                  aria-hidden="true"
+                  style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: "999px",
+                    backgroundColor: tone.ink,
+                    flexShrink: 0,
+                    marginTop: 8,
+                  }}
+                />
+                {ingredient}
               </li>
             ))}
           </ul>
         </section>
 
-        {/* Steps */}
-        <section
-          className="rounded-3xl p-5 shadow"
-          style={{ backgroundColor: "white" }}
-          aria-label="Pasos de preparación"
-        >
-          <h3
-            className="font-extrabold text-gray-800 mb-4"
-            style={{ fontSize: "1.2rem" }}
-          >
-            👩‍🍳 Preparación
-          </h3>
-          <ol className="flex flex-col gap-3" aria-label={`Pasos para preparar ${recipe.name}`}>
+        {/* Preparación */}
+        <section aria-label="Pasos de preparación">
+          <SectionTitle icon={ListChecks} accent={recipe.accent}>
+            Preparación
+          </SectionTitle>
+
+          <ol className="flex flex-col gap-2 mt-3 list-none p-0 m-0">
             {recipe.steps.map((step, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-4 rounded-2xl p-4"
-                style={{ backgroundColor: "#DCFCE7", fontSize: "1.05rem" }}
-              >
+              <li key={i} className="card flex items-start gap-3.5 p-3.5">
                 <span
-                  className="flex-shrink-0 flex items-center justify-center rounded-full font-extrabold text-white bg-green-600"
-                  style={{ width: 40, height: 40, fontSize: "1.1rem" }}
+                  className="tile"
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: "999px",
+                    backgroundColor: tone.tint,
+                    borderColor: tone.line,
+                    color: tone.ink,
+                    fontSize: "0.86rem",
+                    fontWeight: 800,
+                  }}
                   aria-hidden="true"
                 >
                   {i + 1}
                 </span>
-                <span className="font-medium text-gray-800 leading-snug pt-1">{step}</span>
+                <span style={{ fontSize: "0.92rem", fontWeight: 500, lineHeight: 1.45 }}>
+                  {step}
+                </span>
               </li>
             ))}
           </ol>
         </section>
 
-        {/* Tip */}
+        {/* Consejo */}
         <div
-          className="rounded-3xl p-5 shadow flex items-start gap-3"
-          style={{ backgroundColor: "#FEF3C7", border: "2px solid #FCD34D" }}
+          className="flex items-start gap-2.5 p-3.5"
+          style={{
+            backgroundColor: "var(--amber-tint)",
+            border: "1px solid var(--amber-line)",
+            borderRadius: "var(--r-lg)",
+          }}
           role="note"
           aria-label="Consejo de la receta"
         >
-          <span style={{ fontSize: "1.5rem" }} aria-hidden="true">💡</span>
-          <p className="font-semibold text-yellow-900" style={{ fontSize: "1.05rem" }}>
+          <Lightbulb
+            size={19}
+            strokeWidth={2}
+            color="var(--amber-ink)"
+            aria-hidden="true"
+            style={{ flexShrink: 0, marginTop: 1 }}
+          />
+          <p style={{ fontSize: "0.84rem", fontWeight: 600, color: "var(--ink-soft)" }}>
             {recipe.tip}
           </p>
         </div>

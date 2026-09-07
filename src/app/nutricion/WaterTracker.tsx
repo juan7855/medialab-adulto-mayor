@@ -1,157 +1,193 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { GlassWater, Minus, Plus } from "lucide-react";
 import Toast from "@/components/Toast";
-
-interface WaterTrackerProps {
-  date: string;
-}
+import { useToday } from "@/lib/today";
 
 const GOAL = 8;
+const MAX = 12;
 
-export default function WaterTracker({ date }: WaterTrackerProps) {
+export default function WaterTracker() {
+  const date = useToday();
   const [glasses, setGlasses] = useState(0);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
 
   const fetchWater = useCallback(async () => {
+    if (!date) return;
     try {
       const res = await fetch(`/api/nutricion/agua?date=${date}`);
       if (res.ok) {
-        const data = await res.json() as { glasses: number };
+        const data = (await res.json()) as { glasses: number };
         setGlasses(data.glasses);
       }
     } catch {
-      // ignore
+      // se mantiene el valor actual
     } finally {
       setLoading(false);
     }
   }, [date]);
 
   useEffect(() => {
+    // La carga es asíncrona: el estado se actualiza después del await, no
+    // de forma síncrona dentro del efecto, así que no encadena renders.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchWater();
   }, [fetchWater]);
 
-  const updateWater = async (newGlasses: number) => {
-    if (newGlasses < 0 || newGlasses > 12) return;
-    const prev = glasses;
-    setGlasses(newGlasses);
+  const updateWater = async (next: number) => {
+    if (!date || next < 0 || next > MAX) return;
+    const previous = glasses;
+    setGlasses(next);
+
     try {
       await fetch("/api/nutricion/agua", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date, glasses: newGlasses }),
+        body: JSON.stringify({ date, glasses: next }),
       });
-      if (newGlasses > prev) {
-        if (newGlasses >= GOAL) {
-          setToast("¡Meta alcanzada! 🏆 8 vasos de agua");
-        } else {
-          setToast(`¡Vaso registrado! ${newGlasses} de ${GOAL} 💧`);
-        }
+      if (next > previous) {
+        setToast(
+          next >= GOAL ? "¡Meta alcanzada! 8 vasos" : `Vaso registrado · ${next} de ${GOAL}`,
+        );
       }
     } catch {
-      setGlasses(prev);
+      setGlasses(previous);
     }
   };
 
   const percentage = Math.min((glasses / GOAL) * 100, 100);
+  const reached = glasses >= GOAL;
+  const barColor = reached ? "var(--green-ink)" : "var(--blue-ink)";
 
-  if (loading) {
+  if (loading || !date) {
     return (
-      <div className="flex justify-center py-6" aria-busy="true" aria-label="Cargando datos de agua">
-        <div className="w-12 h-12 rounded-full border-4 border-blue-500 border-t-transparent animate-spin"></div>
+      <div
+        className="flex justify-center items-center"
+        style={{ minHeight: "9rem" }}
+        aria-busy="true"
+        aria-label="Cargando el registro de agua"
+      >
+        <span
+          className="animate-spin"
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "999px",
+            border: "3px solid var(--line)",
+            borderTopColor: "var(--blue-ink)",
+            display: "block",
+          }}
+        />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      {/* Glasses visual */}
+    <div className="flex flex-col gap-4">
+      {/* Vasos */}
       <div
-        className="flex flex-wrap justify-center gap-2"
+        className="flex justify-between"
         role="img"
-        aria-label={`${glasses} de ${GOAL} vasos de agua tomados`}
+        aria-label={`${glasses} de ${GOAL} vasos de agua`}
       >
-        {Array.from({ length: GOAL }).map((_, i) => (
-          <div
-            key={i}
-            style={{
-              width: 44,
-              height: 44,
-              fontSize: "1.6rem",
-              filter: i < glasses ? "none" : "grayscale(1) opacity(0.3)",
-            }}
-            className="flex items-center justify-center transition-all duration-300"
-            aria-hidden="true"
-          >
-            💧
-          </div>
-        ))}
+        {Array.from({ length: GOAL }).map((_, i) => {
+          const filled = i < glasses;
+          return (
+            <GlassWater
+              key={i}
+              size={24}
+              strokeWidth={filled ? 2.1 : 1.6}
+              color={filled ? "var(--blue-ink)" : "var(--line-strong)"}
+              aria-hidden="true"
+              style={{ transition: "color 0.25s ease" }}
+            />
+          );
+        })}
       </div>
 
-      {/* Progress bar */}
-      <div className="w-full" role="progressbar" aria-valuenow={glasses} aria-valuemin={0} aria-valuemax={GOAL} aria-label={`Progreso: ${glasses} vasos`}>
-        <div className="flex justify-between mb-1">
-          <span className="font-bold text-blue-700" style={{ fontSize: "1rem" }}>
-            {glasses} vasos
-          </span>
-          <span className="font-semibold text-gray-500" style={{ fontSize: "1rem" }}>
-            Meta: {GOAL} vasos
-          </span>
-        </div>
-        <div className="w-full h-5 rounded-full bg-gray-200 overflow-hidden">
+      {/* Barra de progreso */}
+      <div
+        role="progressbar"
+        aria-valuenow={glasses}
+        aria-valuemin={0}
+        aria-valuemax={GOAL}
+        aria-label={`Progreso de agua: ${glasses} de ${GOAL} vasos`}
+      >
+        <div
+          style={{
+            height: 8,
+            borderRadius: "999px",
+            backgroundColor: "var(--line)",
+            overflow: "hidden",
+          }}
+        >
           <div
-            className="h-full rounded-full transition-all duration-500"
             style={{
               width: `${percentage}%`,
-              backgroundColor: glasses >= GOAL ? "#16A34A" : "#2563EB",
+              height: "100%",
+              borderRadius: "999px",
+              backgroundColor: barColor,
+              transition: "width 0.45s ease, background-color 0.3s ease",
             }}
           />
         </div>
-        {glasses >= GOAL && (
-          <p className="text-center text-green-700 font-bold mt-2" style={{ fontSize: "1rem" }}>
-            ✅ ¡Meta alcanzada!
-          </p>
-        )}
+        <p
+          className="mt-2 text-center"
+          style={{ fontSize: "0.76rem", fontWeight: 700, color: "var(--ink-mute)" }}
+        >
+          {reached ? "¡Meta del día alcanzada!" : `Meta: ${GOAL} vasos`}
+        </p>
       </div>
 
-      {/* Buttons */}
-      <div className="flex gap-4 justify-center">
+      {/* Controles */}
+      <div className="flex items-center justify-between gap-3">
         <button
           onClick={() => void updateWater(glasses - 1)}
           disabled={glasses <= 0}
           aria-label="Quitar un vaso de agua"
-          className="flex items-center justify-center rounded-2xl font-extrabold text-white bg-red-500 hover:bg-red-600 disabled:opacity-40 active:scale-95 transition-all"
-          style={{ width: 88, height: 88, fontSize: "2.5rem" }}
+          className="pressable flex items-center justify-center"
+          style={{
+            width: "3.4rem",
+            height: "3.4rem",
+            borderRadius: "var(--r-md)",
+            backgroundColor: "var(--surface-soft)",
+            border: "1px solid var(--line-strong)",
+            color: "var(--ink-soft)",
+            opacity: glasses <= 0 ? 0.4 : 1,
+          }}
         >
-          −
+          <Minus size={22} strokeWidth={2.6} aria-hidden="true" />
         </button>
-        <div
-          className="flex flex-col items-center justify-center"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <span className="font-extrabold text-blue-700" style={{ fontSize: "2.5rem" }}>
-            {glasses}
-          </span>
-          <span className="text-gray-500 font-medium" style={{ fontSize: "0.85rem" }}>
-            vasos
-          </span>
+
+        <div className="text-center" aria-live="polite" aria-atomic="true">
+          <div style={{ fontSize: "2rem", fontWeight: 800, lineHeight: 1 }}>{glasses}</div>
+          <div style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--ink-mute)" }}>
+            {glasses === 1 ? "vaso" : "vasos"}
+          </div>
         </div>
+
         <button
           onClick={() => void updateWater(glasses + 1)}
-          disabled={glasses >= 12}
+          disabled={glasses >= MAX}
           aria-label="Agregar un vaso de agua"
-          className="flex items-center justify-center rounded-2xl font-extrabold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-40 active:scale-95 transition-all"
-          style={{ width: 88, height: 88, fontSize: "2.5rem" }}
+          className="pressable flex items-center justify-center"
+          style={{
+            width: "3.4rem",
+            height: "3.4rem",
+            borderRadius: "var(--r-md)",
+            backgroundColor: "var(--blue-ink)",
+            border: "none",
+            color: "#fff",
+            opacity: glasses >= MAX ? 0.4 : 1,
+          }}
         >
-          +
+          <Plus size={22} strokeWidth={2.6} aria-hidden="true" />
         </button>
       </div>
 
-      {toast && (
-        <Toast message={toast} emoji="💧" onClose={() => setToast(null)} />
-      )}
+      {toast && <Toast message={toast} tone="success" onClose={() => setToast(null)} />}
     </div>
   );
 }

@@ -1,7 +1,10 @@
 import { notFound } from "next/navigation";
+import { Clock, ListChecks, TriangleAlert } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
+import SectionTitle from "@/components/SectionTitle";
 import ExerciseTimer from "./ExerciseTimer";
-import { EXERCISES } from "../data";
+import { EXERCISES, LEVEL_ACCENT } from "../data";
+import { ACCENTS } from "@/lib/theme";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -16,122 +19,97 @@ export default async function ExerciseDetailPage({ params }: Props) {
   const exercise = EXERCISES.find((e) => e.id === id);
   if (!exercise) return notFound();
 
+  const accentName = LEVEL_ACCENT[exercise.level];
+  const tone = ACCENTS[accentName];
+
   return (
-    <div className="min-h-screen" style={{ backgroundColor: exercise.color }}>
+    <div className="min-h-screen pb-10">
       <PageHeader
         title={exercise.name}
-        emoji={exercise.emoji}
-        color={exercise.levelColor}
+        subtitle={exercise.description}
+        icon={exercise.icon}
+        accent={accentName}
         backHref="/ejercicios"
         backLabel="Ejercicios"
       />
 
-      <main
-        className="px-4 py-5 flex flex-col gap-5"
-        style={{ maxWidth: "480px", margin: "0 auto" }}
-        role="main"
-      >
-        {/* Info card */}
-        <div
-          className="rounded-3xl p-5 shadow flex items-center gap-4"
-          style={{ backgroundColor: "white" }}
-          role="region"
-          aria-label="Información del ejercicio"
-        >
-          <div
-            className="flex-shrink-0 flex items-center justify-center rounded-2xl"
-            style={{ width: 80, height: 80, fontSize: "2.8rem", backgroundColor: exercise.color }}
-            aria-hidden="true"
+      <main className="px-4 pt-3 flex flex-col gap-4" role="main">
+        {/* Metadatos */}
+        <div className="flex gap-2 px-1">
+          <span
+            className="pill"
+            style={{ backgroundColor: tone.tint, borderColor: tone.line, color: tone.ink }}
           >
-            {exercise.emoji}
-          </div>
-          <div>
-            <h2 className="font-extrabold text-gray-900" style={{ fontSize: "1.25rem" }}>
-              {exercise.name}
-            </h2>
-            <p className="text-gray-600 mt-1" style={{ fontSize: "1rem" }}>
-              {exercise.description}
-            </p>
-            <div className="flex gap-3 mt-2">
-              <span
-                className="rounded-full px-3 py-0.5 font-bold text-white"
-                style={{ backgroundColor: exercise.levelColor, fontSize: "0.85rem" }}
-              >
-                {exercise.level}
-              </span>
-              <span className="font-semibold text-gray-600" style={{ fontSize: "0.95rem" }}>
-                ⏱ {exercise.duration}
-              </span>
-            </div>
-          </div>
+            {exercise.level}
+          </span>
+          <span className="pill">
+            <Clock size={13} strokeWidth={2.2} aria-hidden="true" />
+            {exercise.duration}
+          </span>
         </div>
 
-        {/* Timer */}
-        <div
-          className="rounded-3xl shadow"
-          style={{ backgroundColor: "white" }}
-          role="region"
-          aria-label="Temporizador"
-        >
-          <div className="px-5 pt-5 pb-2">
-            <h3 className="font-extrabold text-gray-800 text-center" style={{ fontSize: "1.2rem" }}>
-              ⏱ Temporizador
-            </h3>
-          </div>
+        {/* Temporizador */}
+        <section className="card" aria-label="Temporizador">
           <ExerciseTimer
             totalSeconds={exercise.durationSeconds}
             exerciseName={exercise.name}
             exerciseId={exercise.id}
+            accent={accentName}
           />
-        </div>
+        </section>
 
-        {/* Steps */}
-        <div
-          className="rounded-3xl p-5 shadow"
-          style={{ backgroundColor: "white" }}
-          role="region"
-          aria-label="Pasos del ejercicio"
-        >
-          <h3
-            className="font-extrabold text-gray-800 mb-4"
-            style={{ fontSize: "1.2rem" }}
-          >
-            📋 Pasos a seguir
-          </h3>
-          <ol className="flex flex-col gap-3" aria-label={`Pasos para ${exercise.name}`}>
+        {/* Pasos */}
+        <section aria-label="Pasos del ejercicio">
+          <SectionTitle icon={ListChecks} accent={accentName}>
+            Pasos a seguir
+          </SectionTitle>
+
+          <ol className="flex flex-col gap-2 mt-3 list-none p-0 m-0">
             {exercise.steps.map((step, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-4 rounded-2xl p-4"
-                style={{ backgroundColor: exercise.color, fontSize: "1.05rem" }}
-              >
+              <li key={i} className="card flex items-start gap-3.5 p-3.5">
                 <span
-                  className="flex-shrink-0 flex items-center justify-center rounded-full font-extrabold text-white"
+                  className="tile"
                   style={{
-                    width: 40,
-                    height: 40,
-                    backgroundColor: exercise.levelColor,
-                    fontSize: "1.1rem",
+                    width: 34,
+                    height: 34,
+                    borderRadius: "999px",
+                    backgroundColor: tone.tint,
+                    borderColor: tone.line,
+                    color: tone.ink,
+                    fontSize: "0.86rem",
+                    fontWeight: 800,
                   }}
                   aria-hidden="true"
                 >
                   {i + 1}
                 </span>
-                <span className="font-medium text-gray-800 leading-snug pt-1">{step}</span>
+                <span style={{ fontSize: "0.92rem", fontWeight: 500, lineHeight: 1.45 }}>
+                  {step}
+                </span>
               </li>
             ))}
           </ol>
-        </div>
+        </section>
 
-        {/* Tip */}
+        {/* Advertencia */}
         <div
-          className="rounded-3xl p-5 shadow flex items-start gap-3"
-          style={{ backgroundColor: "#FEF3C7", border: "2px solid #FCD34D" }}
+          className="flex items-start gap-2.5 p-3.5"
+          style={{
+            backgroundColor: "var(--amber-tint)",
+            border: "1px solid var(--amber-line)",
+            borderRadius: "var(--r-lg)",
+          }}
           role="note"
           aria-label="Consejo de seguridad"
         >
-          <span style={{ fontSize: "1.5rem" }} aria-hidden="true">⚠️</span>
-          <p className="font-semibold text-yellow-900" style={{ fontSize: "1.05rem" }}>
+          <TriangleAlert
+            size={19}
+            strokeWidth={2}
+            color="var(--amber-ink)"
+            aria-hidden="true"
+            style={{ flexShrink: 0, marginTop: 1 }}
+          />
+          <p style={{ fontSize: "0.84rem", fontWeight: 600, color: "var(--ink-soft)" }}>
             {exercise.tip}
           </p>
         </div>

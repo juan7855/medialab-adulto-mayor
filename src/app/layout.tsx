@@ -1,6 +1,14 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { Manrope } from "next/font/google";
 import "./globals.css";
+
+const manrope = Manrope({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-sans",
+});
 
 export const metadata: Metadata = {
   title: "MiSalud – App de Salud para Adultos Mayores",
@@ -14,13 +22,13 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 2,
   userScalable: true,
-  themeColor: "#2563EB",
+  themeColor: "#F2EFE8",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es">
-      <body className="antialiased">{children}</body>
+    <html lang="es" className={manrope.variable}>
+      <body>{children}</body>
     </html>
   );
 }

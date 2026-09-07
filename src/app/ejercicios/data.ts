@@ -1,14 +1,37 @@
-export const EXERCISES = [
+import { Armchair, Dumbbell, Footprints, Scale, type LucideIcon } from "lucide-react";
+import type { AccentName } from "@/lib/theme";
+
+export type Level = "Ligero" | "Moderado";
+
+/** El acento comunica la intensidad: verde suave, ámbar exige algo más. */
+export const LEVEL_ACCENT: Record<Level, AccentName> = {
+  Ligero: "green",
+  Moderado: "amber",
+};
+
+export const LEVELS: Level[] = ["Ligero", "Moderado"];
+
+export interface Exercise {
+  id: string;
+  name: string;
+  level: Level;
+  duration: string;
+  durationSeconds: number;
+  icon: LucideIcon;
+  description: string;
+  steps: string[];
+  tip: string;
+}
+
+export const EXERCISES: Exercise[] = [
   {
     id: "caminar",
     name: "Caminata Suave",
     level: "Ligero",
     duration: "15 min",
     durationSeconds: 900,
-    emoji: "🚶",
+    icon: Footprints,
     description: "Caminata pausada para activar el cuerpo",
-    color: "#DBEAFE",
-    levelColor: "#2563EB",
     steps: [
       "Ponte ropa cómoda y zapatos antideslizantes",
       "Comienza caminando despacio durante 2 minutos",
@@ -24,10 +47,8 @@ export const EXERCISES = [
     level: "Ligero",
     duration: "10 min",
     durationSeconds: 600,
-    emoji: "🧘",
+    icon: Armchair,
     description: "Ejercicios de flexibilidad sentado",
-    color: "#DCFCE7",
-    levelColor: "#16A34A",
     steps: [
       "Siéntate en una silla firme con los pies en el suelo",
       "Gira el cuello lentamente de lado a lado (5 veces)",
@@ -43,10 +64,8 @@ export const EXERCISES = [
     level: "Moderado",
     duration: "12 min",
     durationSeconds: 720,
-    emoji: "⚖️",
+    icon: Scale,
     description: "Ejercicios para mejorar el equilibrio",
-    color: "#FEF9C3",
-    levelColor: "#CA8A04",
     steps: [
       "Párate junto a una silla o pared para apoyo",
       "Levanta un pie del suelo por 10 segundos",
@@ -62,10 +81,8 @@ export const EXERCISES = [
     level: "Moderado",
     duration: "15 min",
     durationSeconds: 900,
-    emoji: "💪",
+    icon: Dumbbell,
     description: "Ejercicios de fuerza sin pesas",
-    color: "#FFE4E6",
-    levelColor: "#DC2626",
     steps: [
       "Siéntate y levántate de la silla sin usar los brazos (8 veces)",
       "Aprieta y suelta los puños durante 30 segundos",

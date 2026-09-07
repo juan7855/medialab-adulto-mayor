@@ -1,8 +1,30 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Toast from "@/components/Toast";
+import {
+  Armchair,
+  Bed,
+  Check,
+  CircleCheck,
+  Clock,
+  CookingPot,
+  Egg,
+  Footprints,
+  Moon,
+  Phone,
+  Pill,
+  Salad,
+  Sun,
+  Sunrise,
+  Tv,
+  Undo2,
+  type LucideIcon,
+} from "lucide-react";
+import Toast, { type ToastTone } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import SectionTitle from "@/components/SectionTitle";
+import { useToday } from "@/lib/today";
+import { ACCENTS, type AccentName } from "@/lib/theme";
 
 interface Activity {
   id: number;
@@ -19,252 +41,314 @@ interface RoutineLog {
   completedAt: string | null;
 }
 
-interface RutinaListProps {
-  date: string;
-}
+const GROUPS: { key: string; label: string; icon: LucideIcon; accent: AccentName }[] = [
+  { key: "morning", label: "Mañana", icon: Sunrise, accent: "amber" },
+  { key: "afternoon", label: "Tarde", icon: Sun, accent: "orange" },
+  { key: "evening", label: "Noche", icon: Moon, accent: "purple" },
+];
 
-const TIME_OF_DAY_LABELS: Record<string, { label: string; emoji: string; color: string; bg: string; border: string }> = {
-  morning: { label: "Mañana", emoji: "🌅", color: "#92400E", bg: "#FEF9C3", border: "#FCD34D" },
-  afternoon: { label: "Tarde", emoji: "☀️", color: "#1D4ED8", bg: "#DBEAFE", border: "#93C5FD" },
-  evening: { label: "Noche", emoji: "🌙", color: "#5B21B6", bg: "#EDE9FE", border: "#C4B5FD" },
+/**
+ * La rutina se siembra con un emoji por actividad. Se traduce a un icono de
+ * línea para que cada fila se distinga, en vez de repetir el de su franja.
+ */
+const ACTIVITY_ICONS: Record<string, LucideIcon> = {
+  "\u{1F48A}": Pill, // pastilla
+  "\u{1F373}": Egg, // desayuno
+  "\u{1F6B6}": Footprints, // caminata
+  "\u{1F9D8}": Armchair, // estiramiento
+  "\u{1F372}": CookingPot, // almuerzo
+  "\u{1F634}": Bed, // siesta
+  "\u{1F4DE}": Phone, // llamada a familiar
+  "\u{1F957}": Salad, // cena
+  "\u{1F4FA}": Tv, // ocio
+  "\u{1F6CF}": Bed, // preparar para dormir
 };
 
-export default function RutinaList({ date }: RutinaListProps) {
+function formatToday(iso: string): string {
+  const text = new Date(`${iso}T12:00:00`).toLocaleDateString("es-ES", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+export default function RutinaList() {
+  const date = useToday();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [logs, setLogs] = useState<RoutineLog[]>([]);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<{ msg: string; emoji: string } | null>(null);
+  const [toast, setToast] = useState<{ msg: string; tone: ToastTone } | null>(null);
   const [confirm, setConfirm] = useState<{ actId: number; title: string } | null>(null);
 
   const fetchData = useCallback(async () => {
+    if (!date) return;
     try {
       const [actRes, logRes] = await Promise.all([
         fetch("/api/rutina"),
         fetch(`/api/rutina/logs?date=${date}`),
       ]);
-      if (actRes.ok) setActivities(await actRes.json() as Activity[]);
-      if (logRes.ok) setLogs(await logRes.json() as RoutineLog[]);
+      if (actRes.ok) setActivities((await actRes.json()) as Activity[]);
+      if (logRes.ok) setLogs((await logRes.json()) as RoutineLog[]);
     } catch {
-      // ignore
+      // se deja la lista como esté
     } finally {
       setLoading(false);
     }
   }, [date]);
 
   useEffect(() => {
+    // La carga es asíncrona: el estado se actualiza después del await, no
+    // de forma síncrona dentro del efecto, así que no encadena renders.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchData();
   }, [fetchData]);
 
-  const markCompleted = async (actId: number) => {
+  const setCompleted = async (actId: number, completed: boolean) => {
     setConfirm(null);
-    const prev = [...logs];
-    setLogs((l) => {
-      const existing = l.find((log) => log.activityId === actId);
-      if (existing) return l.map((log) => log.activityId === actId ? { ...log, completed: true, completedAt: new Date().toISOString() } : log);
-      return [...l, { activityId: actId, completed: true, completedAt: new Date().toISOString() }];
-    });
-    try {
-      await fetch("/api/rutina/logs", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ activityId: actId, date, completed: true }),
-      });
-      setToast({ msg: "¡Actividad completada!", emoji: "✅" });
-    } catch {
-      setLogs(prev);
-      setToast({ msg: "Error. Intenta de nuevo.", emoji: "❌" });
-    }
-  };
+    if (!date) return;
+    const previous = [...logs];
+    const stamp = completed ? new Date().toISOString() : null;
 
-  const undoComplete = async (actId: number) => {
-    const prev = [...logs];
-    setLogs((l) => l.map((log) => log.activityId === actId ? { ...log, completed: false, completedAt: null } : log));
+    setLogs((current) => {
+      const exists = current.find((log) => log.activityId === actId);
+      if (exists) {
+        return current.map((log) =>
+          log.activityId === actId ? { ...log, completed, completedAt: stamp } : log,
+        );
+      }
+      return [...current, { activityId: actId, completed, completedAt: stamp }];
+    });
+
     try {
       await fetch("/api/rutina/logs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ activityId: actId, date, completed: false }),
+        body: JSON.stringify({ activityId: actId, date, completed }),
       });
-      setToast({ msg: "Actividad desmarcada", emoji: "↩️" });
+      setToast(
+        completed
+          ? { msg: "Actividad completada", tone: "success" }
+          : { msg: "Actividad desmarcada", tone: "info" },
+      );
     } catch {
-      setLogs(prev);
+      setLogs(previous);
+      setToast({ msg: "No se pudo guardar. Intenta de nuevo.", tone: "error" });
     }
   };
 
   const isCompleted = (actId: number) =>
-    logs.find((l) => l.activityId === actId)?.completed ?? false;
+    logs.find((log) => log.activityId === actId)?.completed ?? false;
 
-  const groups = ["morning", "afternoon", "evening"] as const;
-
-  const completedCount = activities.filter((a) => isCompleted(a.id)).length;
-  const totalCount = activities.length;
-
-  if (loading) {
+  if (loading || !date) {
     return (
-      <div className="flex justify-center py-8" aria-busy="true" aria-label="Cargando rutina">
-        <div className="w-12 h-12 rounded-full border-4 border-purple-500 border-t-transparent animate-spin"></div>
+      <div
+        className="flex justify-center items-center"
+        style={{ minHeight: "9rem" }}
+        aria-busy="true"
+        aria-label="Cargando la rutina"
+      >
+        <span
+          className="animate-spin"
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "999px",
+            border: "3px solid var(--line)",
+            borderTopColor: "var(--purple-ink)",
+            display: "block",
+          }}
+        />
       </div>
     );
   }
 
   if (activities.length === 0) {
     return (
-      <div className="text-center py-8 rounded-3xl bg-white shadow">
-        <p className="text-gray-500 font-semibold" style={{ fontSize: "1.1rem" }}>
-          No hay actividades programadas.
-        </p>
+      <div className="card p-6 text-center">
+        <p style={{ fontSize: "0.95rem", fontWeight: 700 }}>No hay actividades programadas.</p>
       </div>
     );
   }
 
+  const done = activities.filter((a) => isCompleted(a.id)).length;
+  const total = activities.length;
+  const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+  const allDone = done === total;
+
   return (
-    <>
-      {/* Progress */}
-      <div
-        className="rounded-3xl p-4 shadow"
-        style={{ backgroundColor: "white" }}
-        role="region"
-        aria-label={`Progreso: ${completedCount} de ${totalCount} actividades completadas`}
-      >
-        <div className="flex justify-between mb-2">
-          <span className="font-bold text-purple-700" style={{ fontSize: "1rem" }}>
-            {completedCount} de {totalCount} completadas
+    <div className="flex flex-col gap-7">
+      {/* Progreso del día */}
+      <div className="card p-4">
+        <p style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--ink-mute)" }}>
+          {formatToday(date)}
+        </p>
+
+        <div className="flex items-baseline justify-between mt-2">
+          <span style={{ fontSize: "1.5rem", fontWeight: 800 }}>
+            {done}
+            <span style={{ fontSize: "1rem", color: "var(--ink-mute)" }}> de {total}</span>
           </span>
-          <span className="font-bold text-gray-500" style={{ fontSize: "1rem" }}>
-            {totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0}%
+          <span
+            style={{
+              fontSize: "0.86rem",
+              fontWeight: 800,
+              color: allDone ? "var(--green-ink)" : "var(--purple-ink)",
+            }}
+          >
+            {percent}%
           </span>
         </div>
+
         <div
-          className="w-full h-4 rounded-full bg-gray-200 overflow-hidden"
+          className="mt-2.5"
+          style={{
+            height: 8,
+            borderRadius: "999px",
+            backgroundColor: "var(--line)",
+            overflow: "hidden",
+          }}
           role="progressbar"
-          aria-valuenow={completedCount}
+          aria-valuenow={done}
           aria-valuemin={0}
-          aria-valuemax={totalCount}
+          aria-valuemax={total}
+          aria-label={`${done} de ${total} actividades completadas`}
         >
           <div
-            className="h-full rounded-full transition-all duration-500"
             style={{
-              width: `${totalCount > 0 ? (completedCount / totalCount) * 100 : 0}%`,
-              backgroundColor: "#7C3AED",
+              width: `${percent}%`,
+              height: "100%",
+              borderRadius: "999px",
+              backgroundColor: allDone ? "var(--green-ink)" : "var(--purple-ink)",
+              transition: "width 0.45s ease, background-color 0.3s ease",
             }}
           />
         </div>
       </div>
 
-      {/* Activities by time of day */}
-      {groups.map((group) => {
-        const groupActivities = activities.filter((a) => a.timeOfDay === group);
-        if (groupActivities.length === 0) return null;
-        const meta = TIME_OF_DAY_LABELS[group];
+      {/* Actividades por franja horaria */}
+      {GROUPS.map((group) => {
+        const items = activities.filter((a) => a.timeOfDay === group.key);
+        if (items.length === 0) return null;
+        const tone = ACCENTS[group.accent];
 
         return (
-          <section key={group} aria-label={`Actividades de la ${meta.label}`}>
-            <div className="flex items-center gap-2 mb-3 px-1">
-              <span style={{ fontSize: "1.5rem" }} aria-hidden="true">{meta.emoji}</span>
-              <h2
-                className="font-extrabold"
-                style={{ fontSize: "1.15rem", color: meta.color }}
-              >
-                {meta.label}
-              </h2>
-            </div>
+          <section key={group.key} aria-label={`Actividades de la ${group.label}`}>
+            <SectionTitle icon={group.icon} accent={group.accent}>
+              {group.label}
+            </SectionTitle>
 
-            <div className="flex flex-col gap-3" role="list">
-              {groupActivities.map((activity) => {
-                const done = isCompleted(activity.id);
+            <ul className="flex flex-col gap-2.5 mt-3 list-none p-0 m-0">
+              {items.map((activity) => {
+                const completed = isCompleted(activity.id);
+                const ActivityIcon = ACTIVITY_ICONS[activity.emoji] ?? group.icon;
+
                 return (
-                  <div
+                  <li
                     key={activity.id}
-                    role="listitem"
-                    className="rounded-2xl p-4 border-2 transition-all"
+                    className="card flex items-center gap-3 p-3.5"
                     style={{
-                      backgroundColor: done ? "#F0FDF4" : meta.bg,
-                      borderColor: done ? "#86EFAC" : meta.border,
+                      backgroundColor: completed ? "var(--surface-soft)" : "var(--surface)",
                     }}
-                    aria-label={`${activity.title}${activity.scheduledTime ? ` a las ${activity.scheduledTime}` : ""}. Estado: ${done ? "completado" : "pendiente"}`}
                   >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className="flex-shrink-0 flex items-center justify-center rounded-2xl"
-                        style={{ width: 64, height: 64, fontSize: "2rem", backgroundColor: done ? "#DCFCE7" : "white", flexShrink: 0 }}
-                        aria-hidden="true"
-                      >
-                        {done ? "✅" : activity.emoji}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div
-                          className="font-extrabold text-gray-900"
-                          style={{
-                            fontSize: "1.1rem",
-                            textDecoration: done ? "line-through" : "none",
-                            color: done ? "#6B7280" : "#111827",
-                          }}
-                        >
-                          {activity.title}
-                        </div>
-                        {activity.description && (
-                          <div className="text-gray-500 font-medium mt-0.5" style={{ fontSize: "0.9rem" }}>
-                            {activity.description}
-                          </div>
-                        )}
-                        {activity.scheduledTime && (
-                          <div className="text-gray-500 font-medium" style={{ fontSize: "0.9rem" }}>
-                            🕐 {activity.scheduledTime}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-3 mt-3">
-                      {!done ? (
-                        <button
-                          onClick={() => setConfirm({ actId: activity.id, title: activity.title })}
-                          className="flex-1 rounded-2xl font-extrabold text-white bg-purple-600 hover:bg-purple-700 active:scale-95 transition-all"
-                          style={{ minHeight: "56px", fontSize: "1rem" }}
-                          aria-label={`Marcar como completado: ${activity.title}`}
-                        >
-                          ✅ Completado
-                        </button>
+                    <span
+                      className="tile"
+                      style={{
+                        width: 46,
+                        height: 46,
+                        borderRadius: "0.75rem",
+                        backgroundColor: completed ? "var(--green-tint)" : tone.tint,
+                        borderColor: completed ? "var(--green-line)" : tone.line,
+                      }}
+                      aria-hidden="true"
+                    >
+                      {completed ? (
+                        <CircleCheck size={22} strokeWidth={2.1} color="var(--green-ink)" />
                       ) : (
-                        <button
-                          onClick={() => void undoComplete(activity.id)}
-                          className="flex-1 rounded-2xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 active:scale-95 border-2 border-gray-300 transition-all"
-                          style={{ minHeight: "56px", fontSize: "1rem" }}
-                          aria-label={`Desmarcar: ${activity.title}`}
+                        <ActivityIcon size={22} strokeWidth={1.9} color={tone.ink} />
+                      )}
+                    </span>
+
+                    <div className="flex-1 min-w-0">
+                      <div
+                        style={{
+                          fontSize: "0.95rem",
+                          fontWeight: 800,
+                          lineHeight: 1.25,
+                          color: completed ? "var(--ink-mute)" : "var(--ink)",
+                          textDecoration: completed ? "line-through" : "none",
+                        }}
+                      >
+                        {activity.title}
+                      </div>
+
+                      {activity.description && (
+                        <div
+                          className="mt-0.5"
+                          style={{ fontSize: "0.74rem", fontWeight: 500, color: "var(--ink-mute)" }}
                         >
-                          ↩️ Desmarcar
-                        </button>
+                          {activity.description}
+                        </div>
+                      )}
+
+                      {activity.scheduledTime && (
+                        <span className="pill mt-1.5">
+                          <Clock size={12} strokeWidth={2.2} aria-hidden="true" />
+                          {activity.scheduledTime}
+                        </span>
                       )}
                     </div>
-                  </div>
+
+                    <button
+                      onClick={() =>
+                        completed
+                          ? void setCompleted(activity.id, false)
+                          : setConfirm({ actId: activity.id, title: activity.title })
+                      }
+                      className="pressable flex items-center justify-center"
+                      style={{
+                        width: "3rem",
+                        height: "3rem",
+                        minHeight: "3rem",
+                        flexShrink: 0,
+                        borderRadius: "999px",
+                        backgroundColor: completed ? "var(--surface)" : "var(--purple-ink)",
+                        border: completed ? "1px solid var(--line-strong)" : "none",
+                        color: completed ? "var(--ink-mute)" : "#fff",
+                      }}
+                      aria-label={
+                        completed
+                          ? `Desmarcar ${activity.title}`
+                          : `Marcar ${activity.title} como completada`
+                      }
+                    >
+                      {completed ? (
+                        <Undo2 size={19} strokeWidth={2.3} aria-hidden="true" />
+                      ) : (
+                        <Check size={22} strokeWidth={2.8} aria-hidden="true" />
+                      )}
+                    </button>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </section>
         );
       })}
 
-      {/* Confirm dialog */}
       {confirm && (
         <ConfirmDialog
-          message={`¿Completaste "${confirm.title}"?`}
-          onConfirm={() => void markCompleted(confirm.actId)}
+          message={`¿Completaste ${confirm.title}?`}
+          onConfirm={() => void setCompleted(confirm.actId, true)}
           onCancel={() => setConfirm(null)}
-          confirmLabel="✅ Sí, completé"
-          cancelLabel="❌ Cancelar"
-          emoji="✅"
+          confirmLabel="Sí, ya la hice"
+          cancelLabel="Todavía no"
+          icon={CircleCheck}
+          accent="purple"
         />
       )}
 
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.msg}
-          emoji={toast.emoji}
-          onClose={() => setToast(null)}
-        />
-      )}
-    </>
+      {toast && <Toast message={toast.msg} tone={toast.tone} onClose={() => setToast(null)} />}
+    </div>
   );
 }
