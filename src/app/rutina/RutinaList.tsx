@@ -247,7 +247,7 @@ export default function RutinaList() {
                 return (
                   <li
                     key={activity.id}
-                    className="card flex items-center gap-3 p-3.5"
+                    className="card flex items-center gap-2.5 p-3.5"
                     style={{
                       backgroundColor: completed ? "var(--surface-soft)" : "var(--surface)",
                     }}
@@ -255,8 +255,8 @@ export default function RutinaList() {
                     <span
                       className="tile"
                       style={{
-                        width: rem(52),
-                        height: rem(52),
+                        width: rem(42),
+                        height: rem(42),
                         borderRadius: rem(12),
                         backgroundColor: completed ? "var(--green-solid)" : tone.solid,
                       }}
@@ -307,9 +307,9 @@ export default function RutinaList() {
                       }
                       className="pressable flex items-center justify-center"
                       style={{
-                        width: "3.3rem",
-                        height: "3.3rem",
-                        minHeight: "3.3rem",
+                        width: "3rem",
+                        height: "3rem",
+                        minHeight: "3rem",
                         flexShrink: 0,
                         borderRadius: "999px",
                         backgroundColor: completed ? "var(--surface-soft)" : "var(--cta)",

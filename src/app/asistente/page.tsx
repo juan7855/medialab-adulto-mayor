@@ -15,7 +15,9 @@ export default function AsistentePage() {
         </p>
       </div>
 
-      <div className="mt-7">
+      {/* Las tarjetas se centran en el hueco entre el titulo y el pie, para
+          que no quede media pantalla vacia debajo. */}
+      <div className="flex-1 flex flex-col justify-center py-6">
         <SelectorAsistente />
       </div>
 

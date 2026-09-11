@@ -90,6 +90,10 @@ html {
 
 @media (max-width: 344px) {
   html { font-size: 18px; }
+  /* En el escalon mas estrecho el titulo de pantalla baja un punto mas:
+     "Medicamentos" es la palabra mas larga de la app y a 1.75rem no cabe
+     junto a su ficha. */
+  :root { --t-xl: 1.58rem; }
 }
 
 body {
@@ -105,11 +109,12 @@ body {
   font-size: var(--t-base);
   letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
-  /* Una palabra que no quepa nunca debe salirse de su contenedor. Se intenta
-     primero partirla por sílabas (el idioma va en <html lang="es">), que se
-     lee bien; break-word queda sólo como último recurso. */
-  hyphens: auto;
-  -webkit-hyphens: auto;
+  /* Una palabra que no quepa nunca debe salirse de su contenedor.
+     Aquí NO se usa hyphens: auto. Con el diccionario de español instalado
+     (iOS lo trae), el navegador parte palabras para apretar las líneas
+     aunque quepan de sobra: "¿Quién te acom-paña?". En texto de interfaz
+     eso se lee mal. break-word sólo actúa cuando una palabra de verdad no
+     cabe, que es lo que queremos. */
   overflow-wrap: break-word;
 }
 

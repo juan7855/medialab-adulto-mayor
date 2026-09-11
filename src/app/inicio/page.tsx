@@ -18,7 +18,7 @@ function SectionRow({ section, tinted = false }: { section: Section; tinted?: bo
   return (
     <Link
       href={section.href}
-      className="pressable flex items-center gap-3.5 p-3.5"
+      className="pressable flex items-center gap-3 p-3.5"
       style={{
         backgroundColor: tinted ? "var(--red-tint)" : "var(--surface)",
         border: `1px solid ${tinted ? "var(--red-line)" : "var(--line)"}`,
@@ -29,7 +29,7 @@ function SectionRow({ section, tinted = false }: { section: Section; tinted?: bo
       }}
       aria-label={`${section.label}. ${section.description}`}
     >
-      <SectionIcon src={section.icon} size={62} />
+      <SectionIcon src={section.icon} size={54} />
 
       <span className="flex-1 min-w-0">
         <span className="block" style={{ fontSize: "var(--t-md)", fontWeight: 800 }}>
@@ -43,7 +43,7 @@ function SectionRow({ section, tinted = false }: { section: Section; tinted?: bo
         </span>
       </span>
 
-      <ChevronRight size={26} strokeWidth={2.3} color="var(--ink-mute)" aria-hidden="true" />
+      <ChevronRight size={22} strokeWidth={2.3} color="var(--ink-mute)" aria-hidden="true" />
     </Link>
   );
 }

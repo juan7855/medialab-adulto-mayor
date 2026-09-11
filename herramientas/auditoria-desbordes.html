@@ -62,6 +62,51 @@ function audit(doc) {
     }
   }
 
+  // 4. Palabras mas anchas que su propia caja. Con overflow-wrap: break-word
+  //    el navegador las parte por la mitad y el texto se lee cortado.
+  //
+  //    Se mide con un span real dentro del mismo documento, copiando la
+  //    tipografia calculada. Con canvas.measureText salian decenas de falsos
+  //    positivos: no aplica el letter-spacing negativo del diseno ni resuelve
+  //    la fuente variable, asi que inflaba cada palabra uno o dos pixeles.
+  var regla = doc.getElementById("__regla__");
+  if (!regla) {
+    regla = doc.createElement("span");
+    regla.id = "__regla__";
+    regla.style.cssText = "position:absolute;visibility:hidden;white-space:pre;left:-99999px;top:0";
+    doc.body.appendChild(regla);
+  }
+
+  for (const el of doc.querySelectorAll("body *")) {
+    if (el.id === "__regla__") continue;
+    if (el.children.length > 0) continue;            // solo hojas con texto
+    var texto = (el.textContent || "").trim();
+    if (!texto || el.clientWidth < 4) continue;
+    var estilo = doc.defaultView.getComputedStyle(el);
+    if (estilo.whiteSpace === "nowrap" || estilo.whiteSpace === "pre") continue;
+
+    regla.style.fontFamily = estilo.fontFamily;
+    regla.style.fontSize = estilo.fontSize;
+    regla.style.fontWeight = estilo.fontWeight;
+    regla.style.fontStyle = estilo.fontStyle;
+    regla.style.letterSpacing = estilo.letterSpacing;
+    regla.style.textTransform = estilo.textTransform;
+
+    var anchoMax = 0;
+    var peor = "";
+    texto.split(" ").forEach(function (palabra) {
+      if (!palabra) return;
+      regla.textContent = palabra;
+      var w = regla.getBoundingClientRect().width;
+      if (w > anchoMax) { anchoMax = w; peor = palabra; }
+    });
+
+    if (anchoMax > el.clientWidth + 0.5) {
+      problems.push("PALABRA CORTADA (" + anchoMax.toFixed(0) + " > " + el.clientWidth
+        + '): "' + peor + '" en ' + describe(el));
+    }
+  }
+
   return problems;
 }
 

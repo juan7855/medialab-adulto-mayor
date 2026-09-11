@@ -108,7 +108,7 @@ export default function EmergenciaPage() {
                   style={{ textDecoration: "none", color: "inherit" }}
                   aria-label={`Llamar a ${contact.name}, ${contact.role}, teléfono ${contact.phone}`}
                 >
-                  <IconTile icon={contact.icon} accent={contact.accent} size={58} strokeWidth={2} />
+                  <IconTile icon={contact.icon} accent={contact.accent} size={50} strokeWidth={2} />
 
                   <span className="flex-1 min-w-0">
                     <span className="block" style={{ fontSize: "var(--t-md)", fontWeight: 800 }}>
@@ -130,8 +130,8 @@ export default function EmergenciaPage() {
 
                   <span
                     style={{
-                      width: 50,
-                      height: 50,
+                      width: 44,
+                      height: 44,
                       flexShrink: 0,
                       borderRadius: "999px",
                       backgroundColor: "var(--cta)",

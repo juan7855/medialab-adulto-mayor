@@ -30,11 +30,11 @@ export default function PageHeader({
     <header role="banner">
       <AppBar backHref={backHref} backLabel={backLabel} showHome={backHref !== "/inicio"} />
 
-      <div className="flex items-center gap-3.5 px-4 pt-5 pb-1">
+      <div className="flex items-center gap-2.5 px-4 pt-5 pb-1">
         {iconSrc ? (
-          <SectionIcon src={iconSrc} size={62} />
+          <SectionIcon src={iconSrc} size={50} />
         ) : icon ? (
-          <IconTile icon={icon} accent={accent} size={62} strokeWidth={1.9} />
+          <IconTile icon={icon} accent={accent} size={50} strokeWidth={1.9} />
         ) : null}
 
         <div className="min-w-0">
