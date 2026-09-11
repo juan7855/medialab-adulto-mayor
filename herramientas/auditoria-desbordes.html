@@ -9,7 +9,7 @@
 <pre id="out">auditando…</pre>
 <script>
 const ROUTES = [
-  "/", "/inicio", "/ejercicios", "/ejercicios/caminar", "/nutricion",
+  "/", "/asistente", "/animo", "/inicio", "/ejercicios", "/ejercicios/caminar", "/nutricion",
   "/nutricion/receta/sopa-verduras", "/medicamentos", "/cognitivo",
   "/cognitivo/memoria-palabras", "/rutina", "/emergencia",
 ];
@@ -51,7 +51,10 @@ function audit(doc) {
   //    clientWidth 0, así que el desborde sólo es medible en el bloque que lo
   //    contiene. Quien declara overflow-x propio queda fuera: ahí es a propósito.
   for (const el of doc.querySelectorAll("body *")) {
-    if (el.clientWidth === 0) continue;               // en línea o sin caja propia
+    // Cajas de menos de 4px no son contenedores: son ayudas ocultas como
+    // .sr-only (1px + overflow hidden), donde que el texto "desborde" es
+    // justo el mecanismo. Medirlas daba un falso positivo en cada pantalla.
+    if (el.clientWidth < 4) continue;
     const style = doc.defaultView.getComputedStyle(el);
     if (style.overflowX === "auto" || style.overflowX === "scroll") continue;
     if (el.scrollWidth > el.clientWidth + 1) {
@@ -76,6 +79,13 @@ const WIDTHS = [320, 360, 390, 430, 480];
 
 (async () => {
   let total = 0;
+
+  // Deja la sesion iniciada y un asistente elegido: si no, /animo e /inicio
+  // se auditarian sin la ilustracion ni la tarjeta.
+  try {
+    localStorage.setItem("misalud.sesion", "ok");
+    localStorage.setItem("misalud.asistente", "lucia");
+  } catch (e) {}
 
   for (const width of WIDTHS) {
     let subtotal = 0;

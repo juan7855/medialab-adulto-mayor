@@ -1,5 +1,5 @@
 import { HeartPulse } from "lucide-react";
-import SelectorAnimal from "@/components/SelectorAnimal";
+import TecladoNumerico from "@/components/TecladoNumerico";
 
 export default function AccesoPage() {
   return (
@@ -21,18 +21,18 @@ export default function AccesoPage() {
 
       <div className="px-1">
         <h1 style={{ fontSize: "var(--t-2xl)", fontWeight: 800, lineHeight: 1.08 }}>
-          ¿Quién eres?
+          Escribe tu clave
         </h1>
         <p
           className="mt-2"
           style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-mute)" }}
         >
-          Toca tu animal para entrar
+          Son cuatro números
         </p>
       </div>
 
       <div className="mt-7">
-        <SelectorAnimal />
+        <TecladoNumerico />
       </div>
 
       <footer

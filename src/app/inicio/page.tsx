@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ChevronRight, HeartPulse } from "lucide-react";
-import AnimalActivo from "@/components/AnimalActivo";
+import TarjetaAsistente from "@/components/TarjetaAsistente";
 import Greeting from "@/components/Greeting";
 import SectionIcon from "@/components/SectionIcon";
 import { EMERGENCIA, RUTINA, SECTIONS, type Section } from "@/lib/theme";
@@ -51,25 +51,26 @@ function SectionRow({ section, tinted = false }: { section: Section; tinted?: bo
 export default function HomePage() {
   return (
     <main className="min-h-screen flex flex-col px-4 pb-8" role="main">
-      {/* Marca y quién entró */}
-      <div className="flex items-center justify-between gap-3 pt-6 pb-6 px-1">
-        <span className="flex items-center gap-2">
-          <HeartPulse size={22} strokeWidth={2.2} color="var(--ink)" aria-hidden="true" />
-          <span
-            style={{
-              fontSize: "var(--t-xs)",
-              fontWeight: 800,
-              letterSpacing: "0.22em",
-              textTransform: "uppercase",
-            }}
-          >
-            MiSalud
-          </span>
+      {/* Marca */}
+      <div className="flex items-center gap-2 pt-6 pb-6 px-1">
+        <HeartPulse size={22} strokeWidth={2.2} color="var(--ink)" aria-hidden="true" />
+        <span
+          style={{
+            fontSize: "var(--t-xs)",
+            fontWeight: 800,
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+          }}
+        >
+          MiSalud
         </span>
-        <AnimalActivo />
       </div>
 
       <Greeting />
+
+      <div className="mt-5">
+        <TarjetaAsistente />
+      </div>
 
       <nav aria-label="Secciones principales" className="flex flex-col gap-3 mt-7">
         {SECTIONS.map((section, i) => (

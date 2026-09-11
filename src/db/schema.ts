@@ -76,6 +76,14 @@ export const routineLogs = pgTable("routine_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Cómo se encuentra la persona cada día, escrito con sus palabras al entrar.
+export const dailyNotes = pgTable("daily_notes", {
+  id: serial("id").primaryKey(),
+  date: date("date").notNull(),
+  note: text("note").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Exercise completions
 export const exerciseLogs = pgTable("exercise_logs", {
   id: serial("id").primaryKey(),
