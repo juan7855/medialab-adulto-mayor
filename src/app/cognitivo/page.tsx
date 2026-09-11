@@ -13,7 +13,7 @@ export default function CognitivoPage() {
         subtitle="Memoria, atención y lenguaje"
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
-        backHref="/"
+        backHref="/inicio"
         backLabel="Inicio"
       />
 

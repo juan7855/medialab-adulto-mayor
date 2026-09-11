@@ -32,7 +32,7 @@ export default function EmergenciaPage() {
         subtitle="Pide ayuda rápido"
         iconSrc={EMERGENCIA.icon}
         accent={EMERGENCIA.accent}
-        backHref="/"
+        backHref="/inicio"
         backLabel="Inicio"
       />
 

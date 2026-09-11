@@ -13,7 +13,7 @@ export default function EjerciciosPage() {
         subtitle="Muévete con calma, siéntete mejor"
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
-        backHref="/"
+        backHref="/inicio"
         backLabel="Inicio"
       />
 

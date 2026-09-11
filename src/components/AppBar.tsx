@@ -32,7 +32,7 @@ export default function AppBar({ backHref, backLabel, showHome = true }: AppBarP
 
       {showHome && (
         <Link
-          href="/"
+          href="/inicio"
           className="chip-btn"
           style={{ flexDirection: "column", gap: "0.05rem", padding: "0.4rem 0.9rem" }}
           aria-label="Ir al inicio"

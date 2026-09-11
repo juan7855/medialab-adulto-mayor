@@ -17,7 +17,7 @@ export default function MedicamentosPage() {
         subtitle="Tus pastillas, a su hora"
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
-        backHref="/"
+        backHref="/inicio"
         backLabel="Inicio"
       />
 

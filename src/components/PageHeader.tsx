@@ -23,12 +23,12 @@ export default function PageHeader({
   iconSrc,
   icon,
   accent,
-  backHref = "/",
+  backHref = "/inicio",
   backLabel = "Inicio",
 }: PageHeaderProps) {
   return (
     <header role="banner">
-      <AppBar backHref={backHref} backLabel={backLabel} showHome={backHref !== "/"} />
+      <AppBar backHref={backHref} backLabel={backLabel} showHome={backHref !== "/inicio"} />
 
       <div className="flex items-center gap-3.5 px-4 pt-5 pb-1">
         {iconSrc ? (

@@ -47,7 +47,7 @@ export default function NutricionPage() {
         subtitle="Come bien y toma agua"
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
-        backHref="/"
+        backHref="/inicio"
         backLabel="Inicio"
       />
 

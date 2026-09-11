@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198 198" width="198" height="198" role="img" aria-label="Gato">
+  <rect width="198" height="198" rx="34" fill="#C162CE"/>
+  <g fill="#FAF8F5">
+    <path d="M52 46l38 26-42 20z"/>
+    <path d="M146 46l-38 26 42 20z"/>
+    <path d="M99 62c30 0 52 21 52 48s-22 46-52 46-52-19-52-46 22-48 52-48z"/>
+  </g>
+  <g fill="#C162CE">
+    <ellipse cx="79" cy="106" rx="6" ry="8"/>
+    <ellipse cx="119" cy="106" rx="6" ry="8"/>
+    <path d="M99 124l-8 6c-1 1 0 3 2 3h12c2 0 3-2 2-3z"/>
+  </g>
+  <g stroke="#C162CE" stroke-width="4" stroke-linecap="round">
+    <path d="M62 122h-18M62 132l-16 6"/>
+    <path d="M136 122h18M136 132l16 6"/>
+  </g>
+</svg>

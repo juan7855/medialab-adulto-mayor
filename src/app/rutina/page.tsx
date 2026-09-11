@@ -10,7 +10,7 @@ export default function RutinaPage() {
         subtitle="Tu día, paso a paso"
         iconSrc={RUTINA.icon}
         accent={RUTINA.accent}
-        backHref="/"
+        backHref="/inicio"
         backLabel="Inicio"
       />
 

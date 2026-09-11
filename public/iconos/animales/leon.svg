@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198 198" width="198" height="198" role="img" aria-label="León">
+  <rect width="198" height="198" rx="34" fill="#D64F51"/>
+  <g fill="#FAF8F5">
+    <circle cx="99" cy="30" r="0"/>
+    <path d="M99 34l14 10 17-4 6 16 17 7-4 17 11 14-11 14 4 17-17 7-6 16-17-4-14 10-14-10-17 4-6-16-17-7 4-17-11-14 11-14-4-17 17-7 6-16 17 4z"/>
+  </g>
+  <circle cx="99" cy="104" r="40" fill="#D64F51" opacity=".22"/>
+  <g fill="#D64F51">
+    <circle cx="84" cy="98" r="6"/>
+    <circle cx="114" cy="98" r="6"/>
+    <path d="M99 114l-9 7c-1 1 0 3 2 3h14c2 0 3-2 2-3z"/>
+    <path d="M99 126v8" stroke="#D64F51" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g stroke="#D64F51" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M99 134c-6 0-10-3-11-7M99 134c6 0 10-3 11-7"/>
+  </g>
+</svg>
