@@ -16,7 +16,6 @@ export interface CognitiveActivity {
   name: string;
   level: Level;
   duration: string;
-  durationSeconds: number;
   icon: LucideIcon;
   description: string;
   steps: string[];
@@ -29,7 +28,6 @@ export const ACTIVITIES: CognitiveActivity[] = [
     name: "Memoria de palabras",
     level: "Fácil",
     duration: "5 min",
-    durationSeconds: 300,
     icon: Brain,
     description: "Recuerda una lista corta de palabras",
     steps: [
@@ -46,7 +44,6 @@ export const ACTIVITIES: CognitiveActivity[] = [
     name: "Cuentas del día",
     level: "Fácil",
     duration: "5 min",
-    durationSeconds: 300,
     icon: Calculator,
     description: "Cálculo mental con cosas de casa",
     steps: [
@@ -63,7 +60,6 @@ export const ACTIVITIES: CognitiveActivity[] = [
     name: "Nombra categorías",
     level: "Reto",
     duration: "6 min",
-    durationSeconds: 360,
     icon: Shapes,
     description: "Fluidez: cuántos nombres se te ocurren",
     steps: [
@@ -80,7 +76,6 @@ export const ACTIVITIES: CognitiveActivity[] = [
     name: "Recuerdos guiados",
     level: "Fácil",
     duration: "8 min",
-    durationSeconds: 480,
     icon: Album,
     description: "Traer a la memoria momentos vividos",
     steps: [
@@ -97,7 +92,6 @@ export const ACTIVITIES: CognitiveActivity[] = [
     name: "Cuenta hacia atrás",
     level: "Reto",
     duration: "4 min",
-    durationSeconds: 240,
     icon: Hash,
     description: "Atención sostenida con números",
     steps: [

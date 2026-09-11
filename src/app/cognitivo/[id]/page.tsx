@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { Clock, Lightbulb, ListChecks } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
-import ActivityTimer from "@/components/ActivityTimer";
 import { ACTIVITIES, LEVEL_ACCENT } from "../data";
 import { ACCENTS } from "@/lib/theme";
 
@@ -43,15 +42,6 @@ export default async function CognitiveDetailPage({ params }: Props) {
             {activity.duration}
           </span>
         </div>
-
-        <section className="card" aria-label="Temporizador">
-          <ActivityTimer
-            totalSeconds={activity.durationSeconds}
-            exerciseName={activity.name}
-            exerciseId={activity.id}
-            accent={accent}
-          />
-        </section>
 
         <section aria-label="Pasos del ejercicio">
           <SectionTitle icon={ListChecks} accent={accent}>

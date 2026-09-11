@@ -19,7 +19,7 @@ const CONTACTS: {
 
 const STEPS = [
   "Mantén la calma",
-  "Llama al 911",
+  "Llama al 123",
   "Avisa a un familiar",
   "No te muevas si sientes dolor",
 ];
@@ -37,9 +37,9 @@ export default function EmergenciaPage() {
       />
 
       <main className="px-4 pt-4 flex flex-col gap-7" role="main">
-        {/* Llamada al 911 */}
+        {/* Llamada al 123, la línea única de emergencias en Colombia */}
         <a
-          href="tel:911"
+          href="tel:123"
           className="pressable flex flex-col items-center justify-center gap-2 p-6"
           style={{
             backgroundColor: "var(--red-solid)",
@@ -49,11 +49,11 @@ export default function EmergenciaPage() {
             color: "#fff",
             minHeight: "9rem",
           }}
-          aria-label="Llamar al número de emergencias 911"
+          aria-label="Llamar al número de emergencias 123"
         >
           <Phone size={38} strokeWidth={2.1} aria-hidden="true" />
           <span style={{ fontSize: "var(--t-xl)", fontWeight: 800, letterSpacing: "-0.02em" }}>
-            Llamar al 911
+            Llamar al 123
           </span>
           <span style={{ fontSize: "var(--t-xs)", fontWeight: 600, opacity: 0.9 }}>
             Emergencia médica

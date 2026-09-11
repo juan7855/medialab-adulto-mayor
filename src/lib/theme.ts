@@ -92,7 +92,7 @@ export const RUTINA: Section = {
 export const EMERGENCIA: Section = {
   href: "/emergencia",
   label: "Emergencia",
-  description: "Llamar a un familiar o al 911",
+  description: "Llamar a un familiar o al 123",
   icon: "/iconos/emergencia.svg",
   accent: "red",
 };

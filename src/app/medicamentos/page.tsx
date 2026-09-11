@@ -50,7 +50,7 @@ export default function MedicamentosPage() {
             textDecoration: "none",
             color: "inherit",
           }}
-          aria-label="Emergencia: llamar a un familiar o al 911"
+          aria-label="Emergencia: llamar a un familiar o al 123"
         >
           <SectionIcon src={EMERGENCIA.icon} size={54} />
           <span className="flex-1 min-w-0">
