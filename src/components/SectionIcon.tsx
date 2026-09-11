@@ -1,7 +1,9 @@
+import { rem } from "@/lib/scale";
+
 interface SectionIconProps {
   /** Ruta de la ficha en /public/iconos. */
   src: string;
-  /** Lado del cuadro, en px. */
+  /** Lado del cuadro, en px sobre la base de 22. Se pinta en rem. */
   size?: number;
   /** Texto alternativo. Vacío = decorativo (el nombre ya va al lado). */
   alt?: string;
@@ -17,13 +19,11 @@ export default function SectionIcon({ src, size = 76, alt = "" }: SectionIconPro
     <img
       src={src}
       alt={alt}
-      width={size}
-      height={size}
       aria-hidden={alt === "" ? true : undefined}
       style={{
-        width: size,
-        height: size,
-        borderRadius: Math.round(size * 0.22),
+        width: rem(size),
+        height: rem(size),
+        borderRadius: rem(Math.round(size * 0.22)),
         display: "block",
         flexShrink: 0,
       }}

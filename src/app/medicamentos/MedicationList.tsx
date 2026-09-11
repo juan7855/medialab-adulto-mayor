@@ -5,6 +5,7 @@ import { AlarmClock, Check, Clock, Pill } from "lucide-react";
 import Toast, { type ToastTone } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToday } from "@/lib/today";
+import { rem } from "@/lib/scale";
 
 interface Medication {
   id: number;
@@ -151,22 +152,19 @@ export default function MedicationList() {
             >
               <div className="flex items-center gap-3.5">
                 <span
+                  className="tile"
                   style={{
-                    width: 62,
-                    height: 62,
-                    flexShrink: 0,
-                    borderRadius: 14,
+                    width: rem(62),
+                    height: rem(62),
+                    borderRadius: rem(14),
                     backgroundColor: tileColor,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
                   }}
                   aria-hidden="true"
                 >
                   {taken ? (
-                    <Check size={30} strokeWidth={2.6} color="#FAF8F5" />
+                    <Check strokeWidth={2.6} color="#FAF8F5" />
                   ) : (
-                    <Pill size={30} strokeWidth={2} color="#FAF8F5" />
+                    <Pill strokeWidth={2} color="#FAF8F5" />
                   )}
                 </span>
 

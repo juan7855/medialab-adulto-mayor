@@ -80,6 +80,18 @@ html {
   background-color: var(--bg);
 }
 
+/* En pantallas estrechas baja toda la escala a la vez. Tipografía, espacios
+   y radios están en rem, así que el sistema conserva sus proporciones en vez
+   de que una fila se rompa. Sigue siendo texto grande: 20px de base frente a
+   los 16px habituales. */
+@media (max-width: 400px) {
+  html { font-size: 20px; }
+}
+
+@media (max-width: 344px) {
+  html { font-size: 18px; }
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -93,6 +105,12 @@ body {
   font-size: var(--t-base);
   letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
+  /* Una palabra que no quepa nunca debe salirse de su contenedor. Se intenta
+     primero partirla por sílabas (el idioma va en <html lang="es">), que se
+     lee bien; break-word queda sólo como último recurso. */
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  overflow-wrap: break-word;
 }
 
 h1, h2, h3 {
@@ -116,6 +134,20 @@ a[role="button"] {
 }
 
 /* --- Piezas reutilizables ------------------------------------------------ */
+
+/* Cuadro de icono. El glifo se dimensiona como fracción del cuadro para que
+   ambos escalen juntos cuando la base tipográfica cambia. */
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tile > svg {
+  width: 52%;
+  height: 52%;
+}
 
 .card {
   background: var(--surface);

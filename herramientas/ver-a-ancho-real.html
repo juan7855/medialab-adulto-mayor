@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Vista a ancho real</title>
+<style>
+  body { margin: 0; background: #555; display: flex; gap: 12px; padding: 12px; align-items: flex-start; }
+  figure { margin: 0; }
+  figcaption { color: #fff; font: 12px system-ui; margin-bottom: 6px; }
+  iframe { border: 0; height: 1500px; background: #fff; display: block; }
+</style>
+</head>
+<body>
+<script>
+window.addEventListener("DOMContentLoaded", function () {
+  var params = new URLSearchParams(location.search);
+  var route = params.get("r") || "/";
+  var widths = (params.get("w") || "360").split(",");
+  widths.forEach(function (w) {
+    var fig = document.createElement("figure");
+    var cap = document.createElement("figcaption");
+    cap.textContent = w + "px";
+    var f = document.createElement("iframe");
+    f.style.width = w + "px";
+    f.src = route;
+    fig.appendChild(cap);
+    fig.appendChild(f);
+    document.body.appendChild(fig);
+  });
+});
+</script>
+</body>
+</html>

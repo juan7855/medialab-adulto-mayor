@@ -1,0 +1,119 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Auditoría de desbordes</title>
+<style>
+  body { font-family: ui-monospace, monospace; font-size: 13px; margin: 16px; }
+  iframe { height: 1400px; border: 0; position: absolute; left: -9999px; }
+  pre { white-space: pre-wrap; }
+</style>
+<pre id="out">auditando…</pre>
+<script>
+const ROUTES = [
+  "/", "/ejercicios", "/ejercicios/caminar", "/nutricion",
+  "/nutricion/receta/sopa-verduras", "/medicamentos", "/cognitivo",
+  "/cognitivo/memoria-palabras", "/rutina", "/emergencia",
+];
+
+const lines = [];
+const log = (t) => lines.push(t);
+
+function describe(el) {
+  const tag = el.tagName.toLowerCase();
+  const cls = (el.className && typeof el.className === "string")
+    ? "." + el.className.trim().split(/\s+/).slice(0, 3).join(".")
+    : "";
+  const text = (el.textContent || "").trim().slice(0, 40);
+  return tag + cls + ' "' + text + '"';
+}
+
+function audit(doc) {
+  const problems = [];
+  const bodyRect = doc.body.getBoundingClientRect();
+
+  // 1. La página entera tiene scroll horizontal
+  if (doc.documentElement.scrollWidth > doc.documentElement.clientWidth + 1) {
+    problems.push("PAGINA con scroll horizontal: "
+      + doc.documentElement.scrollWidth + " > " + doc.documentElement.clientWidth);
+  }
+
+  // 2. Elementos que sobresalen del cuerpo
+  for (const el of doc.querySelectorAll("body *")) {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    if (r.right > bodyRect.right + 0.5 || r.left < bodyRect.left - 0.5) {
+      problems.push("SE SALE DEL CUERPO (" + r.left.toFixed(0) + " a " + r.right.toFixed(0)
+        + " vs " + bodyRect.left.toFixed(0) + " a " + bodyRect.right.toFixed(0) + "): " + describe(el));
+    }
+  }
+
+  // 3. Contenido más ancho que su propia caja.
+  //    Se miran los contenedores, NO sólo las hojas: un span en línea tiene
+  //    clientWidth 0, así que el desborde sólo es medible en el bloque que lo
+  //    contiene. Quien declara overflow-x propio queda fuera: ahí es a propósito.
+  for (const el of doc.querySelectorAll("body *")) {
+    if (el.clientWidth === 0) continue;               // en línea o sin caja propia
+    const style = doc.defaultView.getComputedStyle(el);
+    if (style.overflowX === "auto" || style.overflowX === "scroll") continue;
+    if (el.scrollWidth > el.clientWidth + 1) {
+      problems.push("CONTENIDO DESBORDADO (" + el.scrollWidth + " > " + el.clientWidth + "): " + describe(el));
+    }
+  }
+
+  return problems;
+}
+
+async function auditFrame(frame) {
+  document.body.appendChild(frame);
+  await new Promise((res) => { frame.onload = res; });
+  try { await frame.contentDocument.fonts.ready; } catch (e) {}
+  await new Promise((res) => setTimeout(res, 900));    // datos que llegan por fetch
+  const problems = audit(frame.contentDocument);
+  frame.remove();
+  return problems;
+}
+
+const WIDTHS = [320, 360, 390, 430, 480];
+
+(async () => {
+  let total = 0;
+
+  for (const width of WIDTHS) {
+    let subtotal = 0;
+    const detail = [];
+    for (const route of ROUTES) {
+      const frame = document.createElement("iframe");
+      frame.style.width = width + "px";
+      frame.src = route;
+      const problems = await auditFrame(frame);
+      subtotal += problems.length;
+      if (problems.length) {
+        detail.push("    " + route + ": " + problems.length);
+        for (const p of problems.slice(0, 2)) detail.push("        " + p);
+      }
+    }
+    total += subtotal;
+    log((subtotal ? "FALLA " : "ok    ") + width + "px -> " + subtotal + " problema(s)");
+    for (const d of detail) log(d);
+  }
+
+  // Control: un desborde deliberado. Si esto no salta, el detector miente.
+  const control = document.createElement("iframe");
+  control.srcdoc = [
+    '<!doctype html><meta charset="utf-8">',
+    '<style>body{margin:0;width:320px;overflow-wrap:normal}',
+    '.caja{width:120px;padding:10px;border:1px solid #000}</style>',
+    '<div class="caja"><span style="font-size:40px;font-weight:800">Medicamentos</span></div>',
+  ].join("");
+  const controlProblems = await auditFrame(control);
+
+  log("");
+  log("control (desborde deliberado): " + controlProblems.length + " detectado(s) -> "
+    + (controlProblems.length > 0 ? "el detector FUNCIONA" : "el detector NO SIRVE"));
+  for (const p of controlProblems.slice(0, 3)) log("    " + p);
+
+  log("");
+  log("TOTAL en la app: " + total + " problema(s)");
+
+  document.getElementById("out").textContent = lines.join("\n");
+})();
+</script>

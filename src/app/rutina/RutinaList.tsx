@@ -25,6 +25,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import SectionTitle from "@/components/SectionTitle";
 import { useToday } from "@/lib/today";
 import { ACCENTS, type AccentName } from "@/lib/theme";
+import { rem } from "@/lib/scale";
 
 interface Activity {
   id: number;
@@ -252,22 +253,19 @@ export default function RutinaList() {
                     }}
                   >
                     <span
+                      className="tile"
                       style={{
-                        width: 52,
-                        height: 52,
-                        flexShrink: 0,
-                        borderRadius: 12,
+                        width: rem(52),
+                        height: rem(52),
+                        borderRadius: rem(12),
                         backgroundColor: completed ? "var(--green-solid)" : tone.solid,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
                       }}
                       aria-hidden="true"
                     >
                       {completed ? (
-                        <CircleCheck size={26} strokeWidth={2.2} color={ACCENTS.green.glyph} />
+                        <CircleCheck strokeWidth={2.2} color={ACCENTS.green.glyph} />
                       ) : (
-                        <ActivityIcon size={26} strokeWidth={2} color={tone.glyph} />
+                        <ActivityIcon strokeWidth={2} color={tone.glyph} />
                       )}
                     </span>
 

@@ -1,12 +1,12 @@
 import type { LucideIcon } from "lucide-react";
 import { ACCENTS, type AccentName } from "@/lib/theme";
+import { rem } from "@/lib/scale";
 
 interface IconTileProps {
   icon: LucideIcon;
   accent: AccentName;
-  /** Lado del cuadro, en px. */
+  /** Lado del cuadro, en px sobre la base de 22. Se pinta en rem. */
   size?: number;
-  iconSize?: number;
   strokeWidth?: number;
 }
 
@@ -19,30 +19,22 @@ export default function IconTile({
   icon: Icon,
   accent,
   size = 56,
-  iconSize,
   strokeWidth = 2,
 }: IconTileProps) {
   const tone = ACCENTS[accent];
 
   return (
     <span
+      className="tile"
       style={{
-        width: size,
-        height: size,
+        width: rem(size),
+        height: rem(size),
         backgroundColor: tone.solid,
-        borderRadius: Math.round(size * 0.22),
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flexShrink: 0,
+        borderRadius: rem(Math.round(size * 0.22)),
       }}
       aria-hidden="true"
     >
-      <Icon
-        size={iconSize ?? Math.round(size * 0.52)}
-        color={tone.glyph}
-        strokeWidth={strokeWidth}
-      />
+      <Icon color={tone.glyph} strokeWidth={strokeWidth} />
     </span>
   );
 }
