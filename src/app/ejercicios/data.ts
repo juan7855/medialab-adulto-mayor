@@ -6,7 +6,7 @@ export type Level = "Ligero" | "Moderado";
 /** El acento comunica la intensidad: verde suave, ámbar exige algo más. */
 export const LEVEL_ACCENT: Record<Level, AccentName> = {
   Ligero: "green",
-  Moderado: "amber",
+  Moderado: "orange",
 };
 
 export const LEVELS: Level[] = ["Ligero", "Moderado"];

@@ -1,40 +1,98 @@
 /**
- * Acentos de la app. Cada sección tiene un tinte de fondo, una tinta para el
- * icono/texto y un borde. Los valores viven en globals.css para que el tema
- * se pueda ajustar en un solo sitio.
+ * Acentos de la app, tomados de la paleta del proyecto.
+ *
+ * `solid` es el color vivo (fichas de icono, barras, puntos), `tint` el
+ * lavado claro para fondos y `line` el borde. Ninguno se usa para texto:
+ * el texto va siempre en --ink, para que se lea a los 65 y a los 85.
  */
 export type AccentName =
   | "green"
   | "orange"
+  | "cyan"
   | "blue"
   | "purple"
   | "red"
-  | "amber";
+  | "yellow";
 
 export interface Accent {
+  solid: string;
   tint: string;
-  ink: string;
   line: string;
+  /**
+   * Color del glifo que va encima de `solid`. Casi siempre crema, como en las
+   * fichas diseñadas; el amarillo es demasiado claro y necesita tinta oscura.
+   */
+  glyph: string;
 }
+
+const CREAM = "#FAF8F5";
 
 export const ACCENTS: Record<AccentName, Accent> = {
-  green: { tint: "var(--green-tint)", ink: "var(--green-ink)", line: "var(--green-line)" },
-  orange: { tint: "var(--orange-tint)", ink: "var(--orange-ink)", line: "var(--orange-line)" },
-  blue: { tint: "var(--blue-tint)", ink: "var(--blue-ink)", line: "var(--blue-line)" },
-  purple: { tint: "var(--purple-tint)", ink: "var(--purple-ink)", line: "var(--purple-line)" },
-  red: { tint: "var(--red-tint)", ink: "var(--red-ink)", line: "var(--red-line)" },
-  amber: { tint: "var(--amber-tint)", ink: "var(--amber-ink)", line: "var(--amber-line)" },
+  green: { solid: "var(--green-solid)", tint: "var(--green-tint)", line: "var(--green-line)", glyph: CREAM },
+  orange: { solid: "var(--orange-solid)", tint: "var(--orange-tint)", line: "var(--orange-line)", glyph: CREAM },
+  cyan: { solid: "var(--cyan-solid)", tint: "var(--cyan-tint)", line: "var(--cyan-line)", glyph: CREAM },
+  blue: { solid: "var(--blue-solid)", tint: "var(--blue-tint)", line: "var(--blue-line)", glyph: CREAM },
+  purple: { solid: "var(--purple-solid)", tint: "var(--purple-tint)", line: "var(--purple-line)", glyph: CREAM },
+  red: { solid: "var(--red-solid)", tint: "var(--red-tint)", line: "var(--red-line)", glyph: CREAM },
+  yellow: { solid: "var(--yellow-solid)", tint: "var(--yellow-tint)", line: "var(--yellow-line)", glyph: "var(--ink)" },
 };
 
-export function accent(name: AccentName): Accent {
-  return ACCENTS[name];
+export interface Section {
+  href: string;
+  label: string;
+  description: string;
+  /** Ficha de icono servida desde /public/iconos. */
+  icon: string;
+  accent: AccentName;
 }
 
-/** Acento de cada sección principal, usado en el inicio y en las cabeceras. */
-export const SECTION_ACCENT = {
-  ejercicios: "green",
-  nutricion: "orange",
-  medicamentos: "blue",
-  rutina: "purple",
-  emergencia: "red",
-} as const satisfies Record<string, AccentName>;
+/**
+ * El acento de cada sección es el color de fondo de su propia ficha, para que
+ * la pantalla entera se lea como una sola familia.
+ */
+export const SECTIONS: Section[] = [
+  {
+    href: "/ejercicios",
+    label: "Ejercicios",
+    description: "Muévete cada día",
+    icon: "/iconos/ejercicios.png",
+    accent: "green",
+  },
+  {
+    href: "/nutricion",
+    label: "Nutrición",
+    description: "Comidas y agua",
+    icon: "/iconos/nutricion.png",
+    accent: "orange",
+  },
+  {
+    href: "/medicamentos",
+    label: "Medicamentos",
+    description: "Tus pastillas de hoy",
+    icon: "/iconos/medicamentos.png",
+    accent: "cyan",
+  },
+  {
+    href: "/cognitivo",
+    label: "Mente activa",
+    description: "Memoria y atención",
+    icon: "/iconos/cognitivo.png",
+    accent: "blue",
+  },
+];
+
+export const RUTINA: Section = {
+  href: "/rutina",
+  label: "Rutina",
+  description: "Tu día, paso a paso",
+  icon: "/iconos/rutina.svg",
+  accent: "purple",
+};
+
+export const EMERGENCIA: Section = {
+  href: "/emergencia",
+  label: "Emergencia",
+  description: "Llamar a un familiar o al 911",
+  icon: "/iconos/emergencia.svg",
+  accent: "red",
+};

@@ -13,9 +13,9 @@ interface ToastProps {
 }
 
 const TONES = {
-  success: { icon: Check, color: "#7BE0A6" },
-  error: { icon: TriangleAlert, color: "#FFA894" },
-  info: { icon: Info, color: "#CFC6B4" },
+  success: { icon: Check, color: "var(--green-solid)" },
+  error: { icon: TriangleAlert, color: "var(--red-solid)" },
+  info: { icon: Info, color: "var(--yellow-solid)" },
 } as const;
 
 export default function Toast({
@@ -38,17 +38,17 @@ export default function Toast({
       className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 animate-slide-in"
       style={{
         transform: "translateX(-50%)",
-        backgroundColor: "#22201A",
-        color: "#FAF7F1",
+        backgroundColor: "#23231B",
+        color: "#FAF8F5",
         borderRadius: "var(--r-md)",
         boxShadow: "var(--shadow-lg)",
-        padding: "0.8rem 1.15rem",
-        fontSize: "0.92rem",
-        fontWeight: 600,
-        maxWidth: "min(26rem, 90vw)",
+        padding: "0.85rem 1.2rem",
+        fontSize: "var(--t-sm)",
+        fontWeight: 700,
+        maxWidth: "min(26rem, 92vw)",
       }}
     >
-      <Icon size={20} strokeWidth={2.4} color={color} aria-hidden="true" />
+      <Icon size={22} strokeWidth={2.5} color={color} aria-hidden="true" />
       <span>{message}</span>
     </div>
   );

@@ -1,6 +1,6 @@
-import { CalendarClock } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import RutinaList from "./RutinaList";
+import { RUTINA } from "@/lib/theme";
 
 export default function RutinaPage() {
   return (
@@ -8,8 +8,8 @@ export default function RutinaPage() {
       <PageHeader
         title="Rutina"
         subtitle="Tu día, paso a paso"
-        icon={CalendarClock}
-        accent="purple"
+        iconSrc={RUTINA.icon}
+        accent={RUTINA.accent}
         backHref="/"
         backLabel="Inicio"
       />

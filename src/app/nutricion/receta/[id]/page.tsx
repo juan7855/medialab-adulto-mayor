@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { Carrot, Clock, ListChecks, Lightbulb, Utensils } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
+import IconTile from "@/components/IconTile";
 import { RECIPES } from "../data";
 import { ACCENTS } from "@/lib/theme";
 
@@ -19,7 +20,6 @@ export default async function RecipeDetailPage({ params }: Props) {
   if (!recipe) return notFound();
 
   const tone = ACCENTS[recipe.accent];
-  const Icon = recipe.icon;
 
   return (
     <div className="min-h-screen pb-10">
@@ -37,30 +37,26 @@ export default async function RecipeDetailPage({ params }: Props) {
         <div
           className="flex items-center justify-center"
           style={{
-            height: 130,
+            height: 136,
             backgroundColor: tone.tint,
             border: `1px solid ${tone.line}`,
             borderRadius: "var(--r-lg)",
           }}
-          aria-hidden="true"
         >
-          <Icon size={54} strokeWidth={1.3} color={tone.ink} />
+          <IconTile icon={recipe.icon} accent={recipe.accent} size={76} strokeWidth={1.7} />
         </div>
 
         {/* Metadatos */}
         <div className="flex flex-wrap gap-2 px-1">
           <span className="pill">
-            <Clock size={13} strokeWidth={2.2} aria-hidden="true" />
+            <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
             {recipe.time}
           </span>
           <span className="pill">
-            <Utensils size={13} strokeWidth={2.2} aria-hidden="true" />
+            <Utensils size={15} strokeWidth={2.2} aria-hidden="true" />
             {recipe.servings}
           </span>
-          <span
-            className="pill"
-            style={{ backgroundColor: tone.tint, borderColor: tone.line, color: tone.ink }}
-          >
+          <span className="pill" style={{ backgroundColor: tone.tint, borderColor: tone.line }}>
             {recipe.difficulty}
           </span>
         </div>
@@ -71,22 +67,22 @@ export default async function RecipeDetailPage({ params }: Props) {
             Ingredientes
           </SectionTitle>
 
-          <ul className="card flex flex-col gap-2.5 mt-3 p-4 list-none m-0">
+          <ul className="card flex flex-col gap-3 mt-3 p-4 list-none m-0">
             {recipe.ingredients.map((ingredient) => (
               <li
                 key={ingredient}
-                className="flex items-start gap-2.5"
-                style={{ fontSize: "0.9rem", fontWeight: 500 }}
+                className="flex items-start gap-3"
+                style={{ fontSize: "var(--t-sm)", fontWeight: 500 }}
               >
                 <span
                   aria-hidden="true"
                   style={{
-                    width: 6,
-                    height: 6,
+                    width: 8,
+                    height: 8,
                     borderRadius: "999px",
-                    backgroundColor: tone.ink,
+                    backgroundColor: tone.solid,
                     flexShrink: 0,
-                    marginTop: 8,
+                    marginTop: 9,
                   }}
                 />
                 {ingredient}
@@ -105,22 +101,25 @@ export default async function RecipeDetailPage({ params }: Props) {
             {recipe.steps.map((step, i) => (
               <li key={i} className="card flex items-start gap-3.5 p-3.5">
                 <span
-                  className="tile"
                   style={{
-                    width: 34,
-                    height: 34,
+                    width: 38,
+                    height: 38,
+                    flexShrink: 0,
                     borderRadius: "999px",
                     backgroundColor: tone.tint,
-                    borderColor: tone.line,
-                    color: tone.ink,
-                    fontSize: "0.86rem",
+                    border: `1px solid ${tone.line}`,
+                    color: "var(--ink)",
+                    fontSize: "var(--t-sm)",
                     fontWeight: 800,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                   aria-hidden="true"
                 >
                   {i + 1}
                 </span>
-                <span style={{ fontSize: "0.92rem", fontWeight: 500, lineHeight: 1.45 }}>
+                <span style={{ fontSize: "var(--t-sm)", fontWeight: 500, lineHeight: 1.45 }}>
                   {step}
                 </span>
               </li>
@@ -132,21 +131,21 @@ export default async function RecipeDetailPage({ params }: Props) {
         <div
           className="flex items-start gap-2.5 p-3.5"
           style={{
-            backgroundColor: "var(--amber-tint)",
-            border: "1px solid var(--amber-line)",
+            backgroundColor: "var(--yellow-tint)",
+            border: "1px solid var(--yellow-line)",
             borderRadius: "var(--r-lg)",
           }}
           role="note"
           aria-label="Consejo de la receta"
         >
           <Lightbulb
-            size={19}
+            size={22}
             strokeWidth={2}
-            color="var(--amber-ink)"
+            color="var(--ink-soft)"
             aria-hidden="true"
             style={{ flexShrink: 0, marginTop: 1 }}
           />
-          <p style={{ fontSize: "0.84rem", fontWeight: 600, color: "var(--ink-soft)" }}>
+          <p style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-soft)" }}>
             {recipe.tip}
           </p>
         </div>

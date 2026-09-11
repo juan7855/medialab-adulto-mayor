@@ -42,7 +42,7 @@ interface RoutineLog {
 }
 
 const GROUPS: { key: string; label: string; icon: LucideIcon; accent: AccentName }[] = [
-  { key: "morning", label: "Mañana", icon: Sunrise, accent: "amber" },
+  { key: "morning", label: "Mañana", icon: Sunrise, accent: "yellow" },
   { key: "afternoon", label: "Tarde", icon: Sun, accent: "orange" },
   { key: "evening", label: "Noche", icon: Moon, accent: "purple" },
 ];
@@ -155,7 +155,7 @@ export default function RutinaList() {
             height: 30,
             borderRadius: "999px",
             border: "3px solid var(--line)",
-            borderTopColor: "var(--purple-ink)",
+            borderTopColor: "var(--purple-solid)",
             display: "block",
           }}
         />
@@ -166,7 +166,7 @@ export default function RutinaList() {
   if (activities.length === 0) {
     return (
       <div className="card p-6 text-center">
-        <p style={{ fontSize: "0.95rem", fontWeight: 700 }}>No hay actividades programadas.</p>
+        <p style={{ fontSize: "var(--t-sm)", fontWeight: 700 }}>No hay actividades programadas.</p>
       </div>
     );
   }
@@ -180,20 +180,20 @@ export default function RutinaList() {
     <div className="flex flex-col gap-7">
       {/* Progreso del día */}
       <div className="card p-4">
-        <p style={{ fontSize: "0.78rem", fontWeight: 700, color: "var(--ink-mute)" }}>
+        <p style={{ fontSize: "var(--t-xs)", fontWeight: 700, color: "var(--ink-mute)" }}>
           {formatToday(date)}
         </p>
 
         <div className="flex items-baseline justify-between mt-2">
-          <span style={{ fontSize: "1.5rem", fontWeight: 800 }}>
+          <span style={{ fontSize: "var(--t-xl)", fontWeight: 800 }}>
             {done}
-            <span style={{ fontSize: "1rem", color: "var(--ink-mute)" }}> de {total}</span>
+            <span style={{ fontSize: "var(--t-sm)", color: "var(--ink-mute)" }}> de {total}</span>
           </span>
           <span
             style={{
-              fontSize: "0.86rem",
+              fontSize: "var(--t-sm)",
               fontWeight: 800,
-              color: allDone ? "var(--green-ink)" : "var(--purple-ink)",
+              color: "var(--ink-soft)",
             }}
           >
             {percent}%
@@ -219,7 +219,7 @@ export default function RutinaList() {
               width: `${percent}%`,
               height: "100%",
               borderRadius: "999px",
-              backgroundColor: allDone ? "var(--green-ink)" : "var(--purple-ink)",
+              backgroundColor: allDone ? "var(--green-solid)" : "var(--purple-solid)",
               transition: "width 0.45s ease, background-color 0.3s ease",
             }}
           />
@@ -252,27 +252,29 @@ export default function RutinaList() {
                     }}
                   >
                     <span
-                      className="tile"
                       style={{
-                        width: 46,
-                        height: 46,
-                        borderRadius: "0.75rem",
-                        backgroundColor: completed ? "var(--green-tint)" : tone.tint,
-                        borderColor: completed ? "var(--green-line)" : tone.line,
+                        width: 52,
+                        height: 52,
+                        flexShrink: 0,
+                        borderRadius: 12,
+                        backgroundColor: completed ? "var(--green-solid)" : tone.solid,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                       aria-hidden="true"
                     >
                       {completed ? (
-                        <CircleCheck size={22} strokeWidth={2.1} color="var(--green-ink)" />
+                        <CircleCheck size={26} strokeWidth={2.2} color={ACCENTS.green.glyph} />
                       ) : (
-                        <ActivityIcon size={22} strokeWidth={1.9} color={tone.ink} />
+                        <ActivityIcon size={26} strokeWidth={2} color={tone.glyph} />
                       )}
                     </span>
 
                     <div className="flex-1 min-w-0">
                       <div
                         style={{
-                          fontSize: "0.95rem",
+                          fontSize: "var(--t-sm)",
                           fontWeight: 800,
                           lineHeight: 1.25,
                           color: completed ? "var(--ink-mute)" : "var(--ink)",
@@ -285,7 +287,7 @@ export default function RutinaList() {
                       {activity.description && (
                         <div
                           className="mt-0.5"
-                          style={{ fontSize: "0.74rem", fontWeight: 500, color: "var(--ink-mute)" }}
+                          style={{ fontSize: "var(--t-xs)", fontWeight: 500, color: "var(--ink-mute)" }}
                         >
                           {activity.description}
                         </div>
@@ -293,7 +295,7 @@ export default function RutinaList() {
 
                       {activity.scheduledTime && (
                         <span className="pill mt-1.5">
-                          <Clock size={12} strokeWidth={2.2} aria-hidden="true" />
+                          <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
                           {activity.scheduledTime}
                         </span>
                       )}
@@ -307,14 +309,14 @@ export default function RutinaList() {
                       }
                       className="pressable flex items-center justify-center"
                       style={{
-                        width: "3rem",
-                        height: "3rem",
-                        minHeight: "3rem",
+                        width: "3.3rem",
+                        height: "3.3rem",
+                        minHeight: "3.3rem",
                         flexShrink: 0,
                         borderRadius: "999px",
-                        backgroundColor: completed ? "var(--surface)" : "var(--purple-ink)",
+                        backgroundColor: completed ? "var(--surface-soft)" : "var(--cta)",
                         border: completed ? "1px solid var(--line-strong)" : "none",
-                        color: completed ? "var(--ink-mute)" : "#fff",
+                        color: completed ? "var(--ink-soft)" : "#fff",
                       }}
                       aria-label={
                         completed
@@ -323,9 +325,9 @@ export default function RutinaList() {
                       }
                     >
                       {completed ? (
-                        <Undo2 size={19} strokeWidth={2.3} aria-hidden="true" />
+                        <Undo2 size={21} strokeWidth={2.3} aria-hidden="true" />
                       ) : (
-                        <Check size={22} strokeWidth={2.8} aria-hidden="true" />
+                        <Check size={25} strokeWidth={2.8} aria-hidden="true" />
                       )}
                     </button>
                   </li>

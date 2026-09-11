@@ -59,7 +59,6 @@ export default function WaterTracker() {
 
   const percentage = Math.min((glasses / GOAL) * 100, 100);
   const reached = glasses >= GOAL;
-  const barColor = reached ? "var(--green-ink)" : "var(--blue-ink)";
 
   if (loading || !date) {
     return (
@@ -72,11 +71,11 @@ export default function WaterTracker() {
         <span
           className="animate-spin"
           style={{
-            width: 30,
-            height: 30,
+            width: 32,
+            height: 32,
             borderRadius: "999px",
             border: "3px solid var(--line)",
-            borderTopColor: "var(--blue-ink)",
+            borderTopColor: "var(--blue-solid)",
             display: "block",
           }}
         />
@@ -97,9 +96,9 @@ export default function WaterTracker() {
           return (
             <GlassWater
               key={i}
-              size={24}
-              strokeWidth={filled ? 2.1 : 1.6}
-              color={filled ? "var(--blue-ink)" : "var(--line-strong)"}
+              size={26}
+              strokeWidth={filled ? 2.2 : 1.7}
+              color={filled ? "var(--blue-solid)" : "var(--line-strong)"}
               aria-hidden="true"
               style={{ transition: "color 0.25s ease" }}
             />
@@ -117,7 +116,7 @@ export default function WaterTracker() {
       >
         <div
           style={{
-            height: 8,
+            height: 10,
             borderRadius: "999px",
             backgroundColor: "var(--line)",
             overflow: "hidden",
@@ -128,14 +127,14 @@ export default function WaterTracker() {
               width: `${percentage}%`,
               height: "100%",
               borderRadius: "999px",
-              backgroundColor: barColor,
+              backgroundColor: reached ? "var(--green-solid)" : "var(--blue-solid)",
               transition: "width 0.45s ease, background-color 0.3s ease",
             }}
           />
         </div>
         <p
           className="mt-2 text-center"
-          style={{ fontSize: "0.76rem", fontWeight: 700, color: "var(--ink-mute)" }}
+          style={{ fontSize: "var(--t-xs)", fontWeight: 700, color: "var(--ink-mute)" }}
         >
           {reached ? "¡Meta del día alcanzada!" : `Meta: ${GOAL} vasos`}
         </p>
@@ -147,23 +146,15 @@ export default function WaterTracker() {
           onClick={() => void updateWater(glasses - 1)}
           disabled={glasses <= 0}
           aria-label="Quitar un vaso de agua"
-          className="pressable flex items-center justify-center"
-          style={{
-            width: "3.4rem",
-            height: "3.4rem",
-            borderRadius: "var(--r-md)",
-            backgroundColor: "var(--surface-soft)",
-            border: "1px solid var(--line-strong)",
-            color: "var(--ink-soft)",
-            opacity: glasses <= 0 ? 0.4 : 1,
-          }}
+          className="btn-soft pressable"
+          style={{ width: "3.6rem", opacity: glasses <= 0 ? 0.4 : 1 }}
         >
-          <Minus size={22} strokeWidth={2.6} aria-hidden="true" />
+          <Minus size={24} strokeWidth={2.6} aria-hidden="true" />
         </button>
 
         <div className="text-center" aria-live="polite" aria-atomic="true">
-          <div style={{ fontSize: "2rem", fontWeight: 800, lineHeight: 1 }}>{glasses}</div>
-          <div style={{ fontSize: "0.7rem", fontWeight: 600, color: "var(--ink-mute)" }}>
+          <div style={{ fontSize: "var(--t-xl)", fontWeight: 800, lineHeight: 1 }}>{glasses}</div>
+          <div style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
             {glasses === 1 ? "vaso" : "vasos"}
           </div>
         </div>
@@ -172,18 +163,10 @@ export default function WaterTracker() {
           onClick={() => void updateWater(glasses + 1)}
           disabled={glasses >= MAX}
           aria-label="Agregar un vaso de agua"
-          className="pressable flex items-center justify-center"
-          style={{
-            width: "3.4rem",
-            height: "3.4rem",
-            borderRadius: "var(--r-md)",
-            backgroundColor: "var(--blue-ink)",
-            border: "none",
-            color: "#fff",
-            opacity: glasses >= MAX ? 0.4 : 1,
-          }}
+          className="btn-cta pressable"
+          style={{ width: "3.6rem", opacity: glasses >= MAX ? 0.4 : 1 }}
         >
-          <Plus size={22} strokeWidth={2.6} aria-hidden="true" />
+          <Plus size={24} strokeWidth={2.6} aria-hidden="true" />
         </button>
       </div>
 

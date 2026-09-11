@@ -14,28 +14,28 @@ async function seed() {
         dose: "500mg – 1 pastilla",
         time: "08:00 AM",
         imageEmoji: "💊",
-        color: "#2563EB",
+        color: "#4186F6",
       },
       {
         name: "Atorvastatina",
         dose: "20mg – 1 pastilla",
         time: "08:00 AM",
         imageEmoji: "🔵",
-        color: "#7C3AED",
+        color: "#C162CE",
       },
       {
         name: "Losartán",
         dose: "50mg – 1 pastilla",
         time: "12:00 PM",
         imageEmoji: "🟡",
-        color: "#CA8A04",
+        color: "#7ECF6D",
       },
       {
         name: "Omeprazol",
         dose: "20mg – 1 pastilla",
         time: "07:30 AM",
         imageEmoji: "💉",
-        color: "#DC2626",
+        color: "#70CAE6",
       },
     ]);
     console.log("✅ Medications seeded");

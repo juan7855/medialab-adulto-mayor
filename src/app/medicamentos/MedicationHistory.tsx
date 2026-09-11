@@ -21,12 +21,12 @@ function formatDate(dateStr: string): string {
 /** Estado del día según cuántas dosis se registraron. */
 function statusOf(day: DayHistory) {
   if (day.total > 0 && day.taken === day.total) {
-    return { label: "Completo", tint: "var(--green-tint)", line: "var(--green-line)", ink: "var(--green-ink)" };
+    return { label: "Completo", tint: "var(--green-tint)", line: "var(--green-line)", bar: "var(--green-solid)" };
   }
   if (day.taken === 0) {
-    return { label: "Ninguno", tint: "var(--red-tint)", line: "var(--red-line)", ink: "var(--red-ink)" };
+    return { label: "Ninguno", tint: "var(--red-tint)", line: "var(--red-line)", bar: "var(--red-solid)" };
   }
-  return { label: "Parcial", tint: "var(--amber-tint)", line: "var(--amber-line)", ink: "var(--amber-ink)" };
+  return { label: "Parcial", tint: "var(--yellow-tint)", line: "var(--yellow-line)", bar: "var(--yellow-solid)" };
 }
 
 export default function MedicationHistory() {
@@ -56,7 +56,7 @@ export default function MedicationHistory() {
             height: 26,
             borderRadius: "999px",
             border: "3px solid var(--line)",
-            borderTopColor: "var(--blue-ink)",
+            borderTopColor: "var(--cyan-solid)",
             display: "block",
           }}
         />
@@ -68,7 +68,7 @@ export default function MedicationHistory() {
     return (
       <p
         className="text-center py-4"
-        style={{ fontSize: "0.86rem", fontWeight: 600, color: "var(--ink-mute)" }}
+        style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-mute)" }}
       >
         Todavía no hay historial.
       </p>
@@ -86,7 +86,7 @@ export default function MedicationHistory() {
             key={day.date}
             className="flex items-center gap-3"
             style={{
-              backgroundColor: "var(--surface-soft)",
+              backgroundColor: "var(--surface)",
               border: "1px solid var(--line)",
               borderRadius: "var(--r-md)",
               padding: "0.7rem 0.85rem",
@@ -94,13 +94,13 @@ export default function MedicationHistory() {
             aria-label={`${formatDate(day.date)}: ${day.taken} de ${day.total} medicamentos tomados`}
           >
             <div className="flex-1 min-w-0">
-              <div style={{ fontSize: "0.86rem", fontWeight: 700 }}>{formatDate(day.date)}</div>
+              <div style={{ fontSize: "var(--t-sm)", fontWeight: 700 }}>{formatDate(day.date)}</div>
 
               {/* Barra de cumplimiento del día */}
               <div
                 className="mt-1.5"
                 style={{
-                  height: 5,
+                  height: 7,
                   borderRadius: "999px",
                   backgroundColor: "var(--line)",
                   overflow: "hidden",
@@ -112,7 +112,7 @@ export default function MedicationHistory() {
                     width: `${ratio * 100}%`,
                     height: "100%",
                     borderRadius: "999px",
-                    backgroundColor: status.ink,
+                    backgroundColor: status.bar,
                   }}
                 />
               </div>
@@ -120,7 +120,7 @@ export default function MedicationHistory() {
 
             <span
               className="pill"
-              style={{ backgroundColor: status.tint, borderColor: status.line, color: status.ink }}
+              style={{ backgroundColor: status.tint, borderColor: status.line }}
             >
               {day.taken}/{day.total} · {status.label}
             </span>

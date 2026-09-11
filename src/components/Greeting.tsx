@@ -28,12 +28,12 @@ export default function Greeting() {
   return (
     <div className="px-1">
       {/* El espacio duro reserva la altura y evita que el bloque salte al hidratar */}
-      <h1 style={{ fontSize: "2.05rem", fontWeight: 800, lineHeight: 1.08 }}>
+      <h1 style={{ fontSize: "var(--t-2xl)", fontWeight: 800, lineHeight: 1.08 }}>
         {now ? greetingFor(now.getHours()) : " "}
       </h1>
       <p
         className="mt-2"
-        style={{ fontSize: "0.92rem", fontWeight: 700, color: "var(--ink-mute)" }}
+        style={{ fontSize: "var(--t-sm)", fontWeight: 700, color: "var(--ink-mute)" }}
       >
         {now ? formatToday(now) : " "}
       </p>

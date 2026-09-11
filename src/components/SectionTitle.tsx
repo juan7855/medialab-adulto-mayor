@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
-import { ACCENTS, type AccentName } from "@/lib/theme";
+import IconTile from "./IconTile";
+import type { AccentName } from "@/lib/theme";
 
 interface SectionTitleProps {
   icon: LucideIcon;
@@ -7,11 +8,14 @@ interface SectionTitleProps {
   children: React.ReactNode;
 }
 
-/** Encabezado de bloque: icono de línea coloreado + texto. */
-export default function SectionTitle({ icon: Icon, accent, children }: SectionTitleProps) {
+/** Encabezado de bloque: ficha pequeña de icono + texto. */
+export default function SectionTitle({ icon, accent, children }: SectionTitleProps) {
   return (
-    <h2 className="flex items-center gap-2 px-1" style={{ fontSize: "1.1rem", fontWeight: 800 }}>
-      <Icon size={22} strokeWidth={2} color={ACCENTS[accent].ink} aria-hidden="true" />
+    <h2
+      className="flex items-center gap-2.5 px-1"
+      style={{ fontSize: "var(--t-md)", fontWeight: 800 }}
+    >
+      <IconTile icon={icon} accent={accent} size={34} strokeWidth={2.2} />
       {children}
     </h2>
   );

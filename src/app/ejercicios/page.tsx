@@ -1,6 +1,9 @@
-import { Lightbulb, PersonStanding } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import ExerciseList from "./ExerciseList";
+import { SECTIONS } from "@/lib/theme";
+
+const SECTION = SECTIONS.find((s) => s.href === "/ejercicios")!;
 
 export default function EjerciciosPage() {
   return (
@@ -8,8 +11,8 @@ export default function EjerciciosPage() {
       <PageHeader
         title="Ejercicios"
         subtitle="Muévete con calma, siéntete mejor"
-        icon={PersonStanding}
-        accent="green"
+        iconSrc={SECTION.icon}
+        accent={SECTION.accent}
         backHref="/"
         backLabel="Inicio"
       />
@@ -25,13 +28,13 @@ export default function EjerciciosPage() {
           role="note"
         >
           <Lightbulb
-            size={19}
+            size={22}
             strokeWidth={2}
-            color="var(--green-ink)"
+            color="var(--ink-soft)"
             aria-hidden="true"
             style={{ flexShrink: 0, marginTop: 1 }}
           />
-          <p style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--ink-soft)" }}>
+          <p style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-soft)" }}>
             Muévete todos los días. Aunque sean 10 minutos, cuentan.
           </p>
         </div>

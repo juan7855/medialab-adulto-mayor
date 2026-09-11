@@ -78,7 +78,7 @@ export const RECIPES: Recipe[] = [
     id: "avena-fruta",
     name: "Avena con Fruta",
     icon: Wheat,
-    accent: "amber" as const,
+    accent: "yellow" as const,
     time: "10 min",
     difficulty: "Muy fácil",
     servings: "1 porción",

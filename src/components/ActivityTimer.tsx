@@ -4,8 +4,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import Toast from "@/components/Toast";
 import { ACCENTS, type AccentName } from "@/lib/theme";
+import { todayISO } from "@/lib/today";
 
-interface ExerciseTimerProps {
+interface ActivityTimerProps {
   totalSeconds: number;
   exerciseName: string;
   exerciseId: string;
@@ -18,12 +19,12 @@ function formatTime(seconds: number): string {
   return `${m}:${s}`;
 }
 
-export default function ExerciseTimer({
+export default function ActivityTimer({
   totalSeconds,
   exerciseName,
   exerciseId,
   accent,
-}: ExerciseTimerProps) {
+}: ActivityTimerProps) {
   const [timeLeft, setTimeLeft] = useState(totalSeconds);
   const [running, setRunning] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -34,7 +35,9 @@ export default function ExerciseTimer({
   const remainingRef = useRef(totalSeconds);
 
   const tone = ACCENTS[accent];
-  const activeColor = finished ? ACCENTS.green.ink : tone.ink;
+  // El anillo lleva el color del acento; el botón, el navy de CTA, que es
+  // el único de la paleta con contraste suficiente para texto blanco.
+  const ringColor = finished ? ACCENTS.green.solid : tone.solid;
 
   const complete = useCallback(() => {
     setRunning(false);
@@ -44,7 +47,9 @@ export default function ExerciseTimer({
     fetch("/api/ejercicios/log", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ exerciseName, exerciseId }),
+      // La fecha se manda desde el navegador: el servidor corre en UTC
+      // y adelantaría el día durante la tarde-noche en América.
+      body: JSON.stringify({ exerciseName, exerciseId, date: todayISO() }),
     }).catch(() => {});
   }, [exerciseName, exerciseId]);
 
@@ -117,7 +122,7 @@ export default function ExerciseTimer({
             strokeDashoffset={strokeDashoffset}
             transform="rotate(-90 95 95)"
             style={{
-              stroke: activeColor,
+              stroke: ringColor,
               transition: "stroke-dashoffset 0.8s ease, stroke 0.3s ease",
             }}
           />
@@ -126,7 +131,7 @@ export default function ExerciseTimer({
         <div className="absolute text-center">
           <div
             style={{
-              fontSize: "2.4rem",
+              fontSize: "var(--t-2xl)",
               fontWeight: 800,
               letterSpacing: "-0.03em",
               fontVariantNumeric: "tabular-nums",
@@ -136,7 +141,7 @@ export default function ExerciseTimer({
           </div>
           <div
             className="mt-0.5"
-            style={{ fontSize: "0.72rem", fontWeight: 700, color: "var(--ink-mute)" }}
+            style={{ fontSize: "var(--t-xs)", fontWeight: 700, color: "var(--ink-mute)" }}
           >
             {finished ? "¡Listo!" : running ? "En curso" : "En pausa"}
           </div>
@@ -147,16 +152,7 @@ export default function ExerciseTimer({
       <div className="flex gap-2.5 w-full">
         <button
           onClick={handleStartPause}
-          className="flex-1 pressable flex items-center justify-center gap-2"
-          style={{
-            minHeight: "3.6rem",
-            borderRadius: "var(--r-md)",
-            backgroundColor: activeColor,
-            color: "#fff",
-            fontSize: "1.02rem",
-            fontWeight: 800,
-            border: "none",
-          }}
+          className="flex-1 btn-cta pressable"
           aria-label={finished ? "Repetir ejercicio" : running ? "Pausar" : "Iniciar"}
         >
           {finished ? (
@@ -172,15 +168,8 @@ export default function ExerciseTimer({
         {!finished && (
           <button
             onClick={handleReset}
-            className="pressable flex items-center justify-center"
-            style={{
-              minWidth: "3.6rem",
-              minHeight: "3.6rem",
-              borderRadius: "var(--r-md)",
-              backgroundColor: "var(--surface-soft)",
-              border: "1px solid var(--line-strong)",
-              color: "var(--ink-soft)",
-            }}
+            className="btn-soft pressable"
+            style={{ minWidth: "3.6rem" }}
             aria-label="Reiniciar temporizador"
           >
             <RotateCcw size={20} strokeWidth={2.2} aria-hidden="true" />

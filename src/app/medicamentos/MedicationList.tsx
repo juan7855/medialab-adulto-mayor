@@ -5,7 +5,6 @@ import { AlarmClock, Check, Clock, Pill } from "lucide-react";
 import Toast, { type ToastTone } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToday } from "@/lib/today";
-import { ACCENTS } from "@/lib/theme";
 
 interface Medication {
   id: number;
@@ -19,14 +18,6 @@ interface MedLog {
   medicationId: number;
   taken: boolean;
   takenAt: string | null;
-}
-
-/**
- * El color de cada medicamento viene de la base de datos. Se usa en tres
- * intensidades (relleno, borde, trazo) añadiendo alfa hexadecimal.
- */
-function shades(hex: string) {
-  return { tint: `${hex}1A`, line: `${hex}45`, ink: hex };
 }
 
 export default function MedicationList() {
@@ -116,11 +107,11 @@ export default function MedicationList() {
         <span
           className="animate-spin"
           style={{
-            width: 30,
-            height: 30,
+            width: 32,
+            height: 32,
             borderRadius: "999px",
             border: "3px solid var(--line)",
-            borderTopColor: "var(--blue-ink)",
+            borderTopColor: "var(--cyan-solid)",
             display: "block",
           }}
         />
@@ -131,8 +122,8 @@ export default function MedicationList() {
   if (medications.length === 0) {
     return (
       <div className="card p-6 text-center">
-        <p style={{ fontSize: "0.95rem", fontWeight: 700 }}>No hay medicamentos registrados.</p>
-        <p className="mt-1.5" style={{ fontSize: "0.8rem", color: "var(--ink-mute)" }}>
+        <p style={{ fontSize: "var(--t-sm)", fontWeight: 700 }}>No hay medicamentos registrados.</p>
+        <p className="mt-1.5" style={{ fontSize: "var(--t-xs)", color: "var(--ink-mute)" }}>
           Consulta a tu médico para agregarlos.
         </p>
       </div>
@@ -145,7 +136,8 @@ export default function MedicationList() {
         {medications.map((med, i) => {
           const taken = isTaken(med.id);
           const isSnoozed = snoozed.has(med.id);
-          const tone = taken ? ACCENTS.green : shades(med.color);
+          // El color de cada medicamento viene de la base de datos.
+          const tileColor = taken ? "var(--green-solid)" : med.color;
 
           return (
             <li
@@ -159,27 +151,29 @@ export default function MedicationList() {
             >
               <div className="flex items-center gap-3.5">
                 <span
-                  className="tile"
                   style={{
-                    width: 58,
-                    height: 58,
-                    borderRadius: "0.85rem",
-                    backgroundColor: tone.tint,
-                    borderColor: tone.line,
+                    width: 62,
+                    height: 62,
+                    flexShrink: 0,
+                    borderRadius: 14,
+                    backgroundColor: tileColor,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                   aria-hidden="true"
                 >
                   {taken ? (
-                    <Check size={26} strokeWidth={2.6} color={tone.ink} />
+                    <Check size={30} strokeWidth={2.6} color="#FAF8F5" />
                   ) : (
-                    <Pill size={26} strokeWidth={1.8} color={tone.ink} />
+                    <Pill size={30} strokeWidth={2} color="#FAF8F5" />
                   )}
                 </span>
 
                 <div className="flex-1 min-w-0">
                   <div
                     style={{
-                      fontSize: "1rem",
+                      fontSize: "var(--t-md)",
                       fontWeight: 800,
                       color: taken ? "var(--ink-mute)" : "var(--ink)",
                       textDecoration: taken ? "line-through" : "none",
@@ -189,12 +183,12 @@ export default function MedicationList() {
                   </div>
                   <div
                     className="mt-0.5"
-                    style={{ fontSize: "0.78rem", fontWeight: 500, color: "var(--ink-mute)" }}
+                    style={{ fontSize: "var(--t-xs)", fontWeight: 500, color: "var(--ink-mute)" }}
                   >
                     {med.dose}
                   </div>
                   <span className="pill mt-2">
-                    <Clock size={13} strokeWidth={2.2} aria-hidden="true" />
+                    <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
                     {med.time}
                   </span>
                 </div>
@@ -204,44 +198,25 @@ export default function MedicationList() {
                 <div className="flex gap-2.5 mt-3.5">
                   <button
                     onClick={() => setConfirm({ medId: med.id, medName: med.name })}
-                    className="flex-1 pressable flex items-center justify-center gap-2"
-                    style={{
-                      minHeight: "3.2rem",
-                      borderRadius: "var(--r-md)",
-                      backgroundColor: "var(--green-ink)",
-                      color: "#fff",
-                      border: "none",
-                      fontSize: "0.92rem",
-                      fontWeight: 800,
-                    }}
+                    className="flex-1 btn-cta pressable"
                     aria-label={`Marcar ${med.name} como tomado`}
                   >
-                    <Check size={18} strokeWidth={2.6} aria-hidden="true" />
+                    <Check size={20} strokeWidth={2.6} aria-hidden="true" />
                     Ya lo tomé
                   </button>
 
                   <button
                     onClick={() => handleSnooze(med.id)}
                     disabled={isSnoozed}
-                    className="pressable flex items-center justify-center gap-2"
-                    style={{
-                      minHeight: "3.2rem",
-                      paddingInline: "1rem",
-                      borderRadius: "var(--r-md)",
-                      backgroundColor: "var(--surface-soft)",
-                      border: "1px solid var(--line-strong)",
-                      color: "var(--ink-soft)",
-                      fontSize: "0.88rem",
-                      fontWeight: 700,
-                      opacity: isSnoozed ? 0.55 : 1,
-                    }}
+                    className="btn-soft pressable"
+                    style={{ paddingInline: "1rem", opacity: isSnoozed ? 0.55 : 1 }}
                     aria-label={
                       isSnoozed
                         ? "Recordatorio ya activado"
                         : `Recordar ${med.name} en 10 minutos`
                     }
                   >
-                    <AlarmClock size={17} strokeWidth={2.2} aria-hidden="true" />
+                    <AlarmClock size={19} strokeWidth={2.2} aria-hidden="true" />
                     10 min
                   </button>
                 </div>
@@ -259,7 +234,7 @@ export default function MedicationList() {
           confirmLabel="Sí, ya lo tomé"
           cancelLabel="Todavía no"
           icon={Pill}
-          accent="blue"
+          accent="cyan"
         />
       )}
 

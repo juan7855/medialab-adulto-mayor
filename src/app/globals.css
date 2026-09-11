@@ -1,44 +1,69 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   MiSalud — sistema de diseño
-   Paleta cálida sobre crema, tarjetas blancas, iconos de línea sobre
-   cuadros teñidos. Tipografía grande: la app es para adultos mayores.
+   MiSalud — identidad visual
+   Paleta propia del proyecto (Imagenes/Paleta de colores.png).
+
+   Criterio de uso del color: el texto va SIEMPRE en tinta casi negra, nunca
+   en un color de acento. Los colores vivos quedan para fichas de icono,
+   bordes, tintes y barras — "detalles", como los definió el diseño. Los
+   botones de acción usan el navy de CTA, el único color de la paleta con
+   contraste suficiente para texto blanco encima.
+
+   Tipografía deliberadamente grande: los usuarios tienen más de 65 años.
 --------------------------------------------------------------------------- */
 
 :root {
-  /* Superficies */
-  --bg: #F2EFE8;
-  --surface: #FFFFFF;
-  --surface-soft: #FBF9F4;
+  /* --- Superficies ------------------------------------------------------ */
+  --bg: #FFFFE1;          /* fondo principal */
+  --surface: #FFFFFF;     /* tarjetas y contenedores */
+  --surface-soft: #FAF8F5;/* zonas secundarias dentro de una tarjeta */
+  --surface-cool: #B4C7E3;/* azul suave, para bloques destacados */
 
-  /* Texto */
-  --ink: #1B1A16;
-  --ink-soft: #575146;
-  --ink-mute: #857E70;
+  /* --- Texto ------------------------------------------------------------ */
+  --ink: #23231B;
+  --ink-soft: #4D4C3E;
+  --ink-mute: #6F6D5A;
 
-  /* Líneas */
-  --line: #E6E0D3;
-  --line-strong: #D6CDBA;
+  /* --- Líneas ----------------------------------------------------------- */
+  --line: #EAE5C2;
+  --line-strong: #D8D2A4;
 
-  /* Acentos: tinte de fondo, tinta del icono, borde */
-  --green-tint: #DCE9DE;  --green-ink: #1C6B4B;  --green-line: #B7D2BE;
-  --orange-tint: #F6E1C7; --orange-ink: #BE560D; --orange-line: #EAC69B;
-  --blue-tint: #DCE3FB;   --blue-ink: #2B49D6;   --blue-line: #BDC9F5;
-  --purple-tint: #E7DDFA; --purple-ink: #7A2ED2; --purple-line: #D1BFF2;
-  --red-tint: #F8DBD5;    --red-ink: #BE3319;    --red-line: #EFBFB5;
-  --amber-tint: #F7E9C6;  --amber-ink: #916B08;  --amber-line: #EBD79B;
+  /* --- Acentos ---------------------------------------------------------- */
+  /* Cada acento: `solid` (color vivo de la paleta), `tint` (lavado claro
+     para fondos) y `line` (borde). Ninguno se usa para texto. */
+  --green-solid: #7ECF6D;  --green-tint: #E9F6E4;  --green-line: #BFE6B4;
+  --green-deep: #4E8752;
+  --orange-solid: #E77A44; --orange-tint: #FBE7DA;  --orange-line: #F2C4A6;
+  --cyan-solid: #70CAE6;   --cyan-tint: #E2F4FA;    --cyan-line: #B4E2F1;
+  --blue-solid: #4186F6;   --blue-tint: #E0EAFD;    --blue-line: #B3CDFA;
+  --purple-solid: #C162CE; --purple-tint: #F5E4F7;  --purple-line: #E4B8EA;
+  --red-solid: #D64F51;    --red-tint: #FBE3E3;     --red-line: #F0BBBC;
+  --yellow-solid: #F5E74E; --yellow-tint: #FDF9D6;  --yellow-line: #EFE192;
 
-  /* Radios */
-  --r-sm: 0.7rem;
-  --r-md: 1rem;
-  --r-lg: 1.35rem;
-  --r-xl: 1.7rem;
+  /* --- Llamadas a la acción -------------------------------------------- */
+  --cta: #1E3A8A;          /* navy: texto blanco encima, contraste ~10:1 */
+  --cta-hi: #F5E74E;       /* amarillo: sólo con texto oscuro encima */
 
-  /* Sombras: cálidas, nunca grises */
-  --shadow-sm: 0 1px 2px rgba(40, 33, 20, 0.05);
-  --shadow: 0 1px 2px rgba(40, 33, 20, 0.04), 0 6px 16px rgba(40, 33, 20, 0.06);
-  --shadow-lg: 0 2px 4px rgba(40, 33, 20, 0.05), 0 14px 32px rgba(40, 33, 20, 0.09);
+  /* --- Escala tipográfica ---------------------------------------------- */
+  --t-xs: 0.82rem;   /* 18px */
+  --t-sm: 0.95rem;   /* 21px */
+  --t-base: 1.05rem; /* 23px */
+  --t-md: 1.2rem;    /* 26px */
+  --t-lg: 1.45rem;   /* 32px */
+  --t-xl: 1.75rem;   /* 38px */
+  --t-2xl: 2.1rem;   /* 46px */
+
+  /* --- Radios ----------------------------------------------------------- */
+  --r-sm: 0.65rem;
+  --r-md: 0.95rem;
+  --r-lg: 1.25rem;
+  --r-xl: 1.6rem;
+
+  /* --- Sombras: cálidas, nunca grises ----------------------------------- */
+  --shadow-sm: 0 1px 2px rgba(60, 52, 20, 0.06);
+  --shadow: 0 1px 2px rgba(60, 52, 20, 0.05), 0 6px 16px rgba(60, 52, 20, 0.07);
+  --shadow-lg: 0 2px 4px rgba(60, 52, 20, 0.06), 0 14px 32px rgba(60, 52, 20, 0.1);
 
   /* Objetivo táctil mínimo */
   --touch: 3.2rem;
@@ -49,8 +74,8 @@
 }
 
 html {
-  /* Base grande a propósito: mejora la legibilidad para adultos mayores */
-  font-size: 20px;
+  /* Base grande a propósito: los usuarios tienen más de 65 años */
+  font-size: 22px;
   -webkit-text-size-adjust: 100%;
   background-color: var(--bg);
 }
@@ -59,24 +84,23 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  /* 480px fijos: en rem se escalaría con la base de 20px y desbordaría */
+  /* 480px fijos: en rem se escalaría con la base y desbordaría */
   max-width: 480px;
   margin-inline: auto;
   background-color: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: "ss01", "cv11";
+  font-size: var(--t-base);
   letter-spacing: -0.005em;
   -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3 {
   letter-spacing: -0.025em;
-  line-height: 1.12;
+  line-height: 1.14;
   margin: 0;
 }
 
-/* Objetivos táctiles generosos */
 button,
 a[role="button"] {
   min-height: var(--touch);
@@ -86,7 +110,7 @@ a[role="button"] {
 }
 
 :focus-visible {
-  outline: 3px solid var(--blue-ink);
+  outline: 3px solid var(--cta);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -100,27 +124,17 @@ a[role="button"] {
   box-shadow: var(--shadow);
 }
 
-/* Cuadro teñido que contiene un icono de línea */
-.tile {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--r-md);
-  border: 1.5px solid;
-  flex-shrink: 0;
-}
-
-/* Cápsula de metadato: "8:00 · Desayuno", "5 min" */
+/* Cápsula de metadato: "08:00", "15 min" */
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   border-radius: 999px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   background: var(--surface-soft);
-  padding: 0.32rem 0.7rem;
-  font-size: 0.78rem;
-  font-weight: 600;
+  padding: 0.3rem 0.72rem;
+  font-size: var(--t-xs);
+  font-weight: 700;
   color: var(--ink-soft);
   white-space: nowrap;
 }
@@ -134,8 +148,8 @@ a[role="button"] {
   border: 1px solid var(--line-strong);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-sm);
-  padding: 0.55rem 0.85rem;
-  font-size: 0.85rem;
+  padding: 0.5rem 0.85rem;
+  font-size: var(--t-sm);
   font-weight: 700;
   color: var(--ink);
   text-decoration: none;
@@ -146,7 +160,39 @@ a[role="button"] {
   background: var(--surface-soft);
 }
 
-/* Pulsable: toda tarjeta que es enlace o botón */
+/* Botón de acción principal */
+.btn-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.4rem;
+  border: none;
+  border-radius: var(--r-md);
+  background: var(--cta);
+  color: #fff;
+  font-size: var(--t-sm);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+/* Botón secundario */
+.btn-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.4rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-md);
+  background: var(--surface-soft);
+  color: var(--ink-soft);
+  font-size: var(--t-sm);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Cualquier tarjeta que sea enlace o botón */
 .pressable {
   transition: transform 0.14s ease-out, box-shadow 0.14s ease-out;
 }
