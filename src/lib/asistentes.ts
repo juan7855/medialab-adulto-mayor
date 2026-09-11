@@ -7,7 +7,7 @@ export interface Asistente {
   nombre: string;
   /** Cómo se presenta en la pantalla de elección. */
   presentacion: string;
-  /** Ilustración en /public/personajes. */
+  /** Ilustración oficial, recortada de Imagenes/personajes.jpeg. */
   imagen: string;
   /** Color de la tarjeta cuando está elegido. */
   tinte: string;
@@ -19,7 +19,7 @@ export const ASISTENTES: Asistente[] = [
     id: "carlos",
     nombre: "Carlos",
     presentacion: "Tranquilo y directo",
-    imagen: "/personajes/carlos.svg",
+    imagen: "/personajes/carlos.png",
     tinte: "var(--green-tint)",
     borde: "var(--green-line)",
   },
@@ -27,7 +27,7 @@ export const ASISTENTES: Asistente[] = [
     id: "lucia",
     nombre: "Lucía",
     presentacion: "Atenta y conversadora",
-    imagen: "/personajes/lucia.svg",
+    imagen: "/personajes/lucia.png",
     tinte: "var(--purple-tint)",
     borde: "var(--purple-line)",
   },
