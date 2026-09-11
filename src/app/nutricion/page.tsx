@@ -2,9 +2,6 @@ import Link from "next/link";
 import {
   ChefHat,
   ChevronRight,
-  Clock,
-  CookingPot,
-  Croissant,
   Droplets,
   Lightbulb,
   Salad,
@@ -17,43 +14,10 @@ import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
 import IconTile from "@/components/IconTile";
 import WaterTracker from "./WaterTracker";
-import { ACCENTS, SECTIONS, type AccentName } from "@/lib/theme";
+import MealList from "./MealList";
+import { SECTIONS, type AccentName } from "@/lib/theme";
 
 const SECTION = SECTIONS.find((s) => s.href === "/nutricion")!;
-
-const MEALS: {
-  id: string;
-  name: string;
-  time: string;
-  icon: LucideIcon;
-  accent: AccentName;
-  items: string[];
-}[] = [
-  {
-    id: "desayuno",
-    name: "Desayuno",
-    time: "7:00 – 8:00",
-    icon: Croissant,
-    accent: "yellow",
-    items: ["Avena con fruta", "Té o leche", "Pan integral"],
-  },
-  {
-    id: "almuerzo",
-    name: "Almuerzo",
-    time: "12:00 – 13:00",
-    icon: CookingPot,
-    accent: "orange",
-    items: ["Sopa de verduras", "Pollo al vapor", "Ensalada verde", "Arroz integral"],
-  },
-  {
-    id: "cena",
-    name: "Cena",
-    time: "18:00 – 19:00",
-    icon: Salad,
-    accent: "green",
-    items: ["Ensalada con atún", "Pan integral", "Fruta de temporada"],
-  },
-];
 
 const RECIPES: {
   id: string;
@@ -103,57 +67,8 @@ export default function NutricionPage() {
           <SectionTitle icon={UtensilsCrossed} accent="orange">
             Menú de hoy
           </SectionTitle>
-
-          <div className="flex flex-col gap-3.5 mt-3">
-            {MEALS.map((meal) => {
-              const tone = ACCENTS[meal.accent];
-
-              return (
-                <article key={meal.id} className="card" style={{ overflow: "hidden" }}>
-                  {/* Portada teñida con la ficha del plato */}
-                  <div
-                    className="flex items-center justify-center"
-                    style={{
-                      height: 108,
-                      backgroundColor: tone.tint,
-                      borderBottom: `1px solid ${tone.line}`,
-                    }}
-                  >
-                    <IconTile icon={meal.icon} accent={meal.accent} size={62} strokeWidth={1.8} />
-                  </div>
-
-                  <div className="p-4">
-                    <h3 style={{ fontSize: "var(--t-md)", fontWeight: 800 }}>{meal.name}</h3>
-                    <span className="pill mt-2">
-                      <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
-                      {meal.time}
-                    </span>
-
-                    <ul className="flex flex-col gap-2 mt-3.5 list-none p-0 m-0">
-                      {meal.items.map((item) => (
-                        <li
-                          key={item}
-                          className="flex items-center gap-2.5"
-                          style={{ fontSize: "var(--t-sm)", fontWeight: 500 }}
-                        >
-                          <span
-                            aria-hidden="true"
-                            style={{
-                              width: 7,
-                              height: 7,
-                              borderRadius: "999px",
-                              backgroundColor: tone.solid,
-                              flexShrink: 0,
-                            }}
-                          />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </article>
-              );
-            })}
+          <div className="mt-3">
+            <MealList />
           </div>
         </section>
 

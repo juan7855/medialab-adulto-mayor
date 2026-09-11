@@ -40,6 +40,18 @@ export const waterLogs = pgTable("water_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Meal intake log.
+// Las comidas del día (desayuno, almuerzo, cena) son contenido fijo definido
+// en la app, no filas de la base; aquí sólo se guarda cuál se marcó y cuándo.
+export const mealLogs = pgTable("meal_logs", {
+  id: serial("id").primaryKey(),
+  mealId: text("meal_id").notNull(),
+  date: date("date").notNull(),
+  eaten: boolean("eaten").notNull().default(false),
+  eatenAt: timestamp("eaten_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Routine activities
 export const routineActivities = pgTable("routine_activities", {
   id: serial("id").primaryKey(),
