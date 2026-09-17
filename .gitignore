@@ -28,3 +28,6 @@ npm-debug.log*
 # env: ignora todos menos la plantilla
 .env*
 !.env.example
+
+# volcados locales de la base de datos (datos personales reales)
+_respaldo/

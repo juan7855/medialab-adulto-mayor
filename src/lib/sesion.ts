@@ -1,54 +1,29 @@
 "use client";
 
 /**
- * Clave de acceso de la maqueta.
+ * Preferencia del asistente elegido, guardada en el navegador.
  *
- * Está escrita aquí a propósito, en el código que se envía al navegador:
- * NO es seguridad, es un cerrojo de demostración. Cuando haya usuarios de
- * verdad, la comprobación tiene que pasar al servidor contra una clave
- * guardada con hash, y esta constante desaparece.
+ * Esto NO es la sesión de acceso — esa vive en el servidor, como cookie
+ * firmada (ver src/lib/auth.ts) y se comprueba en src/middleware.ts. Esto es
+ * sólo "qué personaje mostrar", que no necesita servidor porque no protege
+ * nada: si alguien lo borra o lo cambia a mano, en el peor caso ve al otro
+ * asistente hasta que vuelva a elegir.
  */
-export const CLAVE_DEMO = "1234";
 
-const CLAVE_SESION = "misalud.sesion";
 const CLAVE_ASISTENTE = "misalud.asistente";
 
-function leer(clave: string): string | null {
+export function guardarAsistente(id: string): void {
   try {
-    return window.localStorage.getItem(clave);
-  } catch {
-    return null;
-  }
-}
-
-function guardar(clave: string, valor: string): void {
-  try {
-    window.localStorage.setItem(clave, valor);
+    window.localStorage.setItem(CLAVE_ASISTENTE, id);
   } catch {
     // Modo privado o almacenamiento bloqueado: se sigue igual, sin recordar.
   }
 }
 
-export function abrirSesion(): void {
-  guardar(CLAVE_SESION, "ok");
-}
-
-export function haySesion(): boolean {
-  return leer(CLAVE_SESION) === "ok";
-}
-
-export function guardarAsistente(id: string): void {
-  guardar(CLAVE_ASISTENTE, id);
-}
-
 export function leerAsistente(): string | null {
-  return leer(CLAVE_ASISTENTE);
-}
-
-export function cerrarSesion(): void {
   try {
-    window.localStorage.removeItem(CLAVE_SESION);
+    return window.localStorage.getItem(CLAVE_ASISTENTE);
   } catch {
-    // nada que hacer
+    return null;
   }
 }

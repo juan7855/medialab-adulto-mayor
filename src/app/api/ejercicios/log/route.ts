@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { exerciseLogs } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
+    const patientId = await obtenerPacienteId();
+    if (patientId === null) {
+      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
     const body = (await req.json()) as {
       exerciseName: string;
       exerciseId: string;
@@ -15,6 +21,7 @@ export async function POST(req: NextRequest) {
     const today = body.date ?? new Date().toISOString().split("T")[0];
 
     await db.insert(exerciseLogs).values({
+      patientId,
       exerciseName: body.exerciseName,
       date: today,
       durationSeconds: null,

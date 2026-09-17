@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { waterLogs } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
+import { obtenerPacienteId } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
+    const patientId = await obtenerPacienteId();
+    if (patientId === null) {
+      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
     const date = req.nextUrl.searchParams.get("date") ?? new Date().toISOString().split("T")[0];
 
     const result = await db
       .select()
       .from(waterLogs)
-      .where(eq(waterLogs.date, date))
+      .where(and(eq(waterLogs.patientId, patientId), eq(waterLogs.date, date)))
       .limit(1);
 
     if (result.length === 0) {
@@ -26,22 +32,21 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const patientId = await obtenerPacienteId();
+    if (patientId === null) {
+      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
     const body = await req.json() as { date: string; glasses: number };
     const { date, glasses } = body;
 
-    const existing = await db
-      .select()
-      .from(waterLogs)
-      .where(eq(waterLogs.date, date))
-      .limit(1);
+    const coincide = and(eq(waterLogs.patientId, patientId), eq(waterLogs.date, date));
+    const existing = await db.select().from(waterLogs).where(coincide).limit(1);
 
     if (existing.length > 0) {
-      await db
-        .update(waterLogs)
-        .set({ glasses })
-        .where(eq(waterLogs.date, date));
+      await db.update(waterLogs).set({ glasses }).where(coincide);
     } else {
-      await db.insert(waterLogs).values({ date, glasses });
+      await db.insert(waterLogs).values({ patientId, date, glasses });
     }
 
     return NextResponse.json({ ok: true, glasses });

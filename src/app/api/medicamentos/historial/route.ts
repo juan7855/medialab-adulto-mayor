@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { medications, medicationLogs } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
+import { obtenerPacienteId } from "@/lib/auth";
 
 export async function GET() {
   try {
+    const patientId = await obtenerPacienteId();
+    if (patientId === null) {
+      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
     // Get last 7 days
     const days: string[] = [];
     for (let i = 6; i >= 0; i--) {
@@ -13,7 +19,10 @@ export async function GET() {
       days.push(d.toISOString().split("T")[0]);
     }
 
-    const allMeds = await db.select().from(medications);
+    const allMeds = await db
+      .select()
+      .from(medications)
+      .where(eq(medications.patientId, patientId));
     const totalMeds = allMeds.length;
 
     if (totalMeds === 0) {
@@ -25,7 +34,7 @@ export async function GET() {
         const logs = await db
           .select()
           .from(medicationLogs)
-          .where(eq(medicationLogs.date, date));
+          .where(and(eq(medicationLogs.patientId, patientId), eq(medicationLogs.date, date)));
 
         const taken = logs.filter((l) => l.taken).length;
         return { date, total: totalMeds, taken };

@@ -122,15 +122,30 @@ async function auditFrame(frame) {
 
 const WIDTHS = [320, 360, 390, 430, 480];
 
+// Paciente de prueba usado sólo para auditar. Debe existir en la base con
+// datos reales (siembralo con: npx tsx src/db/seed.ts "Rosa" 2468), porque
+// desde que la sesión es una cookie firmada por el servidor, ya no basta con
+// poner una bandera en localStorage para que /inicio, /animo, etc. dejen de
+// redirigir a "/".
+const PIN_PRUEBA = "2468";
+
 (async () => {
   let total = 0;
 
-  // Deja la sesion iniciada y un asistente elegido: si no, /animo e /inicio
-  // se auditarian sin la ilustracion ni la tarjeta.
-  try {
-    localStorage.setItem("misalud.sesion", "ok");
-    localStorage.setItem("misalud.asistente", "lucia");
-  } catch (e) {}
+  const login = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ pin: PIN_PRUEBA }),
+    credentials: "include",
+  });
+  if (!login.ok) {
+    document.getElementById("out").textContent =
+      "No se pudo iniciar sesión con el pin de prueba (" + PIN_PRUEBA + ").\n"
+      + "Siembra ese paciente antes de auditar:\n"
+      + '  npx tsx src/db/seed.ts "Nombre de prueba" ' + PIN_PRUEBA;
+    return;
+  }
+  localStorage.setItem("misalud.asistente", "lucia");
 
   for (const width of WIDTHS) {
     let subtotal = 0;

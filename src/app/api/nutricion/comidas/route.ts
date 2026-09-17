@@ -2,15 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { mealLogs } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { obtenerPacienteId } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
+    const patientId = await obtenerPacienteId();
+    if (patientId === null) {
+      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
     const date = req.nextUrl.searchParams.get("date");
     if (!date) {
       return NextResponse.json({ error: "Falta la fecha" }, { status: 400 });
     }
 
-    const logs = await db.select().from(mealLogs).where(eq(mealLogs.date, date));
+    const logs = await db
+      .select()
+      .from(mealLogs)
+      .where(and(eq(mealLogs.patientId, patientId), eq(mealLogs.date, date)));
 
     return NextResponse.json(
       logs.map((l) => ({
@@ -27,6 +36,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const patientId = await obtenerPacienteId();
+    if (patientId === null) {
+      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    }
+
     const body = (await req.json()) as { mealId: string; date: string; eaten: boolean };
     const { mealId, date, eaten } = body;
 
@@ -34,7 +48,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
     }
 
-    const match = and(eq(mealLogs.mealId, mealId), eq(mealLogs.date, date));
+    const match = and(
+      eq(mealLogs.patientId, patientId),
+      eq(mealLogs.mealId, mealId),
+      eq(mealLogs.date, date),
+    );
     const existing = await db.select().from(mealLogs).where(match).limit(1);
 
     if (existing.length > 0) {
@@ -44,6 +62,7 @@ export async function POST(req: NextRequest) {
         .where(match);
     } else {
       await db.insert(mealLogs).values({
+        patientId,
         mealId,
         date,
         eaten,

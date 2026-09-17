@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronRight, HeartPulse } from "lucide-react";
 import TarjetaAsistente from "@/components/TarjetaAsistente";
+import CerrarSesion from "@/components/CerrarSesion";
 import Greeting from "@/components/Greeting";
 import SectionIcon from "@/components/SectionIcon";
 import { EMERGENCIA, RUTINA, SECTIONS, type Section } from "@/lib/theme";
@@ -88,11 +89,12 @@ export default function HomePage() {
       </nav>
 
       <footer
-        className="text-center mt-auto pt-9"
+        className="text-center mt-auto pt-9 flex flex-col gap-4"
         style={{ fontSize: "var(--t-xs)", color: "var(--ink-mute)", fontWeight: 500 }}
         role="contentinfo"
       >
         MiSalud · Tu salud, día a día
+        <CerrarSesion />
       </footer>
     </main>
   );

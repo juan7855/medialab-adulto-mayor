@@ -4,37 +4,57 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Delete } from "lucide-react";
 import { rem } from "@/lib/scale";
-import { CLAVE_DEMO, abrirSesion } from "@/lib/sesion";
 
 const TECLAS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
 
 export default function TecladoNumerico() {
   const router = useRouter();
   const [digitos, setDigitos] = useState("");
-  const [error, setError] = useState(false);
+  const [comprobando, setComprobando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const pulsar = (tecla: string) => {
-    if (digitos.length >= 4) return;
+    if (comprobando || digitos.length >= 4) return;
     const siguiente = digitos + tecla;
-    setError(false);
+    setError(null);
     setDigitos(siguiente);
 
-    if (siguiente.length < 4) return;
+    if (siguiente.length === 4) {
+      void intentarEntrar(siguiente);
+    }
+  };
 
-    if (siguiente === CLAVE_DEMO) {
-      abrirSesion();
-      router.push("/asistente");
-    } else {
+  const intentarEntrar = async (pin: string) => {
+    setComprobando(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin }),
+      });
+
+      if (res.ok) {
+        router.push("/asistente");
+        return; // se deja el teclado deshabilitado mientras navega
+      }
+
       // Se deja ver el cuarto punto un instante antes de avisar del fallo.
       setTimeout(() => {
-        setError(true);
+        setError("Clave incorrecta. Intenta de nuevo.");
         setDigitos("");
+        setComprobando(false);
+      }, 220);
+    } catch {
+      setTimeout(() => {
+        setError("No se pudo conectar. Intenta de nuevo.");
+        setDigitos("");
+        setComprobando(false);
       }, 220);
     }
   };
 
   const borrar = () => {
-    setError(false);
+    setError(null);
     setDigitos((d) => d.slice(0, -1));
   };
 
@@ -76,7 +96,7 @@ export default function TecladoNumerico() {
         }}
         role={error ? "alert" : undefined}
       >
-        {error ? "Clave incorrecta. Intenta de nuevo." : " "}
+        {error ?? " "}
       </p>
 
       {/* Teclado */}
@@ -85,12 +105,14 @@ export default function TecladoNumerico() {
           <button
             key={tecla}
             onClick={() => pulsar(tecla)}
+            disabled={comprobando}
             className="card pressable"
             style={{
               minHeight: rem(76),
               fontSize: "var(--t-xl)",
               fontWeight: 800,
               color: "var(--ink)",
+              opacity: comprobando ? 0.6 : 1,
             }}
             aria-label={`Número ${tecla}`}
           >
@@ -102,12 +124,14 @@ export default function TecladoNumerico() {
 
         <button
           onClick={() => pulsar("0")}
+          disabled={comprobando}
           className="card pressable"
           style={{
             minHeight: rem(76),
             fontSize: "var(--t-xl)",
             fontWeight: 800,
             color: "var(--ink)",
+            opacity: comprobando ? 0.6 : 1,
           }}
           aria-label="Número 0"
         >
@@ -116,7 +140,7 @@ export default function TecladoNumerico() {
 
         <button
           onClick={borrar}
-          disabled={digitos.length === 0}
+          disabled={comprobando || digitos.length === 0}
           className="pressable flex items-center justify-center"
           style={{
             minHeight: rem(76),
@@ -124,7 +148,7 @@ export default function TecladoNumerico() {
             backgroundColor: "var(--surface-soft)",
             border: "1px solid var(--line-strong)",
             color: "var(--ink-soft)",
-            opacity: digitos.length === 0 ? 0.4 : 1,
+            opacity: comprobando || digitos.length === 0 ? 0.4 : 1,
           }}
           aria-label="Borrar el último número"
         >
