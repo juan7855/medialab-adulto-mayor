@@ -8,10 +8,10 @@ import IconTile from "@/components/IconTile";
 import { useToday } from "@/lib/today";
 import { rem } from "@/lib/scale";
 import { ACCENTS } from "@/lib/theme";
-import { MEALS, type Meal } from "./comidas";
+import { MEAL_ICONS, MEAL_ICON_FALLBACK, type Meal } from "./comidas";
 
 interface MealLog {
-  mealId: string;
+  mealId: number;
   eaten: boolean;
   eatenAt: string | null;
 }
@@ -24,7 +24,7 @@ function formatHour(iso: string | null): string | null {
   });
 }
 
-export default function MealList() {
+export default function MealList({ meals }: { meals: Meal[] }) {
   const date = useToday();
   const [logs, setLogs] = useState<MealLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,7 +83,7 @@ export default function MealList() {
     }
   };
 
-  const logOf = (mealId: string) => logs.find((log) => log.mealId === mealId);
+  const logOf = (mealId: number) => logs.find((log) => log.mealId === mealId);
 
   if (loading || !date) {
     return (
@@ -108,10 +108,18 @@ export default function MealList() {
     );
   }
 
+  if (meals.length === 0) {
+    return (
+      <div className="card p-6 text-center">
+        <p style={{ fontSize: "var(--t-sm)", fontWeight: 700 }}>Todavía no hay menú configurado.</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="flex flex-col gap-3.5">
-        {MEALS.map((meal) => {
+        {meals.map((meal) => {
           const log = logOf(meal.id);
           const eaten = log?.eaten ?? false;
           const hour = formatHour(log?.eatenAt ?? null);
@@ -137,7 +145,7 @@ export default function MealList() {
                 }}
               >
                 <IconTile
-                  icon={eaten ? Check : meal.icon}
+                  icon={eaten ? Check : (MEAL_ICONS[meal.emoji] ?? MEAL_ICON_FALLBACK)}
                   accent={eaten ? "green" : meal.accent}
                   size={62}
                   strokeWidth={eaten ? 2.6 : 1.8}

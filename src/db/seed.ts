@@ -1,11 +1,16 @@
 import "./load-env";
 import { db } from "./index";
-import { patients, medications, routineActivities } from "./schema";
+import { patients, medications, routineActivities, exercises, cognitiveActivities, meals } from "./schema";
 import { eq } from "drizzle-orm";
 
 /**
- * Crea (o encuentra) un paciente y le siembra medicamentos y rutina de
- * ejemplo, si todavía no tiene ninguno.
+ * Crea (o encuentra) un paciente y le siembra medicamentos, rutina,
+ * ejercicios, actividades de Mente Activa y menú de ejemplo — todo lo que
+ * antes era contenido fijo en el código, ahora propio de cada paciente.
+ * Cada bloque se siembra sólo si el paciente todavía no tiene nada ahí, así
+ * que correrlo de nuevo sobre un paciente existente sólo rellena lo que le
+ * falte (por ejemplo, a los pacientes creados antes de que existiera el
+ * catálogo de ejercicios).
  *
  * Uso: npx tsx src/db/seed.ts "Nombre del paciente" 1234
  */
@@ -194,6 +199,225 @@ async function seed() {
     console.log("✅ Rutina sembrada");
   } else {
     console.log("⏭ Este paciente ya tiene rutina");
+  }
+
+  // Ejercicios
+  const existingExercises = await db
+    .select()
+    .from(exercises)
+    .where(eq(exercises.patientId, patientId))
+    .limit(1);
+
+  if (existingExercises.length === 0) {
+    await db.insert(exercises).values([
+      {
+        patientId,
+        name: "Caminata Suave",
+        level: "Ligero",
+        emoji: "🚶",
+        durationSeconds: 900,
+        description: "Caminata pausada para activar el cuerpo",
+        steps: [
+          "Ponte ropa cómoda y zapatos antideslizantes",
+          "Comienza caminando despacio durante 2 minutos",
+          "Mantén la espalda recta y los brazos relajados",
+          "Camina a paso normal durante 10 minutos",
+          "Termina con 3 minutos de caminata muy lenta",
+        ],
+        tip: "Si sientes dolor, detente y descansa.",
+      },
+      {
+        patientId,
+        name: "Estiramiento",
+        level: "Ligero",
+        emoji: "🧘",
+        durationSeconds: 600,
+        description: "Ejercicios de flexibilidad sentado",
+        steps: [
+          "Siéntate en una silla firme con los pies en el suelo",
+          "Gira el cuello lentamente de lado a lado (5 veces)",
+          "Levanta los brazos sobre la cabeza y baja lentamente (8 veces)",
+          "Estira las piernas hacia adelante una a una (5 veces)",
+          "Respira profundo 5 veces para terminar",
+        ],
+        tip: "Haz cada movimiento sin prisa y sin dolor.",
+      },
+      {
+        patientId,
+        name: "Equilibrio",
+        level: "Moderado",
+        emoji: "⚖️",
+        durationSeconds: 720,
+        description: "Ejercicios para mejorar el equilibrio",
+        steps: [
+          "Párate junto a una silla o pared para apoyo",
+          "Levanta un pie del suelo por 10 segundos",
+          "Repite con el otro pie (5 veces cada uno)",
+          "Camina talón-punta en línea recta (10 pasos)",
+          "Descansa sentado 2 minutos",
+        ],
+        tip: "Ten siempre algo cerca para apoyarte.",
+      },
+      {
+        patientId,
+        name: "Fuerza Suave",
+        level: "Moderado",
+        emoji: "💪",
+        durationSeconds: 900,
+        description: "Ejercicios de fuerza sin pesas",
+        steps: [
+          "Siéntate y levántate de la silla sin usar los brazos (8 veces)",
+          "Aprieta y suelta los puños durante 30 segundos",
+          "Levanta los talones del suelo parado (10 veces)",
+          "Haz pequeños círculos con los hombros (5 cada dirección)",
+          "Termina con respiración profunda",
+        ],
+        tip: "Descansa 1 minuto entre cada ejercicio.",
+      },
+    ]);
+    console.log("✅ Ejercicios sembrados");
+  } else {
+    console.log("⏭ Este paciente ya tiene ejercicios");
+  }
+
+  // Mente activa
+  const existingCognitive = await db
+    .select()
+    .from(cognitiveActivities)
+    .where(eq(cognitiveActivities.patientId, patientId))
+    .limit(1);
+
+  if (existingCognitive.length === 0) {
+    await db.insert(cognitiveActivities).values([
+      {
+        patientId,
+        name: "Memoria de palabras",
+        level: "Fácil",
+        emoji: "🧠",
+        durationLabel: "5 min",
+        description: "Recuerda una lista corta de palabras",
+        steps: [
+          "Busca papel y lápiz, y siéntate con tranquilidad",
+          "Escribe 8 palabras cualquiera: pan, silla, río, reloj...",
+          "Léelas en voz alta dos veces, sin prisa",
+          "Tapa la hoja y espera un minuto mirando por la ventana",
+          "Escribe todas las que recuerdes y luego compara",
+        ],
+        tip: "No importa cuántas recuerdes hoy. Lo que ayuda es repetirlo cada día.",
+      },
+      {
+        patientId,
+        name: "Cuentas del día",
+        level: "Fácil",
+        emoji: "🧮",
+        durationLabel: "5 min",
+        description: "Cálculo mental con cosas de casa",
+        steps: [
+          "Piensa en el precio de tres cosas que compras seguido",
+          "Súmalas de cabeza, sin papel",
+          "Ahora calcula cuánto sería si compraras dos de cada una",
+          "Resta ese total de 100",
+          "Comprueba el resultado con una calculadora",
+        ],
+        tip: "Si te cuesta, usa números más pequeños. La idea es pensar, no acertar.",
+      },
+      {
+        patientId,
+        name: "Nombra categorías",
+        level: "Reto",
+        emoji: "🗂️",
+        durationLabel: "6 min",
+        description: "Fluidez: cuántos nombres se te ocurren",
+        steps: [
+          "Elige una categoría: frutas, animales, ciudades, oficios",
+          "Di en voz alta todos los que se te ocurran, sin parar",
+          "Cuenta cuántos dijiste antes de quedarte en blanco",
+          "Cambia de categoría y repite",
+          "Anota tu mejor número para compararlo mañana",
+        ],
+        tip: "Decirlos en voz alta ayuda más que pensarlos en silencio.",
+      },
+      {
+        patientId,
+        name: "Recuerdos guiados",
+        level: "Fácil",
+        emoji: "📔",
+        durationLabel: "8 min",
+        description: "Traer a la memoria momentos vividos",
+        steps: [
+          "Elige una época: tu juventud, tu primer trabajo, tu barrio",
+          "Recuerda un día concreto de esa época",
+          "Piensa en los detalles: quién estaba, qué olía, qué sonaba",
+          "Cuéntaselo a alguien, o dilo en voz alta",
+          "Termina nombrando tres cosas buenas de ese recuerdo",
+        ],
+        tip: "Compartirlo con un familiar hace el ejercicio mucho más valioso.",
+      },
+      {
+        patientId,
+        name: "Cuenta hacia atrás",
+        level: "Reto",
+        emoji: "🔢",
+        durationLabel: "4 min",
+        description: "Atención sostenida con números",
+        steps: [
+          "Siéntate cómodo y respira hondo dos veces",
+          "Cuenta desde 100 hacia atrás de 3 en 3: 100, 97, 94...",
+          "Si te pierdes, vuelve al último número seguro y sigue",
+          "Llega hasta donde puedas sin apurarte",
+          "Descansa un minuto y hazlo una segunda vez",
+        ],
+        tip: "Perderse es parte del ejercicio. Retomar es lo que entrena la atención.",
+      },
+    ]);
+    console.log("✅ Mente activa sembrada");
+  } else {
+    console.log("⏭ Este paciente ya tiene actividades de Mente Activa");
+  }
+
+  // Menú
+  const existingMeals = await db
+    .select()
+    .from(meals)
+    .where(eq(meals.patientId, patientId))
+    .limit(1);
+
+  if (existingMeals.length === 0) {
+    await db.insert(meals).values([
+      {
+        patientId,
+        slug: "desayuno",
+        name: "Desayuno",
+        article: "el desayuno",
+        time: "7:00 – 8:00",
+        emoji: "🥐",
+        accent: "yellow",
+        items: ["Avena con fruta", "Té o leche", "Pan integral"],
+      },
+      {
+        patientId,
+        slug: "almuerzo",
+        name: "Almuerzo",
+        article: "el almuerzo",
+        time: "12:00 – 13:00",
+        emoji: "🍲",
+        accent: "orange",
+        items: ["Sopa de verduras", "Pollo al vapor", "Ensalada verde", "Arroz integral"],
+      },
+      {
+        patientId,
+        slug: "cena",
+        name: "Cena",
+        article: "la cena",
+        time: "18:00 – 19:00",
+        emoji: "🥗",
+        accent: "green",
+        items: ["Ensalada con atún", "Pan integral", "Fruta de temporada"],
+      },
+    ]);
+    console.log("✅ Menú sembrado");
+  } else {
+    console.log("⏭ Este paciente ya tiene menú");
   }
 
   console.log("🌱 Listo.");

@@ -1,11 +1,20 @@
 import { Lightbulb } from "lucide-react";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { exercises } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import ExerciseList from "./ExerciseList";
+import type { Level } from "./data";
 import { SECTIONS } from "@/lib/theme";
 
 const SECTION = SECTIONS.find((s) => s.href === "/ejercicios")!;
 
-export default function EjerciciosPage() {
+export default async function EjerciciosPage() {
+  // middleware.ts ya garantiza que hay sesión antes de llegar aquí.
+  const patientId = (await obtenerPacienteId())!;
+  const catalogo = await db.select().from(exercises).where(eq(exercises.patientId, patientId));
+
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
@@ -39,7 +48,7 @@ export default function EjerciciosPage() {
           </p>
         </div>
 
-        <ExerciseList />
+        <ExerciseList exercises={catalogo.map((e) => ({ ...e, level: e.level as Level }))} />
       </main>
     </div>
   );

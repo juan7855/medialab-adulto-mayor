@@ -1,32 +1,47 @@
 import { notFound } from "next/navigation";
+import { and, eq } from "drizzle-orm";
 import { Clock, Lightbulb, ListChecks } from "lucide-react";
+import { db } from "@/db";
+import { cognitiveActivities } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
-import { ACTIVITIES, LEVEL_ACCENT } from "../data";
+import { LEVEL_ACCENT, COGNITIVE_ICONS, COGNITIVE_ICON_FALLBACK } from "../data";
 import { ACCENTS } from "@/lib/theme";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-export async function generateStaticParams() {
-  return ACTIVITIES.map((activity) => ({ id: activity.id }));
-}
+// El catálogo es propio de cada paciente: ya no hay un conjunto fijo de
+// rutas que generar en el build, se resuelve por sesión en cada visita.
+export const dynamic = "force-dynamic";
 
 export default async function CognitiveDetailPage({ params }: Props) {
   const { id } = await params;
-  const activity = ACTIVITIES.find((a) => a.id === id);
+  const patientId = (await obtenerPacienteId())!;
+
+  const numericId = Number(id);
+  if (!Number.isInteger(numericId)) return notFound();
+
+  const [activity] = await db
+    .select()
+    .from(cognitiveActivities)
+    .where(and(eq(cognitiveActivities.id, numericId), eq(cognitiveActivities.patientId, patientId)))
+    .limit(1);
+
   if (!activity) return notFound();
 
-  const accent = LEVEL_ACCENT[activity.level];
+  const accent = LEVEL_ACCENT[activity.level as "Fácil" | "Reto"];
   const tone = ACCENTS[accent];
+  const Icon = COGNITIVE_ICONS[activity.emoji] ?? COGNITIVE_ICON_FALLBACK;
 
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
         title={activity.name}
         subtitle={activity.description}
-        icon={activity.icon}
+        icon={Icon}
         accent={accent}
         backHref="/cognitivo"
         backLabel="Mente activa"
@@ -39,7 +54,7 @@ export default async function CognitiveDetailPage({ params }: Props) {
           </span>
           <span className="pill">
             <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
-            {activity.duration}
+            {activity.durationLabel}
           </span>
         </div>
 

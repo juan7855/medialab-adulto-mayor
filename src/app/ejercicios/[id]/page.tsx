@@ -1,33 +1,48 @@
 import { notFound } from "next/navigation";
+import { and, eq } from "drizzle-orm";
 import { Clock, ListChecks, TriangleAlert } from "lucide-react";
+import { db } from "@/db";
+import { exercises } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
 import ActivityTimer from "@/components/ActivityTimer";
-import { EXERCISES, LEVEL_ACCENT } from "../data";
+import { LEVEL_ACCENT, EXERCISE_ICONS, EXERCISE_ICON_FALLBACK, formatDuration } from "../data";
 import { ACCENTS } from "@/lib/theme";
 
 interface Props {
   params: Promise<{ id: string }>;
 }
 
-export async function generateStaticParams() {
-  return EXERCISES.map((ex) => ({ id: ex.id }));
-}
+// El catálogo es propio de cada paciente: ya no hay un conjunto fijo de
+// rutas que generar en el build, se resuelve por sesión en cada visita.
+export const dynamic = "force-dynamic";
 
 export default async function ExerciseDetailPage({ params }: Props) {
   const { id } = await params;
-  const exercise = EXERCISES.find((e) => e.id === id);
+  const patientId = (await obtenerPacienteId())!;
+
+  const numericId = Number(id);
+  if (!Number.isInteger(numericId)) return notFound();
+
+  const [exercise] = await db
+    .select()
+    .from(exercises)
+    .where(and(eq(exercises.id, numericId), eq(exercises.patientId, patientId)))
+    .limit(1);
+
   if (!exercise) return notFound();
 
-  const accent = LEVEL_ACCENT[exercise.level];
+  const accent = LEVEL_ACCENT[exercise.level as "Ligero" | "Moderado"];
   const tone = ACCENTS[accent];
+  const Icon = EXERCISE_ICONS[exercise.emoji] ?? EXERCISE_ICON_FALLBACK;
 
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
         title={exercise.name}
         subtitle={exercise.description}
-        icon={exercise.icon}
+        icon={Icon}
         accent={accent}
         backHref="/ejercicios"
         backLabel="Ejercicios"
@@ -41,7 +56,7 @@ export default async function ExerciseDetailPage({ params }: Props) {
           </span>
           <span className="pill">
             <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
-            {exercise.duration}
+            {formatDuration(exercise.durationSeconds)}
           </span>
         </div>
 
@@ -50,7 +65,7 @@ export default async function ExerciseDetailPage({ params }: Props) {
           <ActivityTimer
             totalSeconds={exercise.durationSeconds}
             exerciseName={exercise.name}
-            exerciseId={exercise.id}
+            exerciseId={String(exercise.id)}
             accent={accent}
           />
         </section>

@@ -10,6 +10,10 @@ import {
   Wheat,
   type LucideIcon,
 } from "lucide-react";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { meals as mealsTable } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
 import IconTile from "@/components/IconTile";
@@ -39,7 +43,14 @@ const TIPS = [
   "Come pescado 2 veces por semana.",
 ];
 
-export default function NutricionPage() {
+export default async function NutricionPage() {
+  const patientId = (await obtenerPacienteId())!;
+  const menu = await db
+    .select()
+    .from(mealsTable)
+    .where(eq(mealsTable.patientId, patientId))
+    .orderBy(mealsTable.id);
+
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
@@ -68,7 +79,7 @@ export default function NutricionPage() {
             Menú de hoy
           </SectionTitle>
           <div className="mt-3">
-            <MealList />
+            <MealList meals={menu.map((m) => ({ ...m, accent: m.accent as AccentName }))} />
           </div>
         </section>
 

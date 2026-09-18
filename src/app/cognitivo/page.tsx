@@ -1,11 +1,22 @@
 import { Lightbulb } from "lucide-react";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";
+import { cognitiveActivities } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import CognitiveList from "./CognitiveList";
+import type { Level } from "./data";
 import { SECTIONS } from "@/lib/theme";
 
 const SECTION = SECTIONS.find((s) => s.href === "/cognitivo")!;
 
-export default function CognitivoPage() {
+export default async function CognitivoPage() {
+  const patientId = (await obtenerPacienteId())!;
+  const catalogo = await db
+    .select()
+    .from(cognitiveActivities)
+    .where(eq(cognitiveActivities.patientId, patientId));
+
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
@@ -39,7 +50,7 @@ export default function CognitivoPage() {
           </p>
         </div>
 
-        <CognitiveList />
+        <CognitiveList activities={catalogo.map((a) => ({ ...a, level: a.level as Level }))} />
       </main>
     </div>
   );

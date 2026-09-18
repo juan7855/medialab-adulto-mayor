@@ -4,12 +4,19 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronRight, Clock } from "lucide-react";
 import IconTile from "@/components/IconTile";
-import { ACTIVITIES, LEVELS, LEVEL_ACCENT, type Level } from "./data";
+import {
+  LEVELS,
+  LEVEL_ACCENT,
+  COGNITIVE_ICONS,
+  COGNITIVE_ICON_FALLBACK,
+  type CognitiveActivity,
+  type Level,
+} from "./data";
 
-export default function CognitiveList() {
+export default function CognitiveList({ activities }: { activities: CognitiveActivity[] }) {
   const [level, setLevel] = useState<Level>("Fácil");
 
-  const visible = ACTIVITIES.filter((a) => a.level === level);
+  const visible = activities.filter((a) => a.level === level);
 
   return (
     <>
@@ -41,49 +48,57 @@ export default function CognitiveList() {
         })}
       </div>
 
-      <ul
-        className="flex flex-col gap-3 mt-4 list-none p-0 m-0"
-        aria-label={`Ejercicios de dificultad ${level}`}
-      >
-        {visible.map((activity, i) => (
-          <li key={activity.id} className="animate-rise" style={{ animationDelay: `${i * 45}ms` }}>
-            <Link
-              href={`/cognitivo/${activity.id}`}
-              className="card pressable flex items-center gap-3.5 p-3.5"
-              style={{ textDecoration: "none", color: "inherit" }}
-              aria-label={`${activity.name}. ${activity.description}. Duración ${activity.duration}`}
-            >
-              <IconTile
-                icon={activity.icon}
-                accent={LEVEL_ACCENT[activity.level]}
-                size={66}
-                strokeWidth={1.9}
-              />
+      {visible.length === 0 ? (
+        <div className="card p-6 text-center mt-4">
+          <p style={{ fontSize: "var(--t-sm)", fontWeight: 700 }}>
+            Todavía no hay actividades de este nivel.
+          </p>
+        </div>
+      ) : (
+        <ul
+          className="flex flex-col gap-3 mt-4 list-none p-0 m-0"
+          aria-label={`Actividades de dificultad ${level}`}
+        >
+          {visible.map((activity, i) => (
+            <li key={activity.id} className="animate-rise" style={{ animationDelay: `${i * 45}ms` }}>
+              <Link
+                href={`/cognitivo/${activity.id}`}
+                className="card pressable flex items-center gap-3.5 p-3.5"
+                style={{ textDecoration: "none", color: "inherit" }}
+                aria-label={`${activity.name}. ${activity.description}. Duración ${activity.durationLabel}`}
+              >
+                <IconTile
+                  icon={COGNITIVE_ICONS[activity.emoji] ?? COGNITIVE_ICON_FALLBACK}
+                  accent={LEVEL_ACCENT[activity.level]}
+                  size={66}
+                  strokeWidth={1.9}
+                />
 
-              <span className="flex-1 min-w-0">
-                <span
-                  className="block"
-                  style={{ fontSize: "var(--t-md)", fontWeight: 800, lineHeight: 1.2 }}
-                >
-                  {activity.name}
+                <span className="flex-1 min-w-0">
+                  <span
+                    className="block"
+                    style={{ fontSize: "var(--t-md)", fontWeight: 800, lineHeight: 1.2 }}
+                  >
+                    {activity.name}
+                  </span>
+                  <span
+                    className="block mt-1"
+                    style={{ fontSize: "var(--t-xs)", fontWeight: 500, color: "var(--ink-mute)" }}
+                  >
+                    {activity.description}
+                  </span>
+                  <span className="pill mt-2">
+                    <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
+                    {activity.durationLabel}
+                  </span>
                 </span>
-                <span
-                  className="block mt-1"
-                  style={{ fontSize: "var(--t-xs)", fontWeight: 500, color: "var(--ink-mute)" }}
-                >
-                  {activity.description}
-                </span>
-                <span className="pill mt-2">
-                  <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
-                  {activity.duration}
-                </span>
-              </span>
 
-              <ChevronRight size={26} strokeWidth={2.3} color="var(--ink-mute)" aria-hidden="true" />
-            </Link>
-          </li>
-        ))}
-      </ul>
+                <ChevronRight size={26} strokeWidth={2.3} color="var(--ink-mute)" aria-hidden="true" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }

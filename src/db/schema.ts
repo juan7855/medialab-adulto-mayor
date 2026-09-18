@@ -59,13 +59,14 @@ export const waterLogs = pgTable("water_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Meal intake log.
-// Las comidas del día (desayuno, almuerzo, cena) son contenido fijo definido
-// en la app, no filas de la base; aquí sólo se guarda cuál se marcó y cuándo.
+// Meal intake log. meals ahora es una tabla propia (ver más abajo, junto al
+// resto del contenido personalizado); esto sólo guarda cuál se marcó y cuándo.
 export const mealLogs = pgTable("meal_logs", {
   id: serial("id").primaryKey(),
   patientId: integer("patient_id").notNull().references(() => patients.id),
-  mealId: text("meal_id").notNull(),
+  mealId: integer("meal_id")
+    .notNull()
+    .references(() => meals.id),
   date: date("date").notNull(),
   eaten: boolean("eaten").notNull().default(false),
   eatenAt: timestamp("eaten_at"),
@@ -115,5 +116,79 @@ export const exerciseLogs = pgTable("exercise_logs", {
   date: date("date").notNull(),
   durationSeconds: integer("duration_seconds"),
   completed: boolean("completed").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// Historia clínica y contenido personalizado.
+//
+// Hasta aquí, patients sólo guardaba identidad (nombre y clave). Lo de abajo
+// es lo que permite que la app se organice según lo que esa persona
+// necesita: condiciones y restricciones por un lado, y un catálogo propio de
+// ejercicios / comida / actividades mentales por otro — en vez del mismo
+// contenido fijo para todos los pacientes, que es como empezó esta app.
+// ---------------------------------------------------------------------------
+
+// Perfil clínico, uno por paciente. Nadie en esta app lo edita todavía (eso
+// es trabajo de la interfaz del cuidador); existe para que esa interfaz
+// tenga dónde escribir, y en el futuro el catálogo de abajo pueda filtrarse
+// o sugerirse según esto.
+export const clinicalProfiles = pgTable("clinical_profiles", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull().unique().references(() => patients.id),
+  conditions: text("conditions").array(), // ["diabetes tipo 2", "artritis en rodillas"]
+  dietRestrictions: text("diet_restrictions").array(), // ["bajo en sodio", "sin azúcar"]
+  allergies: text("allergies").array(),
+  mobilityNotes: text("mobility_notes"), // libre: "usa bastón", "evitar ejercicios de pie"
+  doctorName: text("doctor_name"),
+  doctorPhone: text("doctor_phone"),
+  notes: text("notes"), // libre, para lo que no encaje arriba
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Catálogo de ejercicios de ESTE paciente (antes era un array fijo en
+// código, igual para todos). El emoji es la clave que el cliente traduce a
+// un icono de línea — mismo patrón que routineActivities.emoji.
+export const exercises = pgTable("exercises", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull().references(() => patients.id),
+  name: text("name").notNull(),
+  level: text("level").notNull(), // "Ligero" | "Moderado"
+  emoji: text("emoji").notNull(),
+  durationSeconds: integer("duration_seconds").notNull(),
+  description: text("description").notNull(),
+  steps: text("steps").array().notNull(),
+  tip: text("tip").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Catálogo de actividades de Mente Activa de este paciente. Sin
+// durationSeconds real: esta sección no lleva cronómetro.
+export const cognitiveActivities = pgTable("cognitive_activities", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull().references(() => patients.id),
+  name: text("name").notNull(),
+  level: text("level").notNull(), // "Fácil" | "Reto"
+  emoji: text("emoji").notNull(),
+  durationLabel: text("duration_label").notNull(), // "5 min", sólo texto
+  description: text("description").notNull(),
+  steps: text("steps").array().notNull(),
+  tip: text("tip").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Menú de este paciente: desayuno/almuerzo/cena con su propio contenido.
+// slug identifica el tipo de comida de forma estable dentro del paciente
+// (útil si en el futuro se agregan meriendas u otras franjas).
+export const meals = pgTable("meals", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull().references(() => patients.id),
+  slug: text("slug").notNull(), // "desayuno" | "almuerzo" | "cena"
+  name: text("name").notNull(),
+  article: text("article").notNull(), // "el desayuno" — para preguntas tipo "¿ya tomaste X?"
+  time: text("time").notNull(),
+  emoji: text("emoji").notNull(),
+  accent: text("accent").notNull(), // color de la tarjeta: ver src/lib/theme.ts
+  items: text("items").array().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
