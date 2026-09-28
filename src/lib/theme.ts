@@ -89,6 +89,14 @@ export const RUTINA: Section = {
   accent: "purple",
 };
 
+export const COMUNIDAD: Section = {
+  href: "/comunidad",
+  label: "Comunidad",
+  description: "Foro y mensajes con otros",
+  icon: "/iconos/comunidad.svg",
+  accent: "yellow",
+};
+
 export const EMERGENCIA: Section = {
   href: "/emergencia",
   label: "Emergencia",

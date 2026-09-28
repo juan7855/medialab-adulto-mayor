@@ -1,10 +1,14 @@
 import Link from "next/link";
+import { eq } from "drizzle-orm";
 import { ChevronRight, HeartPulse } from "lucide-react";
+import { db } from "@/db";
+import { patients } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 import TarjetaAsistente from "@/components/TarjetaAsistente";
 import CerrarSesion from "@/components/CerrarSesion";
 import Greeting from "@/components/Greeting";
 import SectionIcon from "@/components/SectionIcon";
-import { EMERGENCIA, RUTINA, SECTIONS, type Section } from "@/lib/theme";
+import { COMUNIDAD, EMERGENCIA, RUTINA, SECTIONS, type Section } from "@/lib/theme";
 
 /**
  * Una sola fila para todas las secciones.
@@ -49,7 +53,15 @@ function SectionRow({ section, tinted = false }: { section: Section; tinted?: bo
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  // middleware.ts ya garantiza que hay sesión antes de llegar aquí.
+  const patientId = (await obtenerPacienteId())!;
+  const [patient] = await db
+    .select({ name: patients.name })
+    .from(patients)
+    .where(eq(patients.id, patientId));
+  const primerNombre = patient?.name.split(" ")[0] ?? "";
+
   return (
     <main className="min-h-screen flex flex-col px-4 pb-8" role="main">
       {/* Marca */}
@@ -67,7 +79,7 @@ export default function HomePage() {
         </span>
       </div>
 
-      <Greeting />
+      <Greeting name={primerNombre} />
 
       <div className="mt-5">
         <TarjetaAsistente />
@@ -85,6 +97,7 @@ export default function HomePage() {
         ))}
 
         <SectionRow section={RUTINA} />
+        <SectionRow section={COMUNIDAD} />
         <SectionRow section={EMERGENCIA} tinted />
       </nav>
 
