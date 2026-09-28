@@ -1,6 +1,10 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { useIsClient } from "@/lib/today";
+import { hablar } from "@/lib/voz";
+import { asistentePorId } from "@/lib/asistentes";
+import { leerAsistente } from "@/lib/sesion";
 
 function greetingFor(hour: number): string {
   if (hour < 12) return "Buenos días";
@@ -18,18 +22,29 @@ function formatToday(date: Date): string {
 }
 
 /**
- * Saludo y fecha. Se resuelve en el navegador: la página es estática, así que
- * calcularlo en el servidor lo dejaría congelado en la fecha del build.
+ * Saludo y fecha. La hora se resuelve en el navegador: la página es
+ * estática, así que calcularla en el servidor la dejaría congelada en la
+ * fecha del build. El nombre, en cambio, ya viene resuelto del servidor (a
+ * partir de la sesión), así que se pinta siempre, sin esperar a hidratar.
  */
-export default function Greeting() {
+export default function Greeting({ name }: { name: string }) {
   const isClient = useIsClient();
   const now = isClient ? new Date() : null;
+  const yaHablo = useRef(false);
+
+  useEffect(() => {
+    if (!isClient || !name || yaHablo.current) return;
+    yaHablo.current = true;
+    const asistente = asistentePorId(leerAsistente());
+    hablar(`${greetingFor(new Date().getHours())}, ${name}. ¿Cómo has estado?`, asistente?.voz);
+  }, [isClient, name]);
 
   return (
     <div className="px-1">
       {/* El espacio duro reserva la altura y evita que el bloque salte al hidratar */}
       <h1 style={{ fontSize: "var(--t-2xl)", fontWeight: 800, lineHeight: 1.08 }}>
         {now ? greetingFor(now.getHours()) : " "}
+        {name && `, ${name}`}
       </h1>
       <p
         className="mt-2"

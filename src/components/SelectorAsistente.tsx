@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { rem } from "@/lib/scale";
 import { ASISTENTES } from "@/lib/asistentes";
 import { guardarAsistente } from "@/lib/sesion";
+import { hablar } from "@/lib/voz";
 
 /**
  * Uno encima del otro, a lo ancho.
@@ -18,6 +19,10 @@ export default function SelectorAsistente() {
 
   const elegir = (id: string) => {
     guardarAsistente(id);
+    const asistente = ASISTENTES.find((a) => a.id === id);
+    if (asistente) {
+      hablar(`Hola, soy ${asistente.nombre}. A partir de hoy te acompaño.`, asistente.voz);
+    }
     router.push("/animo");
   };
 

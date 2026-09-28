@@ -12,6 +12,8 @@ export interface Asistente {
   /** Color de la tarjeta cuando está elegido. */
   tinte: string;
   borde: string;
+  /** Qué tipo de voz del navegador se prefiere al hablar como este asistente. */
+  voz: "masculina" | "femenina";
 }
 
 export const ASISTENTES: Asistente[] = [
@@ -22,6 +24,7 @@ export const ASISTENTES: Asistente[] = [
     imagen: "/personajes/carlos.png",
     tinte: "var(--green-tint)",
     borde: "var(--green-line)",
+    voz: "masculina",
   },
   {
     id: "lucia",
@@ -30,6 +33,7 @@ export const ASISTENTES: Asistente[] = [
     imagen: "/personajes/lucia.png",
     tinte: "var(--purple-tint)",
     borde: "var(--purple-line)",
+    voz: "femenina",
   },
 ];
 

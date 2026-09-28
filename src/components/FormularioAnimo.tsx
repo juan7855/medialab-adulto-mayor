@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check } from "lucide-react";
+import { Check, Mic, Square } from "lucide-react";
 import { rem } from "@/lib/scale";
 import { todayISO } from "@/lib/today";
+import { asistentePorId } from "@/lib/asistentes";
+import { leerAsistente } from "@/lib/sesion";
+import { hablar } from "@/lib/voz";
+import { useReconocimientoVoz } from "@/lib/reconocimiento";
+import { responderA } from "@/lib/conversacion";
 
 const LARGO_MAXIMO = 500;
 
@@ -13,6 +18,27 @@ export default function FormularioAnimo() {
   const [texto, setTexto] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [respuesta, setRespuesta] = useState<string | null>(null);
+  const yaHablo = useRef(false);
+  const { escuchando, error: errorVoz, iniciar, detener, disponible: vozDisponible } = useReconocimientoVoz();
+
+  useEffect(() => {
+    if (yaHablo.current) return;
+    yaHablo.current = true;
+    const asistente = asistentePorId(leerAsistente());
+    hablar("¿Cómo te encuentras hoy?", asistente?.voz);
+  }, []);
+
+  const escucharYResponder = () => {
+    setRespuesta(null);
+    iniciar((dicho) => {
+      setTexto((prev) => (prev ? `${prev} ${dicho}` : dicho));
+      const asistente = asistentePorId(leerAsistente());
+      const reply = responderA(dicho);
+      setRespuesta(reply);
+      hablar(reply, asistente?.voz);
+    });
+  };
 
   const terminar = async () => {
     setGuardando(true);
@@ -59,17 +85,40 @@ export default function FormularioAnimo() {
         }}
       />
 
+      {vozDisponible && (
+        <button
+          type="button"
+          onClick={escuchando ? detener : escucharYResponder}
+          className="chip-btn mt-2"
+          style={{ alignSelf: "flex-start" }}
+          aria-label={escuchando ? "Dejar de escuchar" : "Contar cómo te sientes hablando"}
+        >
+          {escuchando ? (
+            <Square size={17} strokeWidth={2.2} aria-hidden="true" />
+          ) : (
+            <Mic size={17} strokeWidth={2.2} aria-hidden="true" />
+          )}
+          {escuchando ? "Escuchando..." : "Hablar en vez de escribir"}
+        </button>
+      )}
+
+      {respuesta && (
+        <p className="mt-2 px-1" style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
+          {respuesta}
+        </p>
+      )}
+
       <p
         className="mt-2 px-1"
         style={{
           fontSize: "var(--t-xs)",
           fontWeight: 600,
-          color: error ? "var(--red-solid)" : "var(--ink-mute)",
+          color: error || errorVoz ? "var(--red-solid)" : "var(--ink-mute)",
           minHeight: "2.6rem",
         }}
-        role={error ? "alert" : undefined}
+        role={error || errorVoz ? "alert" : undefined}
       >
-        {error ?? "Escribe lo que quieras. Nadie te corrige."}
+        {error ?? errorVoz ?? "Escribe lo que quieras. Nadie te corrige."}
       </p>
 
       <button
