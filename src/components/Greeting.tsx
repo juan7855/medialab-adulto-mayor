@@ -3,8 +3,6 @@
 import { useEffect, useRef } from "react";
 import { useIsClient } from "@/lib/today";
 import { hablar } from "@/lib/voz";
-import { asistentePorId } from "@/lib/asistentes";
-import { leerAsistente } from "@/lib/sesion";
 
 function greetingFor(hour: number): string {
   if (hour < 12) return "Buenos días";
@@ -35,8 +33,7 @@ export default function Greeting({ name }: { name: string }) {
   useEffect(() => {
     if (!isClient || !name || yaHablo.current) return;
     yaHablo.current = true;
-    const asistente = asistentePorId(leerAsistente());
-    hablar(`${greetingFor(new Date().getHours())}, ${name}. ¿Cómo has estado?`, asistente?.voz);
+    hablar(`${greetingFor(new Date().getHours())}, ${name}. ¿Cómo has estado?`);
   }, [isClient, name]);
 
   return (

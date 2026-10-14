@@ -38,8 +38,8 @@ export default function Toast({
       className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 animate-slide-in"
       style={{
         transform: "translateX(-50%)",
-        backgroundColor: "#23231B",
-        color: "#FAF8F5",
+        backgroundColor: "#303F49",
+        color: "#FBF9F3",
         borderRadius: "var(--r-md)",
         boxShadow: "var(--shadow-lg)",
         padding: "0.85rem 1.2rem",

@@ -1,25 +1,13 @@
-"use client";
-
 import { rem } from "@/lib/scale";
-import { asistentePorId } from "@/lib/asistentes";
-import { leerAsistente } from "@/lib/sesion";
-import { useIsClient } from "@/lib/today";
+import { ASISTENTE as asistente } from "@/lib/asistentes";
 
 interface Props {
   /** Alto de la ilustración, en px sobre la base de 22. */
   size?: number;
 }
 
-/**
- * La ilustración del asistente elegido. Se lee del navegador, así que sólo
- * aparece tras hidratar; si no hay ninguno elegido, no se pinta nada.
- */
+/** La ilustración de Panela. */
 export default function AsistenteActivo({ size = 150 }: Props) {
-  const isClient = useIsClient();
-  const asistente = isClient ? asistentePorId(leerAsistente()) : null;
-
-  if (!asistente) return null;
-
   return (
     <span
       className="flex items-end justify-center"

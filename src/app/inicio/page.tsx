@@ -1,6 +1,8 @@
+import { ASISTENTE } from "@/lib/asistentes";
+import { rem } from "@/lib/scale";
 import Link from "next/link";
 import { eq } from "drizzle-orm";
-import { ChevronRight, HeartPulse } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { db } from "@/db";
 import { patients } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
@@ -66,16 +68,10 @@ export default async function HomePage() {
     <main className="min-h-screen flex flex-col px-4 pb-8" role="main">
       {/* Marca */}
       <div className="flex items-center gap-2 pt-6 pb-6 px-1">
-        <HeartPulse size={22} strokeWidth={2.2} color="var(--ink)" aria-hidden="true" />
-        <span
-          style={{
-            fontSize: "var(--t-xs)",
-            fontWeight: 800,
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-          }}
-        >
-          MiSalud
+        {/* eslint-disable-next-line @next/next/no-img-element -- ilustración local */}
+        <img src={ASISTENTE.imagen} alt="" style={{ height: rem(34), width: "auto" }} />
+        <span style={{ fontSize: "var(--t-md)", fontWeight: 800, color: "var(--green-solid)" }}>
+          Panela
         </span>
       </div>
 
@@ -106,7 +102,7 @@ export default async function HomePage() {
         style={{ fontSize: "var(--t-xs)", color: "var(--ink-mute)", fontWeight: 500 }}
         role="contentinfo"
       >
-        MiSalud · Tu salud, día a día
+        Panela · Tu salud, día a día
         <CerrarSesion />
       </footer>
     </main>

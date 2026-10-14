@@ -1,49 +1,50 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   MiSalud — identidad visual
-   Paleta propia del proyecto (Imagenes/Paleta de colores.png).
+   Panela — identidad visual
+   Guía: Imagenes/identidad visual/identidad_visual_panela.pdf
 
-   Criterio de uso del color: el texto va SIEMPRE en tinta casi negra, nunca
-   en un color de acento. Los colores vivos quedan para fichas de icono,
-   bordes, tintes y barras — "detalles", como los definió el diseño. Los
-   botones de acción usan el navy de CTA, el único color de la paleta con
-   contraste suficiente para texto blanco encima.
+   Fórmula: fondo marfil + verde protagonista + turquesa y naranja como
+   acentos + tipografía redondeada + tarjetas suaves + mascota ilustrada.
+   El verde marca la acción principal; el coral queda reservado para
+   emergencias. El texto va SIEMPRE en tinta oscura, nunca en un acento.
+   Profundidad discreta: cambios de superficie y bordes finos, no sombras.
 
    Tipografía deliberadamente grande: los usuarios tienen más de 65 años.
 --------------------------------------------------------------------------- */
 
 :root {
   /* --- Superficies ------------------------------------------------------ */
-  --bg: #FFFFE1;          /* fondo principal */
+  --bg: #F5F1E6;          /* marfil: fondo global */
   --surface: #FFFFFF;     /* tarjetas y contenedores */
-  --surface-soft: #FAF8F5;/* zonas secundarias dentro de una tarjeta */
-  --surface-cool: #B4C7E3;/* azul suave, para bloques destacados */
+  --surface-soft: #FBF9F3;/* zonas secundarias dentro de una tarjeta */
+  --beige: #E9DFC9;       /* bloques destacados y superficies secundarias */
+  --surface-cool: #DDEFF2;/* turquesa suave, para bloques destacados */
 
   /* --- Texto ------------------------------------------------------------ */
-  --ink: #23231B;
-  --ink-soft: #4D4C3E;
-  --ink-mute: #6F6D5A;
+  --ink: #303F49;
+  --ink-soft: #46545E;
+  --ink-mute: #5F6A66;
 
   /* --- Líneas ----------------------------------------------------------- */
-  --line: #EAE5C2;
-  --line-strong: #D8D2A4;
+  --line: #E9DFC9;
+  --line-strong: #D6CBB0;
 
   /* --- Acentos ---------------------------------------------------------- */
   /* Cada acento: `solid` (color vivo de la paleta), `tint` (lavado claro
      para fondos) y `line` (borde). Ninguno se usa para texto. */
-  --green-solid: #7ECF6D;  --green-tint: #E9F6E4;  --green-line: #BFE6B4;
-  --green-deep: #4E8752;
-  --orange-solid: #E77A44; --orange-tint: #FBE7DA;  --orange-line: #F2C4A6;
-  --cyan-solid: #70CAE6;   --cyan-tint: #E2F4FA;    --cyan-line: #B4E2F1;
-  --blue-solid: #4186F6;   --blue-tint: #E0EAFD;    --blue-line: #B3CDFA;
-  --purple-solid: #C162CE; --purple-tint: #F5E4F7;  --purple-line: #E4B8EA;
-  --red-solid: #D64F51;    --red-tint: #FBE3E3;     --red-line: #F0BBBC;
-  --yellow-solid: #F5E74E; --yellow-tint: #FDF9D6;  --yellow-line: #EFE192;
+  --green-solid: #31836F;  --green-tint: #E1EFEA;  --green-line: #B5D5CB;
+  --green-deep: #31836F;
+  --orange-solid: #D58C56; --orange-tint: #F8EADF;  --orange-line: #EBCDB3;
+  --cyan-solid: #329CAF;   --cyan-tint: #DDEFF2;    --cyan-line: #A9D5DD;
+  --blue-solid: #4B7F9A;   --blue-tint: #E1ECF1;    --blue-line: #B3CBD8;
+  --purple-solid: #8FA39B; --purple-tint: #ECEFEE;  --purple-line: #D0D8D4;
+  --red-solid: #B85F59;    --red-tint: #F6E4E2;     --red-line: #E3BDB9;
+  --yellow-solid: #E9DFC9; --yellow-tint: #F6F0E1;  --yellow-line: #DDD0B2;
 
   /* --- Llamadas a la acción -------------------------------------------- */
-  --cta: #1E3A8A;          /* navy: texto blanco encima, contraste ~10:1 */
-  --cta-hi: #F5E74E;       /* amarillo: sólo con texto oscuro encima */
+  --cta: #31836F;          /* verde: texto blanco encima */
+  --cta-hi: #D58C56;       /* naranja: acento secundario */
 
   /* --- Escala tipográfica ---------------------------------------------- */
   --t-xs: 0.82rem;   /* 18px */
@@ -57,13 +58,14 @@
   /* --- Radios ----------------------------------------------------------- */
   --r-sm: 0.65rem;
   --r-md: 0.95rem;
-  --r-lg: 1.25rem;
-  --r-xl: 1.6rem;
+  --r-lg: 1rem;     /* tarjetas: 16–24px */
+  --r-xl: 1.25rem;
+  --r-pill: 999px;  /* botones tipo píldora */
 
-  /* --- Sombras: cálidas, nunca grises ----------------------------------- */
-  --shadow-sm: 0 1px 2px rgba(60, 52, 20, 0.06);
-  --shadow: 0 1px 2px rgba(60, 52, 20, 0.05), 0 6px 16px rgba(60, 52, 20, 0.07);
-  --shadow-lg: 0 2px 4px rgba(60, 52, 20, 0.06), 0 14px 32px rgba(60, 52, 20, 0.1);
+  /* --- Sombras: muy discretas y cálidas ----------------------------------- */
+  --shadow-sm: 0 1px 2px rgba(80, 64, 30, 0.05);
+  --shadow: 0 1px 2px rgba(80, 64, 30, 0.04), 0 3px 8px rgba(80, 64, 30, 0.04);
+  --shadow-lg: 0 2px 4px rgba(80, 64, 30, 0.05), 0 8px 20px rgba(80, 64, 30, 0.07);
 
   /* Objetivo táctil mínimo */
   --touch: 3.2rem;
@@ -183,7 +185,7 @@ a[role="button"] {
   gap: 0.35rem;
   background: var(--surface);
   border: 1px solid var(--line-strong);
-  border-radius: var(--r-md);
+  border-radius: var(--r-pill);
   box-shadow: var(--shadow-sm);
   padding: 0.5rem 0.85rem;
   font-size: var(--t-sm);
@@ -205,7 +207,7 @@ a[role="button"] {
   gap: 0.5rem;
   min-height: 3.4rem;
   border: none;
-  border-radius: var(--r-md);
+  border-radius: var(--r-pill);
   background: var(--cta);
   color: #fff;
   font-size: var(--t-sm);
@@ -221,7 +223,7 @@ a[role="button"] {
   gap: 0.5rem;
   min-height: 3.4rem;
   border: 1px solid var(--line-strong);
-  border-radius: var(--r-md);
+  border-radius: var(--r-pill);
   background: var(--surface-soft);
   color: var(--ink-soft);
   font-size: var(--t-sm);

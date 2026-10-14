@@ -4,18 +4,15 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
 import { rem } from "@/lib/scale";
-import { asistentePorId } from "@/lib/asistentes";
-import { leerAsistente } from "@/lib/sesion";
-import { useIsClient, useToday } from "@/lib/today";
+import { ASISTENTE as asistente } from "@/lib/asistentes";
+import { useToday } from "@/lib/today";
 
 /**
- * El asistente elegido, acompañando en el inicio, con lo que la persona
+ * Panela, acompañando en el inicio, con lo que la persona
  * escribió hoy sobre cómo se encuentra.
  */
 export default function TarjetaAsistente() {
-  const isClient = useIsClient();
   const date = useToday();
-  const asistente = isClient ? asistentePorId(leerAsistente()) : null;
   const [nota, setNota] = useState<string | null>(null);
 
   const cargarNota = useCallback(async () => {
@@ -37,8 +34,6 @@ export default function TarjetaAsistente() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     void cargarNota();
   }, [cargarNota]);
-
-  if (!asistente) return null;
 
   return (
     <div

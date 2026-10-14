@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 198 198" width="198" height="198" role="img" aria-label="Rutina">
-  <rect width="198" height="198" rx="34" fill="#C162CE"/>
+  <rect width="198" height="198" rx="34" fill="#8FA39B"/>
   <g fill="#FAF8F5">
     <rect x="64" y="30" width="15" height="36" rx="7.5"/>
     <rect x="119" y="30" width="15" height="36" rx="7.5"/>
     <rect x="31" y="46" width="136" height="122" rx="20"/>
   </g>
-  <g fill="#C162CE">
+  <g fill="#8FA39B">
     <rect x="31" y="78" width="136" height="7"/>
     <circle cx="63" cy="110" r="9"/>
     <circle cx="99" cy="110" r="9"/>
@@ -13,6 +13,6 @@
     <circle cx="63" cy="142" r="9"/>
     <circle cx="99" cy="142" r="9"/>
   </g>
-  <circle cx="135" cy="142" r="13" fill="#C162CE"/>
+  <circle cx="135" cy="142" r="13" fill="#8FA39B"/>
   <circle cx="135" cy="142" r="7" fill="#FAF8F5"/>
 </svg>

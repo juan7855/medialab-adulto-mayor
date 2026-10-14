@@ -5,8 +5,6 @@ import { useRouter } from "next/navigation";
 import { Check, Mic, Square } from "lucide-react";
 import { rem } from "@/lib/scale";
 import { todayISO } from "@/lib/today";
-import { asistentePorId } from "@/lib/asistentes";
-import { leerAsistente } from "@/lib/sesion";
 import { hablar } from "@/lib/voz";
 import { useReconocimientoVoz } from "@/lib/reconocimiento";
 import { responderA } from "@/lib/conversacion";
@@ -25,18 +23,16 @@ export default function FormularioAnimo() {
   useEffect(() => {
     if (yaHablo.current) return;
     yaHablo.current = true;
-    const asistente = asistentePorId(leerAsistente());
-    hablar("¿Cómo te encuentras hoy?", asistente?.voz);
+    hablar("¿Cómo te encuentras hoy?");
   }, []);
 
   const escucharYResponder = () => {
     setRespuesta(null);
     iniciar((dicho) => {
       setTexto((prev) => (prev ? `${prev} ${dicho}` : dicho));
-      const asistente = asistentePorId(leerAsistente());
       const reply = responderA(dicho);
       setRespuesta(reply);
-      hablar(reply, asistente?.voz);
+      hablar(reply);
     });
   };
 

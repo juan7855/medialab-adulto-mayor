@@ -34,7 +34,7 @@ export default function TecladoNumerico() {
       });
 
       if (res.ok) {
-        router.push("/asistente");
+        router.push("/animo");
         return; // se deja el teclado deshabilitado mientras navega
       }
 

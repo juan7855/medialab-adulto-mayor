@@ -25,7 +25,7 @@ export interface Accent {
   glyph: string;
 }
 
-const CREAM = "#FAF8F5";
+const CREAM = "#FBF9F3";
 
 export const ACCENTS: Record<AccentName, Accent> = {
   green: { solid: "var(--green-solid)", tint: "var(--green-tint)", line: "var(--green-line)", glyph: CREAM },
