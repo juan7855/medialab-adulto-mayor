@@ -142,7 +142,7 @@ export default function FormularioEncuesta({ nombreInicial }: { nombreInicial: s
         }),
       });
       if (!res.ok) throw new Error();
-      router.push("/animo");
+      router.push("/gracias");
     } catch {
       setError("No se pudo guardar. Intente de nuevo.");
       setEnviando(false);
