@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ChevronRight, Clock } from "lucide-react";
 import IconTile from "@/components/IconTile";
 import {
-  LEVELS,
-  LEVEL_ACCENT,
+  accentDeNivel,
+  nivelesDe,
   EXERCISE_ICONS,
   EXERCISE_ICON_FALLBACK,
   formatDuration,
@@ -15,15 +15,17 @@ import {
 } from "./data";
 
 export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
-  const [level, setLevel] = useState<Level>("Ligero");
+  const niveles = nivelesDe(exercises);
+  const [elegido, setLevel] = useState<Level | null>(null);
+  const level = elegido && niveles.includes(elegido) ? elegido : (niveles[0] ?? "");
 
   const visible = exercises.filter((ex) => ex.level === level);
 
   return (
     <>
       {/* Filtro por intensidad */}
-      <div className="flex gap-2.5" role="tablist" aria-label="Filtrar por intensidad">
-        {LEVELS.map((option) => {
+      <div className="flex flex-wrap gap-2.5" role="tablist" aria-label="Filtrar por intensidad">
+        {niveles.map((option) => {
           const active = option === level;
 
           return (
@@ -71,7 +73,7 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
               >
                 <IconTile
                   icon={EXERCISE_ICONS[ex.emoji] ?? EXERCISE_ICON_FALLBACK}
-                  accent={LEVEL_ACCENT[ex.level]}
+                  accent={accentDeNivel(ex.level)}
                   size={66}
                   strokeWidth={1.9}
                 />

@@ -1,15 +1,34 @@
 import { Armchair, Dumbbell, Footprints, Scale, type LucideIcon } from "lucide-react";
 import type { AccentName } from "@/lib/theme";
 
-export type Level = "Ligero" | "Moderado";
+/** La plataforma del cuidador define sus propios niveles (Suave, Moderada...). */
+export type Level = string;
 
-/** El acento comunica la intensidad: verde suave, ámbar exige algo más. */
-export const LEVEL_ACCENT: Record<Level, AccentName> = {
-  Ligero: "green",
-  Moderado: "orange",
+const LEVEL_ACCENT: Record<string, AccentName> = {
+  descanso: "cyan",
+  suave: "green",
+  ligero: "green",
+  moderada: "orange",
+  moderado: "orange",
+  intensa: "red",
 };
 
-export const LEVELS: Level[] = ["Ligero", "Moderado"];
+/** El acento comunica la intensidad: verde suave, ámbar exige algo más. */
+export function accentDeNivel(level: string): AccentName {
+  return LEVEL_ACCENT[level.toLowerCase()] ?? "green";
+}
+
+const ORDEN = Object.keys(LEVEL_ACCENT);
+
+/** Los niveles que de verdad existen en el catálogo, de menos a más intensos. */
+export function nivelesDe(exercises: { level: string }[]): Level[] {
+  const presentes = [...new Set(exercises.map((e) => e.level))];
+  const rango = (l: string) => {
+    const i = ORDEN.indexOf(l.toLowerCase());
+    return i === -1 ? ORDEN.length : i;
+  };
+  return presentes.sort((a, b) => rango(a) - rango(b));
+}
 
 /**
  * El catálogo de ejercicios ahora vive en la base de datos, propio de cada

@@ -37,6 +37,28 @@ export const ACCENTS: Record<AccentName, Accent> = {
   yellow: { solid: "var(--yellow-solid)", tint: "var(--yellow-tint)", line: "var(--yellow-line)", glyph: "var(--ink)" },
 };
 
+/**
+ * Nombres de color que escribe la plataforma del cuidador (tailwind: emerald,
+ * amber, indigo...) traducidos a los acentos de esta app. Cualquier valor
+ * desconocido cae en verde en vez de romper la pantalla.
+ */
+const ACCENT_ALIASES: Record<string, AccentName> = {
+  emerald: "green",
+  teal: "green",
+  lime: "green",
+  amber: "orange",
+  indigo: "blue",
+  sky: "cyan",
+  violet: "purple",
+  rose: "red",
+};
+
+export function accentOf(value: string | null | undefined): AccentName {
+  const key = (value ?? "").toLowerCase();
+  if (key in ACCENTS) return key as AccentName;
+  return ACCENT_ALIASES[key] ?? "green";
+}
+
 export interface Section {
   href: string;
   label: string;

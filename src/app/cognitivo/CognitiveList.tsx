@@ -5,8 +5,8 @@ import Link from "next/link";
 import { ChevronRight, Clock } from "lucide-react";
 import IconTile from "@/components/IconTile";
 import {
-  LEVELS,
-  LEVEL_ACCENT,
+  accentDeNivel,
+  nivelesDe,
   COGNITIVE_ICONS,
   COGNITIVE_ICON_FALLBACK,
   type CognitiveActivity,
@@ -14,14 +14,16 @@ import {
 } from "./data";
 
 export default function CognitiveList({ activities }: { activities: CognitiveActivity[] }) {
-  const [level, setLevel] = useState<Level>("Fácil");
+  const niveles = nivelesDe(activities);
+  const [elegido, setLevel] = useState<Level | null>(null);
+  const level = elegido && niveles.includes(elegido) ? elegido : (niveles[0] ?? "");
 
   const visible = activities.filter((a) => a.level === level);
 
   return (
     <>
-      <div className="flex gap-2.5" role="tablist" aria-label="Filtrar por dificultad">
-        {LEVELS.map((option) => {
+      <div className="flex flex-wrap gap-2.5" role="tablist" aria-label="Filtrar por dificultad">
+        {niveles.map((option) => {
           const active = option === level;
 
           return (
@@ -69,7 +71,7 @@ export default function CognitiveList({ activities }: { activities: CognitiveAct
               >
                 <IconTile
                   icon={COGNITIVE_ICONS[activity.emoji] ?? COGNITIVE_ICON_FALLBACK}
-                  accent={LEVEL_ACCENT[activity.level]}
+                  accent={accentDeNivel(activity.level)}
                   size={66}
                   strokeWidth={1.9}
                 />

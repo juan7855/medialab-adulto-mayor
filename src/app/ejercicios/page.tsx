@@ -5,7 +5,6 @@ import { exercises } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import ExerciseList from "./ExerciseList";
-import type { Level } from "./data";
 import { SECTIONS } from "@/lib/theme";
 
 const SECTION = SECTIONS.find((s) => s.href === "/ejercicios")!;
@@ -48,7 +47,7 @@ export default async function EjerciciosPage() {
           </p>
         </div>
 
-        <ExerciseList exercises={catalogo.map((e) => ({ ...e, level: e.level as Level }))} />
+        <ExerciseList exercises={catalogo} />
       </main>
     </div>
   );

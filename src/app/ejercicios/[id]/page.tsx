@@ -7,7 +7,7 @@ import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
 import ActivityTimer from "@/components/ActivityTimer";
-import { LEVEL_ACCENT, EXERCISE_ICONS, EXERCISE_ICON_FALLBACK, formatDuration } from "../data";
+import { accentDeNivel, EXERCISE_ICONS, EXERCISE_ICON_FALLBACK, formatDuration } from "../data";
 import { ACCENTS } from "@/lib/theme";
 
 interface Props {
@@ -33,7 +33,7 @@ export default async function ExerciseDetailPage({ params }: Props) {
 
   if (!exercise) return notFound();
 
-  const accent = LEVEL_ACCENT[exercise.level as "Ligero" | "Moderado"];
+  const accent = accentDeNivel(exercise.level);
   const tone = ACCENTS[accent];
   const Icon = EXERCISE_ICONS[exercise.emoji] ?? EXERCISE_ICON_FALLBACK;
 

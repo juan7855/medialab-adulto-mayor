@@ -6,7 +6,7 @@ import { cognitiveActivities } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
-import { LEVEL_ACCENT, COGNITIVE_ICONS, COGNITIVE_ICON_FALLBACK } from "../data";
+import { accentDeNivel, COGNITIVE_ICONS, COGNITIVE_ICON_FALLBACK } from "../data";
 import { ACCENTS } from "@/lib/theme";
 
 interface Props {
@@ -32,7 +32,7 @@ export default async function CognitiveDetailPage({ params }: Props) {
 
   if (!activity) return notFound();
 
-  const accent = LEVEL_ACCENT[activity.level as "Fácil" | "Reto"];
+  const accent = accentDeNivel(activity.level);
   const tone = ACCENTS[accent];
   const Icon = COGNITIVE_ICONS[activity.emoji] ?? COGNITIVE_ICON_FALLBACK;
 

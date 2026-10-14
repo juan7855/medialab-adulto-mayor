@@ -5,7 +5,6 @@ import { cognitiveActivities } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import CognitiveList from "./CognitiveList";
-import type { Level } from "./data";
 import { SECTIONS } from "@/lib/theme";
 
 const SECTION = SECTIONS.find((s) => s.href === "/cognitivo")!;
@@ -50,7 +49,7 @@ export default async function CognitivoPage() {
           </p>
         </div>
 
-        <CognitiveList activities={catalogo.map((a) => ({ ...a, level: a.level as Level }))} />
+        <CognitiveList activities={catalogo} />
       </main>
     </div>
   );

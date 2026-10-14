@@ -19,7 +19,7 @@ import SectionTitle from "@/components/SectionTitle";
 import IconTile from "@/components/IconTile";
 import WaterTracker from "./WaterTracker";
 import MealList from "./MealList";
-import { SECTIONS, type AccentName } from "@/lib/theme";
+import { SECTIONS, accentOf, type AccentName } from "@/lib/theme";
 
 const SECTION = SECTIONS.find((s) => s.href === "/nutricion")!;
 
@@ -79,7 +79,7 @@ export default async function NutricionPage() {
             Menú de hoy
           </SectionTitle>
           <div className="mt-3">
-            <MealList meals={menu.map((m) => ({ ...m, accent: m.accent as AccentName }))} />
+            <MealList meals={menu.map((m) => ({ ...m, accent: accentOf(m.accent) }))} />
           </div>
         </section>
 

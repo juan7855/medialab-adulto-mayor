@@ -1,15 +1,33 @@
 import { Album, Brain, Calculator, Hash, Shapes, type LucideIcon } from "lucide-react";
 import type { AccentName } from "@/lib/theme";
 
-export type Level = "Fácil" | "Reto";
+/** La plataforma del cuidador puede definir otros niveles además de estos. */
+export type Level = string;
 
-/** El acento comunica la exigencia: azul tranquilo, morado para el reto. */
-export const LEVEL_ACCENT: Record<Level, AccentName> = {
-  "Fácil": "blue",
-  Reto: "purple",
+const LEVEL_ACCENT: Record<string, AccentName> = {
+  "fácil": "blue",
+  facil: "blue",
+  medio: "cyan",
+  reto: "purple",
+  "difícil": "purple",
 };
 
-export const LEVELS: Level[] = ["Fácil", "Reto"];
+/** El acento comunica la exigencia: azul tranquilo, morado para el reto. */
+export function accentDeNivel(level: string): AccentName {
+  return LEVEL_ACCENT[level.toLowerCase()] ?? "blue";
+}
+
+const ORDEN = Object.keys(LEVEL_ACCENT);
+
+/** Los niveles que de verdad existen en el catálogo, de menos a más difíciles. */
+export function nivelesDe(activities: { level: string }[]): Level[] {
+  const presentes = [...new Set(activities.map((a) => a.level))];
+  const rango = (l: string) => {
+    const i = ORDEN.indexOf(l.toLowerCase());
+    return i === -1 ? ORDEN.length : i;
+  };
+  return presentes.sort((a, b) => rango(a) - rango(b));
+}
 
 /**
  * El catálogo de Mente Activa ahora vive en la base de datos, propio de
