@@ -4,9 +4,6 @@
  */
 export const ASISTENTE = {
   nombre: "Panela",
-  /** Ilustración oficial, de Imagenes/identidad visual/personaje nuevo.png. */
+  /** Ilustración oficial sin fondo (Imagenes/identidad visual/personaje sin fondo.png). Siempre va sin fondo ni marco. */
   imagen: "/personajes/panela.png",
-  /** Color de las tarjetas donde aparece. */
-  tinte: "var(--beige)",
-  borde: "var(--line-strong)",
 } as const;

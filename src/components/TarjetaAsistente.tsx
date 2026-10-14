@@ -36,19 +36,12 @@ export default function TarjetaAsistente() {
   }, [cargarNota]);
 
   return (
-    <div
-      className="card flex items-stretch gap-3.5 p-3.5"
-      style={{ backgroundColor: asistente.tinte, borderColor: asistente.borde }}
-    >
+    <div className="card flex items-stretch gap-3.5 p-3.5">
       <span
         className="flex items-end justify-center"
         style={{
-          backgroundColor: "var(--surface)",
-          border: `1px solid ${asistente.borde}`,
-          borderRadius: "var(--r-md)",
-          overflow: "hidden",
           height: rem(104),
-          width: rem(88),
+          width: rem(80),
           flexShrink: 0,
         }}
         aria-hidden="true"

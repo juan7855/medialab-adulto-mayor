@@ -6,17 +6,13 @@ interface Props {
   size?: number;
 }
 
-/** La ilustración de Panela. */
+/** La ilustración de Panela, siempre sin fondo ni marco. */
 export default function AsistenteActivo({ size = 150 }: Props) {
   return (
     <span
       className="flex items-end justify-center"
       style={{
-        backgroundColor: asistente.tinte,
-        border: `1px solid ${asistente.borde}`,
-        borderRadius: "var(--r-lg)",
-        overflow: "hidden",
-        height: rem(size + 10),
+        height: rem(size),
         width: rem(size),
         flexShrink: 0,
       }}
