@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { surveyResponses } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
-import { PREGUNTAS, TIPOS_DOCUMENTO, type RespuestaEncuesta } from "@/lib/encuesta";
+import { PREGUNTAS, type RespuestaEncuesta } from "@/lib/encuesta";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,9 +12,6 @@ export async function POST(req: NextRequest) {
     }
 
     const body = (await req.json()) as Partial<RespuestaEncuesta>;
-    const documentType = String(body.documentType ?? "");
-    const documentNumber = String(body.documentNumber ?? "").trim().slice(0, 30);
-    const fullName = String(body.fullName ?? "").trim().slice(0, 120);
 
     // Todo es obligatorio: se valida aquí, no sólo en el formulario.
     const puntajes: Record<string, number> = {};
@@ -25,22 +22,12 @@ export async function POST(req: NextRequest) {
       }
       puntajes[p.clave] = v as number;
     }
-    if (
-      !(TIPOS_DOCUMENTO as readonly string[]).includes(documentType) ||
-      documentNumber === "" ||
-      fullName === ""
-    ) {
-      return NextResponse.json({ error: "Faltan datos" }, { status: 400 });
-    }
 
     // Una sola respuesta por paciente: si ya existía, no se pisa.
     await db
       .insert(surveyResponses)
       .values({
         patientId,
-        documentType,
-        documentNumber,
-        fullName,
         lifeSatisfaction: puntajes.lifeSatisfaction,
         dailyWorthwhile: puntajes.dailyWorthwhile,
         happyYesterday: puntajes.happyYesterday,

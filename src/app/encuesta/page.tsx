@@ -1,7 +1,4 @@
 import { redirect } from "next/navigation";
-import { eq } from "drizzle-orm";
-import { db } from "@/db";
-import { patients } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
 import { encuestaCompleta } from "@/lib/encuesta-servidor";
 import FormularioEncuesta from "@/components/FormularioEncuesta";
@@ -10,11 +7,6 @@ export default async function EncuestaPage() {
   // middleware.ts ya garantiza que hay sesión antes de llegar aquí.
   const patientId = (await obtenerPacienteId())!;
   if (await encuestaCompleta(patientId)) redirect("/animo");
-
-  const [patient] = await db
-    .select({ name: patients.name })
-    .from(patients)
-    .where(eq(patients.id, patientId));
 
   return (
     <main className="min-h-screen flex flex-col px-4 pb-10" role="main">
@@ -31,7 +23,7 @@ export default async function EncuestaPage() {
       </div>
 
       <div className="mt-6">
-        <FormularioEncuesta nombreInicial={patient?.name ?? ""} />
+        <FormularioEncuesta />
       </div>
     </main>
   );

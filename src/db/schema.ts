@@ -408,15 +408,14 @@ export const communityBlocks = pgTable(
 );
 
 // Encuesta de bienestar obligatoria: se responde una sola vez, tras la
-// primera clave. patient_id es único: una respuesta por paciente. Las
+// primera clave. Las columnas document_type, document_number y full_name
+// ya no se piden (el nombre vive en patients) y quedaron opcionales en la
+// base, sólo para conservar lo que ya se había guardado. patient_id es único: una respuesta por paciente. Las
 // preguntas son escalas 0–10 (ver src/lib/encuesta.ts). La tabla se creó con
 // SQL directo (no con drizzle-kit push, que podría tocar columnas del cuidador).
 export const surveyResponses = pgTable("survey_responses", {
   id: serial("id").primaryKey(),
   patientId: integer("patient_id").notNull().unique().references(() => patients.id),
-  documentType: text("document_type").notNull(),
-  documentNumber: text("document_number").notNull(),
-  fullName: text("full_name").notNull(),
   lifeSatisfaction: integer("life_satisfaction").notNull(),
   dailyWorthwhile: integer("daily_worthwhile").notNull(),
   happyYesterday: integer("happy_yesterday").notNull(),
