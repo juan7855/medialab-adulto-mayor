@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 import { db } from "@/db";
 import { patients } from "@/db/schema";
+import { redirect } from "next/navigation";
 import { obtenerPacienteId } from "@/lib/auth";
+import { encuestaCompleta } from "@/lib/encuesta-servidor";
 import TarjetaAsistente from "@/components/TarjetaAsistente";
 import CerrarSesion from "@/components/CerrarSesion";
 import Greeting from "@/components/Greeting";
@@ -132,6 +134,8 @@ function EmergenciaRow() {
 export default async function HomePage() {
   // middleware.ts ya garantiza que hay sesión antes de llegar aquí.
   const patientId = (await obtenerPacienteId())!;
+  // La encuesta de bienestar es obligatoria antes de usar la app.
+  if (!(await encuestaCompleta(patientId))) redirect("/encuesta");
   const [patient] = await db
     .select({ name: patients.name })
     .from(patients)
