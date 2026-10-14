@@ -6,7 +6,7 @@ import FormularioEncuesta from "@/components/FormularioEncuesta";
 export default async function EncuestaPage() {
   // middleware.ts ya garantiza que hay sesión antes de llegar aquí.
   const patientId = (await obtenerPacienteId())!;
-  if (await encuestaCompleta(patientId)) redirect("/animo");
+  if (await encuestaCompleta(patientId)) redirect("/inicio");
 
   return (
     <main className="min-h-screen flex flex-col px-4 pb-10" role="main">

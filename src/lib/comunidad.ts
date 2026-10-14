@@ -11,7 +11,7 @@ import {
 import { and, eq, or, desc, asc, ne, isNull, sql } from "drizzle-orm";
 
 /** Límite de largo para posts, comentarios y mensajes: recortado en
- *  servidor, igual que dailyNotes en /api/animo. */
+ *  servidor. */
 export const LARGO_MAXIMO_TEXTO = 500;
 
 /** true si este paciente fue registrado en la comunidad por un cuidador. */

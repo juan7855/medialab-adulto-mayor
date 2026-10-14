@@ -9,7 +9,7 @@
 <pre id="out">auditando…</pre>
 <script>
 const ROUTES = [
-  "/", "/asistente", "/animo", "/inicio", "/ejercicios", "/ejercicios/caminar", "/nutricion",
+  "/", "/inicio", "/ejercicios", "/ejercicios/caminar", "/nutricion",
   "/nutricion/receta/sopa-verduras", "/medicamentos", "/cognitivo",
   "/cognitivo/memoria-palabras", "/rutina", "/emergencia",
 ];
@@ -125,7 +125,7 @@ const WIDTHS = [320, 360, 390, 430, 480];
 // Paciente de prueba usado sólo para auditar. Debe existir en la base con
 // datos reales (siembralo con: npx tsx src/db/seed.ts "Rosa" 2468), porque
 // desde que la sesión es una cookie firmada por el servidor, ya no basta con
-// poner una bandera en localStorage para que /inicio, /animo, etc. dejen de
+// poner una bandera en localStorage para que /inicio, etc. dejen de
 // redirigir a "/".
 const PIN_PRUEBA = "2468";
 

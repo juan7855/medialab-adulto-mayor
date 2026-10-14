@@ -90,8 +90,8 @@ export default function PantallaGracias({ name }: { name: string }) {
         </p>
       </div>
 
-      <Link href="/animo" className="btn-cta pressable w-full mt-8" style={{ fontSize: "var(--t-base)" }}>
-        Continuar
+      <Link href="/inicio" className="btn-cta pressable w-full mt-8" style={{ fontSize: "var(--t-base)" }}>
+        Ir al inicio
       </Link>
     </main>
   );

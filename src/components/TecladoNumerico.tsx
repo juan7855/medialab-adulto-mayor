@@ -34,7 +34,7 @@ export default function TecladoNumerico() {
       });
 
       if (res.ok) {
-        router.push("/encuesta");
+        router.push("/inicio");
         return; // se deja el teclado deshabilitado mientras navega
       }
 
