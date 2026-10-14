@@ -39,10 +39,10 @@ export default function ResumenHoy() {
   }, [date]);
 
   const texto = !conteo
-    ? "Tu rutina de hoy"
+    ? "Su rutina de hoy"
     : conteo.total === 0
       ? "Todavía no hay tareas para hoy"
-      : `Hiciste ${conteo.hechas} de ${conteo.total} cosas`;
+      : `Hizo ${conteo.hechas} de ${conteo.total} cosas`;
 
   return (
     <Link

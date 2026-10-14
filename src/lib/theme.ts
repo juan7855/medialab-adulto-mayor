@@ -76,7 +76,7 @@ export const SECTIONS: Section[] = [
   {
     href: "/ejercicios",
     label: "Ejercicios",
-    description: "Muévete cada día",
+    description: "Muévase cada día",
     icon: "/iconos/ejercicios.png",
     accent: "green",
   },
@@ -90,7 +90,7 @@ export const SECTIONS: Section[] = [
   {
     href: "/medicamentos",
     label: "Medicamentos",
-    description: "Tus pastillas de hoy",
+    description: "Sus pastillas de hoy",
     icon: "/iconos/medicamentos.png",
     accent: "cyan",
   },
@@ -106,7 +106,7 @@ export const SECTIONS: Section[] = [
 export const RUTINA: Section = {
   href: "/rutina",
   label: "Rutina",
-  description: "Tu día, paso a paso",
+  description: "Su día, paso a paso",
   icon: "/iconos/rutina.svg",
   accent: "purple",
 };

@@ -18,7 +18,7 @@ export default async function EjerciciosPage() {
     <div className="min-h-screen pb-10">
       <PageHeader
         title="Ejercicios"
-        subtitle="Muévete con calma, siéntete mejor"
+        subtitle="Muévase con calma, siéntase mejor"
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
         backHref="/inicio"
@@ -43,7 +43,7 @@ export default async function EjerciciosPage() {
             style={{ flexShrink: 0, marginTop: 1 }}
           />
           <p style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-soft)" }}>
-            Muévete todos los días. Aunque sean 10 minutos, cuentan.
+            Muévase todos los días. Aunque sean 10 minutos, cuentan.
           </p>
         </div>
 

@@ -31,7 +31,7 @@ export default async function MensajesPage() {
             className="text-center mt-8"
             style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-mute)" }}
           >
-            Todavía no tienes conversaciones.
+            Todavía no tiene conversaciones.
           </p>
         ) : (
           <ul className="flex flex-col gap-2.5">

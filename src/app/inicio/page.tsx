@@ -198,7 +198,7 @@ export default async function HomePage() {
         style={{ fontSize: "var(--t-xs)", color: "var(--ink-mute)", fontWeight: 500 }}
         role="contentinfo"
       >
-        Panela · Tu salud, día a día
+        Panela · Su salud, día a día
         <CerrarSesion />
       </footer>
     </main>

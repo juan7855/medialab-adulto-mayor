@@ -72,8 +72,8 @@ export default function BotonBloquear({ patientId, name }: BotonBloquearProps) {
         <ConfirmDialog
           message={
             bloqueado
-              ? `¿Quieres volver a recibir mensajes de ${name}?`
-              : `¿Quieres dejar de recibir mensajes de ${name}?`
+              ? `¿Quiere volver a recibir mensajes de ${name}?`
+              : `¿Quiere dejar de recibir mensajes de ${name}?`
           }
           onConfirm={() => void confirmar()}
           onCancel={() => setAbierto(false)}

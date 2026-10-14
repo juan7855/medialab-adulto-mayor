@@ -9,7 +9,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
     if (!(await esMiembroComunidad(patientId))) {
-      return NextResponse.json({ error: "No estás en la comunidad" }, { status: 403 });
+      return NextResponse.json({ error: "No está en la comunidad" }, { status: 403 });
     }
 
     const postId = Number((await params).id);

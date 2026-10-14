@@ -68,7 +68,7 @@ export default function HiloMensajes({ conversationId, miId, otroId, otroNombre 
       setTexto("");
       await cargar();
     } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : "No se pudo enviar. Intenta de nuevo.");
+      setError(e instanceof Error && e.message ? e.message : "No se pudo enviar. Intente de nuevo.");
     } finally {
       setEnviando(false);
     }
@@ -126,7 +126,7 @@ export default function HiloMensajes({ conversationId, miId, otroId, otroNombre 
         )}
         <div className="flex items-end gap-2">
           <label htmlFor="mensaje" className="sr-only">
-            Escribe un mensaje
+            Escriba un mensaje
           </label>
           <textarea
             id="mensaje"
@@ -134,7 +134,7 @@ export default function HiloMensajes({ conversationId, miId, otroId, otroNombre 
             onChange={(e) => setTexto(e.target.value)}
             maxLength={LARGO_MAXIMO}
             rows={1}
-            placeholder="Escribe un mensaje..."
+            placeholder="Escriba un mensaje..."
             className="card flex-1"
             style={{
               padding: "0.7rem 0.9rem",

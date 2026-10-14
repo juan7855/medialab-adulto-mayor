@@ -11,7 +11,7 @@ export default async function NuevoMensajePage() {
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
-        title="Con quién quieres hablar"
+        title="Con quién quiere hablar"
         iconSrc={COMUNIDAD.icon}
         accent={COMUNIDAD.accent}
         backHref="/comunidad/mensajes"

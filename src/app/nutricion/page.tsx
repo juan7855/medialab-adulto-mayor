@@ -37,10 +37,10 @@ const RECIPES: {
 ];
 
 const TIPS = [
-  "Bebe al menos 8 vasos de agua al día.",
-  "Come 5 porciones de frutas y verduras cada día.",
-  "Reduce la sal para cuidar tu corazón.",
-  "Come pescado 2 veces por semana.",
+  "Beba al menos 8 vasos de agua al día.",
+  "Coma 5 porciones de frutas y verduras cada día.",
+  "Reduzca la sal para cuidar su corazón.",
+  "Coma pescado 2 veces por semana.",
 ];
 
 export default async function NutricionPage() {
@@ -55,7 +55,7 @@ export default async function NutricionPage() {
     <div className="min-h-screen pb-10">
       <PageHeader
         title="Nutrición"
-        subtitle="Come bien y toma agua"
+        subtitle="Coma bien y tome agua"
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
         backHref="/inicio"

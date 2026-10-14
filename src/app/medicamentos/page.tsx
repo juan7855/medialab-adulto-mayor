@@ -14,7 +14,7 @@ export default function MedicamentosPage() {
     <div className="min-h-screen pb-10">
       <PageHeader
         title="Medicamentos"
-        subtitle="Tus pastillas, a su hora"
+        subtitle="Sus pastillas, a su hora"
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
         backHref="/inicio"

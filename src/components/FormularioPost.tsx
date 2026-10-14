@@ -26,7 +26,7 @@ export default function FormularioPost() {
       if (!res.ok) throw new Error("respuesta no válida");
       router.push("/comunidad");
     } catch {
-      setError("No se pudo publicar. Revisa la conexión e intenta de nuevo.");
+      setError("No se pudo publicar. Revise la conexión e intente de nuevo.");
       setGuardando(false);
     }
   };
@@ -34,7 +34,7 @@ export default function FormularioPost() {
   return (
     <div className="flex flex-col">
       <label htmlFor="post" className="sr-only">
-        Qué quieres contarle a la comunidad
+        Qué quiere contarle a la comunidad
       </label>
       <textarea
         id="post"
@@ -42,7 +42,7 @@ export default function FormularioPost() {
         onChange={(e) => setTexto(e.target.value)}
         maxLength={LARGO_MAXIMO}
         rows={6}
-        placeholder="¿Qué quieres contarle a la comunidad?"
+        placeholder="¿Qué quiere contarle a la comunidad?"
         autoFocus
         className="card"
         style={{

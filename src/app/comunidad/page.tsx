@@ -41,7 +41,7 @@ export default async function ComunidadPage() {
               style={{ flexShrink: 0, marginTop: 1 }}
             />
             <p style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-soft)" }}>
-              Tu cuidador todavía no te agregó a la comunidad. Cuando lo haga, vas a poder ver el
+              Su cuidador todavía no lo agregó a la comunidad. Cuando lo haga, podrá ver el
               foro y escribir con otras personas.
             </p>
           </div>
@@ -63,7 +63,7 @@ export default async function ComunidadPage() {
                 className="text-center mt-8"
                 style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-mute)" }}
               >
-                Nadie ha publicado todavía. ¡Sé la primera persona!
+                Nadie ha publicado todavía. ¡Sea la primera persona!
               </p>
             ) : (
               <ul className="flex flex-col gap-3">

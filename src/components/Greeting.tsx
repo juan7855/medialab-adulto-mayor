@@ -24,7 +24,7 @@ export default function Greeting({ name }: { name: string }) {
   useEffect(() => {
     if (!isClient || !name || yaHablo.current) return;
     yaHablo.current = true;
-    hablar(`${greetingFor(new Date().getHours())}, ${name}. ¿Cómo has estado?`);
+    hablar(`${greetingFor(new Date().getHours())}, ${name}. ¿Cómo ha estado?`);
   }, [isClient, name]);
 
   return (

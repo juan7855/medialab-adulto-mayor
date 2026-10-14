@@ -66,7 +66,7 @@ export function useReconocimientoVoz() {
       if (texto.trim()) alTerminar(texto.trim());
     };
     rec.onerror = () => {
-      setError("No te escuché bien. Intenta de nuevo.");
+      setError("No lo escuché bien. Intente de nuevo.");
       setEscuchando(false);
     };
     rec.onend = () => setEscuchando(false);

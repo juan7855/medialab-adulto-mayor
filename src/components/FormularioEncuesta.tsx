@@ -144,7 +144,7 @@ export default function FormularioEncuesta({ nombreInicial }: { nombreInicial: s
       if (!res.ok) throw new Error();
       router.push("/animo");
     } catch {
-      setError("No se pudo guardar. Intenta de nuevo.");
+      setError("No se pudo guardar. Intente de nuevo.");
       setEnviando(false);
     }
   };
@@ -192,7 +192,7 @@ export default function FormularioEncuesta({ nombreInicial }: { nombreInicial: s
           maxLength={30}
           value={numero}
           onChange={(e) => setNumero(e.target.value)}
-          placeholder="Tu respuesta"
+          placeholder="Su respuesta"
           required
           style={CAMPO}
         />
@@ -206,7 +206,7 @@ export default function FormularioEncuesta({ nombreInicial }: { nombreInicial: s
           maxLength={120}
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
-          placeholder="Tu respuesta"
+          placeholder="Su respuesta"
           required
           style={CAMPO}
         />
@@ -242,7 +242,7 @@ export default function FormularioEncuesta({ nombreInicial }: { nombreInicial: s
           className="text-center"
           style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}
         >
-          Responde todas las preguntas para continuar
+          Responda todas las preguntas para continuar
         </p>
       )}
     </form>

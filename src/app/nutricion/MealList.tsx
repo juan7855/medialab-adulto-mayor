@@ -79,7 +79,7 @@ export default function MealList({ meals }: { meals: Meal[] }) {
       );
     } catch {
       setLogs(previous);
-      setToast({ msg: "No se pudo guardar. Intenta de nuevo.", tone: "error" });
+      setToast({ msg: "No se pudo guardar. Intente de nuevo.", tone: "error" });
     }
   };
 
@@ -207,7 +207,7 @@ export default function MealList({ meals }: { meals: Meal[] }) {
                       }}
                     >
                       <Check size={15} strokeWidth={2.6} aria-hidden="true" />
-                      {hour ? `Ya comiste · ${hour}` : "Ya comiste"}
+                      {hour ? `Ya comió · ${hour}` : "Ya comió"}
                     </span>
 
                     <button
@@ -238,7 +238,7 @@ export default function MealList({ meals }: { meals: Meal[] }) {
 
       {confirm && (
         <ConfirmDialog
-          message={`¿Ya comiste ${confirm.article}?`}
+          message={`¿Ya comió ${confirm.article}?`}
           onConfirm={() => void setEaten(confirm, true)}
           onCancel={() => setConfirm(null)}
           confirmLabel="Sí, ya comí"

@@ -78,13 +78,13 @@ export default function MedicationList() {
       setToast({ msg: "Medicamento registrado", tone: "success" });
     } catch {
       setLogs(previous);
-      setToast({ msg: "No se pudo guardar. Intenta de nuevo.", tone: "error" });
+      setToast({ msg: "No se pudo guardar. Intente de nuevo.", tone: "error" });
     }
   };
 
   const handleSnooze = (medId: number) => {
     setSnoozed((prev) => new Set([...prev, medId]));
-    setToast({ msg: "Te recordamos en 10 minutos", tone: "info" });
+    setToast({ msg: "Se lo recordamos en 10 minutos", tone: "info" });
     setTimeout(() => {
       setSnoozed((prev) => {
         const next = new Set(prev);
@@ -125,7 +125,7 @@ export default function MedicationList() {
       <div className="card p-6 text-center">
         <p style={{ fontSize: "var(--t-sm)", fontWeight: 700 }}>No hay medicamentos registrados.</p>
         <p className="mt-1.5" style={{ fontSize: "var(--t-xs)", color: "var(--ink-mute)" }}>
-          Consulta a tu médico para agregarlos.
+          Consulte a su médico para agregarlos.
         </p>
       </div>
     );
@@ -226,7 +226,7 @@ export default function MedicationList() {
 
       {confirm && (
         <ConfirmDialog
-          message={`¿Tomaste ${confirm.medName}?`}
+          message={`¿Tomó ${confirm.medName}?`}
           onConfirm={() => void markTaken(confirm.medId)}
           onCancel={() => setConfirm(null)}
           confirmLabel="Sí, ya lo tomé"

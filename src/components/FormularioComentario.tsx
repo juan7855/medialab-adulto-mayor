@@ -25,7 +25,7 @@ export default function FormularioComentario({ postId }: { postId: number }) {
       setTexto("");
       router.refresh();
     } catch {
-      setError("No se pudo enviar. Intenta de nuevo.");
+      setError("No se pudo enviar. Intente de nuevo.");
     } finally {
       setEnviando(false);
     }
@@ -34,7 +34,7 @@ export default function FormularioComentario({ postId }: { postId: number }) {
   return (
     <div className="flex flex-col gap-2 mt-2">
       <label htmlFor="comentario" className="sr-only">
-        Escribe un comentario
+        Escriba un comentario
       </label>
       <textarea
         id="comentario"
@@ -42,7 +42,7 @@ export default function FormularioComentario({ postId }: { postId: number }) {
         onChange={(e) => setTexto(e.target.value)}
         maxLength={LARGO_MAXIMO}
         rows={2}
-        placeholder="Escribe un comentario..."
+        placeholder="Escriba un comentario..."
         className="card"
         style={{
           padding: "0.75rem",

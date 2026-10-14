@@ -49,7 +49,7 @@ export default function TarjetaAsistente() {
             lineHeight: 1.3,
           }}
         >
-          {nota ? `Hoy me contaste: “${nota}”` : "¿Me cuentas cómo estás hoy?"}
+          {nota ? `Hoy me contó: “${nota}”` : "¿Me cuenta cómo está hoy?"}
         </p>
 
         {/* eslint-disable-next-line @next/next/no-img-element -- ilustración local */}
@@ -64,7 +64,7 @@ export default function TarjetaAsistente() {
         href="/animo"
         className="btn-cta pressable w-full mt-4"
         style={{ backgroundColor: "var(--ink)", fontSize: "var(--t-base)" }}
-        aria-label="Contarle a Panela cómo te encuentras hoy"
+        aria-label="Contarle a Panela cómo se encuentra hoy"
       >
         {nota ? "Cambiar lo que conté" : "Contarle cómo estoy"}
       </Link>

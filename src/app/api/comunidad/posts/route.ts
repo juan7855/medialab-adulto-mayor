@@ -11,7 +11,7 @@ export async function GET() {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
     if (!(await esMiembroComunidad(patientId))) {
-      return NextResponse.json({ error: "No estás en la comunidad" }, { status: 403 });
+      return NextResponse.json({ error: "No está en la comunidad" }, { status: 403 });
     }
 
     return NextResponse.json(await listarPostsForo());
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
     if (!(await esMiembroComunidad(patientId))) {
-      return NextResponse.json({ error: "No estás en la comunidad" }, { status: 403 });
+      return NextResponse.json({ error: "No está en la comunidad" }, { status: 403 });
     }
 
     const body = (await req.json()) as { content?: string };

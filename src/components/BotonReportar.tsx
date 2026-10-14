@@ -30,7 +30,7 @@ export default function BotonReportar({ targetType, targetId, compact = false }:
       if (!res.ok) throw new Error("respuesta no válida");
       setToast("Reportado. Un cuidador lo va a revisar.");
     } catch {
-      setToast("No se pudo reportar. Intenta de nuevo.");
+      setToast("No se pudo reportar. Intente de nuevo.");
     } finally {
       setEnviando(false);
       setAbierto(false);
@@ -51,7 +51,7 @@ export default function BotonReportar({ targetType, targetId, compact = false }:
 
       {abierto && (
         <ConfirmDialog
-          message="¿Quieres reportar esto? Un cuidador lo va a revisar."
+          message="¿Quiere reportar esto? Un cuidador lo va a revisar."
           onConfirm={() => void confirmar()}
           onCancel={() => setAbierto(false)}
           confirmLabel={enviando ? "Enviando..." : "Sí, reportar"}

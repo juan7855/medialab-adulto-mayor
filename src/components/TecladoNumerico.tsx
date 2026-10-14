@@ -40,13 +40,13 @@ export default function TecladoNumerico() {
 
       // Se deja ver el cuarto punto un instante antes de avisar del fallo.
       setTimeout(() => {
-        setError("Clave incorrecta. Intenta de nuevo.");
+        setError("Clave incorrecta. Intente de nuevo.");
         setDigitos("");
         setComprobando(false);
       }, 220);
     } catch {
       setTimeout(() => {
-        setError("No se pudo conectar. Intenta de nuevo.");
+        setError("No se pudo conectar. Intente de nuevo.");
         setDigitos("");
         setComprobando(false);
       }, 220);

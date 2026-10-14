@@ -19,7 +19,7 @@ export interface Meal {
   id: number;
   slug: string;
   name: string;
-  /** Cómo se nombra en una pregunta: "¿Ya tomaste el desayuno?" */
+  /** Cómo se nombra en una pregunta: "¿Ya tomó el desayuno?" */
   article: string;
   time: string;
   emoji: string;

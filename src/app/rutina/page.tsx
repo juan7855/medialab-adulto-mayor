@@ -7,7 +7,7 @@ export default function RutinaPage() {
     <div className="min-h-screen pb-10">
       <PageHeader
         title="Rutina"
-        subtitle="Tu día, paso a paso"
+        subtitle="Su día, paso a paso"
         iconSrc={RUTINA.icon}
         accent={RUTINA.accent}
         backHref="/inicio"

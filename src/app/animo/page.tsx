@@ -14,7 +14,7 @@ export default async function AnimoPage() {
       <div className="flex items-center gap-4 pt-8">
         <AsistenteActivo size={110} />
         <h1 style={{ fontSize: "var(--t-xl)", fontWeight: 800, lineHeight: 1.1 }}>
-          ¿Cómo te encuentras hoy?
+          ¿Cómo se encuentra hoy?
         </h1>
       </div>
 

@@ -18,10 +18,10 @@ const CONTACTS: {
 ];
 
 const STEPS = [
-  "Mantén la calma",
-  "Llama al 123",
-  "Avisa a un familiar",
-  "No te muevas si sientes dolor",
+  "Mantenga la calma",
+  "Llame al 123",
+  "Avise a un familiar",
+  "No se mueva si siente dolor",
 ];
 
 export default function EmergenciaPage() {
@@ -29,7 +29,7 @@ export default function EmergenciaPage() {
     <div className="min-h-screen pb-10">
       <PageHeader
         title="Emergencia"
-        subtitle="Pide ayuda rápido"
+        subtitle="Pida ayuda rápido"
         iconSrc={EMERGENCIA.icon}
         accent={EMERGENCIA.accent}
         backHref="/inicio"

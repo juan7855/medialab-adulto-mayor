@@ -16,7 +16,7 @@ export default function AccesoPage() {
 
       <div className="px-1">
         <h1 style={{ fontSize: "var(--t-2xl)", fontWeight: 800, lineHeight: 1.08 }}>
-          Escribe tu clave
+          Escriba su clave
         </h1>
         <p
           className="mt-2"
@@ -35,7 +35,7 @@ export default function AccesoPage() {
         style={{ fontSize: "var(--t-xs)", color: "var(--ink-mute)", fontWeight: 500 }}
         role="contentinfo"
       >
-        Panela · Tu salud, día a día
+        Panela · Su salud, día a día
       </footer>
     </main>
   );

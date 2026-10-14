@@ -134,7 +134,7 @@ export default function RutinaList() {
       );
     } catch {
       setLogs(previous);
-      setToast({ msg: "No se pudo guardar. Intenta de nuevo.", tone: "error" });
+      setToast({ msg: "No se pudo guardar. Intente de nuevo.", tone: "error" });
     }
   };
 
@@ -338,7 +338,7 @@ export default function RutinaList() {
 
       {confirm && (
         <ConfirmDialog
-          message={`¿Completaste ${confirm.title}?`}
+          message={`¿Completó ${confirm.title}?`}
           onConfirm={() => void setCompleted(confirm.actId, true)}
           onCancel={() => setConfirm(null)}
           confirmLabel="Sí, ya la hice"

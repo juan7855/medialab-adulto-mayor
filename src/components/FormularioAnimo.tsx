@@ -23,7 +23,7 @@ export default function FormularioAnimo() {
   useEffect(() => {
     if (yaHablo.current) return;
     yaHablo.current = true;
-    hablar("¿Cómo te encuentras hoy?");
+    hablar("¿Cómo se encuentra hoy?");
   }, []);
 
   const escucharYResponder = () => {
@@ -50,7 +50,7 @@ export default function FormularioAnimo() {
       router.push("/inicio");
     } catch {
       // No se pierde lo escrito: se avisa y se deja reintentar.
-      setError("No se pudo guardar. Revisa la conexión e intenta de nuevo.");
+      setError("No se pudo guardar. Revise la conexión e intente de nuevo.");
       setGuardando(false);
     }
   };
@@ -58,7 +58,7 @@ export default function FormularioAnimo() {
   return (
     <div className="flex flex-col">
       <label htmlFor="animo" className="sr-only">
-        Cuenta cómo te encuentras hoy
+        Cuéntenos cómo se encuentra hoy
       </label>
       <textarea
         id="animo"
@@ -87,7 +87,7 @@ export default function FormularioAnimo() {
           onClick={escuchando ? detener : escucharYResponder}
           className="chip-btn mt-2"
           style={{ alignSelf: "flex-start" }}
-          aria-label={escuchando ? "Dejar de escuchar" : "Contar cómo te sientes hablando"}
+          aria-label={escuchando ? "Dejar de escuchar" : "Contar cómo se siente hablando"}
         >
           {escuchando ? (
             <Square size={17} strokeWidth={2.2} aria-hidden="true" />
@@ -114,7 +114,7 @@ export default function FormularioAnimo() {
         }}
         role={error || errorVoz ? "alert" : undefined}
       >
-        {error ?? errorVoz ?? "Escribe lo que quieras. Nadie te corrige."}
+        {error ?? errorVoz ?? "Escriba lo que quiera. Nadie lo corrige."}
       </p>
 
       <button
