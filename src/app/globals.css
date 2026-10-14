@@ -38,9 +38,9 @@
   --orange-solid: #D58C56; --orange-tint: #F8EADF;  --orange-line: #EBCDB3;
   --cyan-solid: #329CAF;   --cyan-tint: #DDEFF2;    --cyan-line: #A9D5DD;
   --blue-solid: #4B7F9A;   --blue-tint: #E1ECF1;    --blue-line: #B3CBD8;
-  --purple-solid: #8FA39B; --purple-tint: #ECEFEE;  --purple-line: #D0D8D4;
+  --purple-solid: #6E8B82; --purple-tint: #ECEFEE;  --purple-line: #D0D8D4;
   --red-solid: #B85F59;    --red-tint: #F6E4E2;     --red-line: #E3BDB9;
-  --yellow-solid: #E9DFC9; --yellow-tint: #F6F0E1;  --yellow-line: #DDD0B2;
+  --yellow-solid: #C2A05A; --yellow-tint: #F6F0E1;  --yellow-line: #DDD0B2;
 
   /* --- Llamadas a la acción -------------------------------------------- */
   --cta: #31836F;          /* verde: texto blanco encima */

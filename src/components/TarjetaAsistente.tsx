@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Pencil } from "lucide-react";
 import { rem } from "@/lib/scale";
 import { ASISTENTE as asistente } from "@/lib/asistentes";
 import { useToday } from "@/lib/today";
 
 /**
- * Panela, acompañando en el inicio, con lo que la persona
- * escribió hoy sobre cómo se encuentra.
+ * Panela con su globo de diálogo y el botón para contarle cómo se siente la
+ * persona. Va dentro de la tarjeta de bienvenida del inicio; si ya escribió
+ * algo hoy, el globo lo muestra en lugar de la pregunta.
  */
 export default function TarjetaAsistente() {
   const date = useToday();
@@ -24,7 +24,7 @@ export default function TarjetaAsistente() {
         setNota(data.note);
       }
     } catch {
-      // sin nota: la tarjeta se muestra igual
+      // sin nota: se muestra la pregunta
     }
   }, [date]);
 
@@ -36,53 +36,38 @@ export default function TarjetaAsistente() {
   }, [cargarNota]);
 
   return (
-    <div className="card flex items-stretch gap-3.5 p-3.5">
-      <span
-        className="flex items-end justify-center"
-        style={{
-          height: rem(104),
-          width: rem(80),
-          flexShrink: 0,
-        }}
-        aria-hidden="true"
-      >
+    <>
+      <div className="flex items-end gap-2 mt-4">
+        <p
+          className="flex-1 min-w-0 self-center"
+          style={{
+            backgroundColor: "var(--surface)",
+            borderRadius: "var(--r-xl)",
+            padding: "0.9rem 1rem",
+            fontSize: "var(--t-base)",
+            fontWeight: 700,
+            lineHeight: 1.3,
+          }}
+        >
+          {nota ? `Hoy me contaste: “${nota}”` : "¿Me cuentas cómo estás hoy?"}
+        </p>
+
         {/* eslint-disable-next-line @next/next/no-img-element -- ilustración local */}
         <img
           src={asistente.imagen}
-          alt=""
-          style={{ height: rem(96), width: "auto", display: "block" }}
+          alt="Panela"
+          style={{ height: rem(128), width: "auto", display: "block", flexShrink: 0 }}
         />
-      </span>
-
-      <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <p style={{ fontSize: "var(--t-sm)", fontWeight: 800 }}>
-          Hoy te acompaña {asistente.nombre}
-        </p>
-
-        {nota ? (
-          <p
-            className="mt-1"
-            style={{
-              fontSize: "var(--t-xs)",
-              fontWeight: 500,
-              color: "var(--ink-soft)",
-              lineHeight: 1.4,
-            }}
-          >
-            Escribiste: “{nota}”
-          </p>
-        ) : (
-          <Link
-            href="/animo"
-            className="chip-btn mt-2"
-            style={{ alignSelf: "flex-start" }}
-            aria-label="Contar cómo te encuentras hoy"
-          >
-            <Pencil size={17} strokeWidth={2.2} aria-hidden="true" />
-            Cuéntame cómo estás
-          </Link>
-        )}
       </div>
-    </div>
+
+      <Link
+        href="/animo"
+        className="btn-cta pressable w-full mt-4"
+        style={{ backgroundColor: "var(--ink)", fontSize: "var(--t-base)" }}
+        aria-label="Contarle a Panela cómo te encuentras hoy"
+      >
+        {nota ? "Cambiar lo que conté" : "Contarle cómo estoy"}
+      </Link>
+    </>
   );
 }

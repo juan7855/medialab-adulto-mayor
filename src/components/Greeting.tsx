@@ -10,20 +10,11 @@ function greetingFor(hour: number): string {
   return "Buenas noches";
 }
 
-function formatToday(date: Date): string {
-  const text = date.toLocaleDateString("es-ES", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
-
 /**
- * Saludo y fecha. La hora se resuelve en el navegador: la página es
- * estática, así que calcularla en el servidor la dejaría congelada en la
- * fecha del build. El nombre, en cambio, ya viene resuelto del servidor (a
- * partir de la sesión), así que se pinta siempre, sin esperar a hidratar.
+ * Saludo. La hora se resuelve en el navegador: la página es estática, así
+ * que calcularla en el servidor la dejaría congelada en la fecha del build.
+ * El nombre, en cambio, ya viene resuelto del servidor (a partir de la
+ * sesión), así que se pinta siempre, sin esperar a hidratar.
  */
 export default function Greeting({ name }: { name: string }) {
   const isClient = useIsClient();
@@ -37,18 +28,17 @@ export default function Greeting({ name }: { name: string }) {
   }, [isClient, name]);
 
   return (
-    <div className="px-1">
+    <h1 style={{ lineHeight: 1.1 }}>
       {/* El espacio duro reserva la altura y evita que el bloque salte al hidratar */}
-      <h1 style={{ fontSize: "var(--t-2xl)", fontWeight: 800, lineHeight: 1.08 }}>
-        {now ? greetingFor(now.getHours()) : " "}
-        {name && `, ${name}`}
-      </h1>
-      <p
-        className="mt-2"
-        style={{ fontSize: "var(--t-sm)", fontWeight: 700, color: "var(--ink-mute)" }}
+      <span
+        className="block"
+        style={{ fontSize: "var(--t-md)", fontWeight: 600, color: "var(--ink-soft)" }}
       >
-        {now ? formatToday(now) : " "}
-      </p>
-    </div>
+        {now ? `${greetingFor(now.getHours())},` : " "}
+      </span>
+      <span className="block mt-1" style={{ fontSize: "var(--t-2xl)", fontWeight: 800 }}>
+        {name || " "}
+      </span>
+    </h1>
   );
 }
