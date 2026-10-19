@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useIsClient } from "@/lib/today";
 import { hablar } from "@/lib/voz";
+
+// A nivel de módulo: sobrevive a la navegación interna (el componente se
+// vuelve a montar al regresar al inicio) y se reinicia al abrir la app.
+let saludoDicho = false;
 
 function greetingFor(hour: number): string {
   if (hour < 12) return "Buenos días";
@@ -19,11 +23,10 @@ function greetingFor(hour: number): string {
 export default function Greeting({ name }: { name: string }) {
   const isClient = useIsClient();
   const now = isClient ? new Date() : null;
-  const yaHablo = useRef(false);
 
   useEffect(() => {
-    if (!isClient || !name || yaHablo.current) return;
-    yaHablo.current = true;
+    if (!isClient || !name || saludoDicho) return;
+    saludoDicho = true;
     hablar(`${greetingFor(new Date().getHours())}, ${name}. ¿Cómo ha estado?`);
   }, [isClient, name]);
 
