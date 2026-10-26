@@ -1,4 +1,3 @@
-import { ASISTENTE } from "@/lib/asistentes";
 import { rem } from "@/lib/scale";
 import Link from "next/link";
 import { eq } from "drizzle-orm";
@@ -128,11 +127,8 @@ export default async function HomePage() {
       {/* Marca */}
       <div className="flex items-center justify-between gap-2 pt-6 pb-4 px-1">
         <div className="flex items-center gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element -- ilustración local */}
-          <img src={ASISTENTE.imagen} alt="" style={{ height: rem(34), width: "auto" }} />
-          <span style={{ fontSize: "var(--t-md)", fontWeight: 800, color: "var(--green-solid)" }}>
-            Panela
-          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element -- logo local */}
+          <img src="/logo/panela-logo.png" alt="Panela" style={{ height: rem(30), width: "auto" }} />
         </div>
         <EmergenciaBoton />
       </div>
