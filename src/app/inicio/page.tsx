@@ -6,11 +6,9 @@ import {
   Apple,
   Brain,
   CalendarCheck,
-  ChevronRight,
   Dumbbell,
   MessagesSquare,
   Pill,
-  TriangleAlert,
   type LucideIcon,
 } from "lucide-react";
 import { db } from "@/db";
@@ -88,45 +86,28 @@ function SectionTile({ section }: { section: Section }) {
   );
 }
 
-/** Emergencia: ancha y en coral, separada del resto, como único uso del rojo. */
-function EmergenciaRow() {
+/** Emergencia: botón compacto en coral arriba a la derecha, siempre a la vista. */
+function EmergenciaBoton() {
   return (
     <Link
       href={EMERGENCIA.href}
-      className="pressable flex items-center gap-3 p-3.5"
+      className="pressable flex items-center gap-2"
       style={{
-        backgroundColor: "var(--red-tint)",
-        border: "1px solid var(--red-line)",
-        borderRadius: "var(--r-xl)",
+        backgroundColor: "var(--red-solid)",
+        borderRadius: "999px",
+        padding: `${rem(8)} ${rem(14)}`,
+        color: "#fff",
         textDecoration: "none",
-        color: "inherit",
+        fontSize: "var(--t-sm)",
+        fontWeight: 800,
       }}
       aria-label={`${EMERGENCIA.label}. ${EMERGENCIA.description}`}
     >
       <span
-        className="tile"
-        style={{
-          width: rem(46),
-          height: rem(46),
-          backgroundColor: "var(--red-solid)",
-          borderRadius: "50% 50% 50% 14%",
-        }}
         aria-hidden="true"
-      >
-        <TriangleAlert color="#fff" strokeWidth={2.2} style={{ width: "52%", height: "52%" }} />
-      </span>
-      <span className="flex-1 min-w-0">
-        <span className="block" style={{ fontSize: "var(--t-md)", fontWeight: 800 }}>
-          {EMERGENCIA.label}
-        </span>
-        <span
-          className="block mt-0.5"
-          style={{ fontSize: "var(--t-xs)", fontWeight: 500, color: "var(--ink-soft)" }}
-        >
-          {EMERGENCIA.description}
-        </span>
-      </span>
-      <ChevronRight size={22} strokeWidth={2.3} color="var(--ink-soft)" aria-hidden="true" />
+        style={{ width: rem(10), height: rem(10), borderRadius: "999px", backgroundColor: "#fff" }}
+      />
+      {EMERGENCIA.label}
     </Link>
   );
 }
@@ -145,12 +126,15 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen flex flex-col px-4 pb-8" role="main">
       {/* Marca */}
-      <div className="flex items-center gap-2 pt-6 pb-4 px-1">
-        {/* eslint-disable-next-line @next/next/no-img-element -- ilustración local */}
-        <img src={ASISTENTE.imagen} alt="" style={{ height: rem(34), width: "auto" }} />
-        <span style={{ fontSize: "var(--t-md)", fontWeight: 800, color: "var(--green-solid)" }}>
-          Panela
-        </span>
+      <div className="flex items-center justify-between gap-2 pt-6 pb-4 px-1">
+        <div className="flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element -- ilustración local */}
+          <img src={ASISTENTE.imagen} alt="" style={{ height: rem(34), width: "auto" }} />
+          <span style={{ fontSize: "var(--t-md)", fontWeight: 800, color: "var(--green-solid)" }}>
+            Panela
+          </span>
+        </div>
+        <EmergenciaBoton />
       </div>
 
       {/* Bienvenida: Panela habla con la persona */}
@@ -188,10 +172,6 @@ export default async function HomePage() {
           </div>
         ))}
       </nav>
-
-      <div className="mt-3">
-        <EmergenciaRow />
-      </div>
 
       <footer
         className="text-center mt-auto pt-9 flex flex-col gap-4"
