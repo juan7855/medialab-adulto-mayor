@@ -5,6 +5,7 @@ import {
   Apple,
   Brain,
   CalendarCheck,
+  ClipboardList,
   Dumbbell,
   MessagesSquare,
   Pill,
@@ -175,6 +176,22 @@ export default async function HomePage() {
         role="contentinfo"
       >
         Panela · Su salud, día a día
+        <Link
+          href="/encuesta?nueva=1"
+          className="pressable flex items-center gap-1.5 mx-auto"
+          style={{
+            color: "var(--ink-soft)",
+            fontSize: "var(--t-xs)",
+            fontWeight: 700,
+            textDecoration: "none",
+            border: "1px solid var(--line-strong)",
+            borderRadius: "999px",
+            padding: `${rem(6)} ${rem(14)}`,
+          }}
+        >
+          <ClipboardList size={16} strokeWidth={2.2} aria-hidden="true" />
+          Volver a llenar encuesta
+        </Link>
         <CerrarSesion />
       </footer>
     </main>

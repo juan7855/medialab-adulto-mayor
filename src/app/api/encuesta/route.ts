@@ -23,18 +23,23 @@ export async function POST(req: NextRequest) {
       puntajes[p.clave] = v as number;
     }
 
-    // Una sola respuesta por paciente: si ya existía, no se pisa.
+    // Una sola respuesta por paciente: si ya existía, la última reemplaza a
+    // la anterior. Las dos preguntas de /conversemos se vacían porque
+    // pertenecían a la respuesta vieja; esa pantalla viene justo después.
+    const puntajesFila = {
+      lifeSatisfaction: puntajes.lifeSatisfaction,
+      dailyWorthwhile: puntajes.dailyWorthwhile,
+      happyYesterday: puntajes.happyYesterday,
+      anxiousYesterday: puntajes.anxiousYesterday,
+      sadYesterday: puntajes.sadYesterday,
+    };
     await db
       .insert(surveyResponses)
-      .values({
-        patientId,
-        lifeSatisfaction: puntajes.lifeSatisfaction,
-        dailyWorthwhile: puntajes.dailyWorthwhile,
-        happyYesterday: puntajes.happyYesterday,
-        anxiousYesterday: puntajes.anxiousYesterday,
-        sadYesterday: puntajes.sadYesterday,
-      })
-      .onConflictDoNothing();
+      .values({ patientId, ...puntajesFila })
+      .onConflictDoUpdate({
+        target: surveyResponses.patientId,
+        set: { ...puntajesFila, extraNote: null, sleepQuality: null, createdAt: new Date() },
+      });
 
     return NextResponse.json({ ok: true });
   } catch (error) {

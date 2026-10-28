@@ -3,10 +3,17 @@ import { obtenerPacienteId } from "@/lib/auth";
 import { encuestaCompleta } from "@/lib/encuesta-servidor";
 import FormularioEncuesta from "@/components/FormularioEncuesta";
 
-export default async function EncuestaPage() {
+export default async function EncuestaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ nueva?: string }>;
+}) {
   // middleware.ts ya garantiza que hay sesión antes de llegar aquí.
   const patientId = (await obtenerPacienteId())!;
-  if (await encuestaCompleta(patientId)) redirect("/inicio");
+  // ?nueva=1 viene del botón "Volver a llenar encuesta" del inicio: la nueva
+  // respuesta reemplaza a la anterior (ver api/encuesta).
+  const { nueva } = await searchParams;
+  if (!nueva && (await encuestaCompleta(patientId))) redirect("/inicio");
 
   return (
     <main className="min-h-screen flex flex-col px-4 pb-10" role="main">
