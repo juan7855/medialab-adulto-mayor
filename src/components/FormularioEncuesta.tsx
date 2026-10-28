@@ -89,7 +89,7 @@ export default function FormularioEncuesta() {
         body: JSON.stringify({ scores: puntajes }),
       });
       if (!res.ok) throw new Error();
-      router.push("/gracias");
+      router.push("/conversemos");
     } catch {
       setError("No se pudo guardar. Intente de nuevo.");
       setEnviando(false);

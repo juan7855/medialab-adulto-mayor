@@ -15,3 +15,13 @@ export type ClavePregunta = (typeof PREGUNTAS)[number]["clave"];
 export interface RespuestaEncuesta {
   scores: Record<ClavePregunta, number>;
 }
+
+/** Pantalla siguiente a la encuesta: dos preguntas, ninguna obligatoria. */
+export const OPCIONES_SUENO = ["Muy bien", "Bien", "Regular", "Mal"] as const;
+export type OpcionSueno = (typeof OPCIONES_SUENO)[number];
+export const LARGO_MAXIMO_NOTA = 500;
+
+export interface RespuestaConversemos {
+  extraNote?: string;
+  sleepQuality?: OpcionSueno | null;
+}

@@ -412,7 +412,8 @@ export const communityBlocks = pgTable(
 // ya no se piden (el nombre vive en patients) y quedaron opcionales en la
 // base, sólo para conservar lo que ya se había guardado. patient_id es único: una respuesta por paciente. Las
 // preguntas son escalas 0–10 (ver src/lib/encuesta.ts). La tabla se creó con
-// SQL directo (no con drizzle-kit push, que podría tocar columnas del cuidador).
+// SQL directo (no con drizzle-kit push, que podría tocar columnas del cuidador);
+// extra_note y sleep_quality también se agregaron con ALTER TABLE a mano.
 export const surveyResponses = pgTable("survey_responses", {
   id: serial("id").primaryKey(),
   patientId: integer("patient_id").notNull().unique().references(() => patients.id),
@@ -422,4 +423,8 @@ export const surveyResponses = pgTable("survey_responses", {
   anxiousYesterday: integer("anxious_yesterday").notNull(),
   sadYesterday: integer("sad_yesterday").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
+  // Pantalla siguiente a la encuesta (/conversemos): opcionales, en palabras
+  // de la persona. sleep_quality es una de OPCIONES_SUENO (src/lib/encuesta.ts).
+  extraNote: text("extra_note"),
+  sleepQuality: text("sleep_quality"),
 });
