@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useIsClient } from "@/lib/today";
-import { hablar } from "@/lib/voz";
+import { hablarCuandoSePueda } from "@/lib/voz";
 
 // A nivel de módulo: sobrevive a la navegación interna (el componente se
 // vuelve a montar al regresar al inicio) y se reinicia al abrir la app.
@@ -27,7 +27,7 @@ export default function Greeting({ name }: { name: string }) {
   useEffect(() => {
     if (!isClient || !name || saludoDicho) return;
     saludoDicho = true;
-    hablar(`${greetingFor(new Date().getHours())}, ${name}. ¿Cómo ha estado?`);
+    return hablarCuandoSePueda(`${greetingFor(new Date().getHours())}, ${name}. ¿Cómo ha estado?`);
   }, [isClient, name]);
 
   return (

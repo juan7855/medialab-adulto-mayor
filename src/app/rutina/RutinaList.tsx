@@ -7,6 +7,7 @@ import {
   Check,
   CircleCheck,
   Clock,
+  CloudSun,
   CookingPot,
   Egg,
   Footprints,
@@ -16,6 +17,7 @@ import {
   Salad,
   Sun,
   Sunrise,
+  Sunset,
   Tv,
   Undo2,
   type LucideIcon,
@@ -43,10 +45,44 @@ interface RoutineLog {
 }
 
 const GROUPS: { key: string; label: string; icon: LucideIcon; accent: AccentName }[] = [
-  { key: "morning", label: "Mañana", icon: Sunrise, accent: "yellow" },
-  { key: "afternoon", label: "Tarde", icon: Sun, accent: "orange" },
-  { key: "evening", label: "Noche", icon: Moon, accent: "purple" },
+  { key: "amanecer", label: "Amanecer", icon: Sunrise, accent: "yellow" },
+  { key: "manana", label: "Mañana", icon: CloudSun, accent: "green" },
+  { key: "mediodia", label: "Mediodía", icon: Sun, accent: "orange" },
+  { key: "tarde", label: "Tarde", icon: Sunset, accent: "cyan" },
+  { key: "noche", label: "Noche", icon: Moon, accent: "purple" },
+  { key: "otros", label: "Durante el día", icon: Clock, accent: "blue" },
 ];
+
+/**
+ * Franja de una actividad. La plataforma del cuidador escribe la franja en
+ * español ("Amanecer", "Mañana", "Mediodía", "Tarde", "Noche"); el seed
+ * original la escribía en inglés ("morning"...). Se aceptan ambas, sin
+ * importar mayúsculas ni tildes, y lo que no se reconozca cae en "otros"
+ * para que ninguna actividad desaparezca de la pantalla.
+ */
+const ALIAS_FRANJA: Record<string, string> = {
+  amanecer: "amanecer",
+  madrugada: "amanecer",
+  dawn: "amanecer",
+  manana: "manana",
+  morning: "manana",
+  mediodia: "mediodia",
+  noon: "mediodia",
+  tarde: "tarde",
+  afternoon: "tarde",
+  noche: "noche",
+  evening: "noche",
+  night: "noche",
+};
+
+function franjaDe(timeOfDay: string | null | undefined): string {
+  const clave = (timeOfDay ?? "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .trim()
+    .toLowerCase();
+  return ALIAS_FRANJA[clave] ?? "otros";
+}
 
 /**
  * La rutina se siembra con un emoji por actividad. Se traduce a un icono de
@@ -229,12 +265,14 @@ export default function RutinaList() {
 
       {/* Actividades por franja horaria */}
       {GROUPS.map((group) => {
-        const items = activities.filter((a) => a.timeOfDay === group.key);
+        const items = activities
+          .filter((a) => franjaDe(a.timeOfDay) === group.key)
+          .sort((a, b) => (a.scheduledTime ?? "").localeCompare(b.scheduledTime ?? ""));
         if (items.length === 0) return null;
         const tone = ACCENTS[group.accent];
 
         return (
-          <section key={group.key} aria-label={`Actividades de la ${group.label}`}>
+          <section key={group.key} aria-label={`Actividades: ${group.label}`}>
             <SectionTitle icon={group.icon} accent={group.accent}>
               {group.label}
             </SectionTitle>

@@ -44,6 +44,65 @@ export function hablar(texto: string, genero?: "masculina" | "femenina"): void {
   }
 }
 
+/**
+ * Habla un texto apenas el navegador lo permita.
+ *
+ * En celulares (Chrome Android, Safari iOS) una página no puede hablar sola:
+ * hace falta que la persona haya tocado la pantalla. En el computador suele
+ * permitirse. Así que se intenta de inmediato y, si la voz no arranca, se
+ * repite dentro del primer toque o tecla — iOS exige que `speak()` ocurra
+ * dentro del propio gesto, no después.
+ *
+ * Devuelve una función para cancelar la espera (al desmontar el componente).
+ */
+export function hablarCuandoSePueda(texto: string): () => void {
+  if (!disponibleVoz() || !texto) return () => {};
+
+  let arranco = false;
+  let esperando = false;
+  const eventos = ["pointerdown", "touchend", "keydown"] as const;
+
+  const quitar = () => {
+    if (!esperando) return;
+    esperando = false;
+    eventos.forEach((e) => window.removeEventListener(e, alTocar, true));
+  };
+
+  function alTocar() {
+    quitar();
+    if (!arranco) hablarMarcando();
+  }
+
+  function hablarMarcando() {
+    try {
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(texto);
+      u.lang = "es-ES";
+      u.rate = 0.95;
+      const voz = elegirVoz();
+      if (voz) u.voice = voz;
+      u.onstart = () => {
+        arranco = true;
+        quitar();
+      };
+      window.speechSynthesis.speak(u);
+    } catch {
+      // Sin voz: la app sigue funcionando igual, en silencio.
+    }
+  }
+
+  // Si el navegador informa que aún no hubo ningún toque, ni se intenta:
+  // se espera directamente al primer gesto.
+  const activacion = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } })
+    .userActivation;
+  if (!activacion || activacion.hasBeenActive) hablarMarcando();
+
+  esperando = true;
+  eventos.forEach((e) => window.addEventListener(e, alTocar, { capture: true, passive: true }));
+
+  return quitar;
+}
+
 export function detenerVoz(): void {
   if (!disponibleVoz()) return;
   try {
