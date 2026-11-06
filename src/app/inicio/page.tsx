@@ -10,7 +10,6 @@ import TarjetaAsistente from "@/components/TarjetaAsistente";
 import CerrarSesion from "@/components/CerrarSesion";
 import Greeting from "@/components/Greeting";
 import ResumenHoy from "@/components/ResumenHoy";
-import EmergenciaBoton from "@/components/EmergenciaBoton";
 import Gota, { type Esquina } from "@/components/Gota";
 import { COMUNIDAD, SECTIONS, type Section } from "@/lib/theme";
 
@@ -77,12 +76,11 @@ export default async function HomePage() {
           {/* eslint-disable-next-line @next/next/no-img-element -- logo local */}
           <img src="/logo/panela-logo.png" alt="Panela" style={{ height: rem(34), width: "auto" }} />
         </div>
-        <EmergenciaBoton />
       </div>
 
       {/* Bienvenida: Panela habla con la persona */}
       <section
-        className="relative overflow-hidden p-5"
+        className="relative overflow-hidden p-4"
         style={{ backgroundColor: "var(--beige)", borderRadius: "var(--r-xl)" }}
         aria-label="Bienvenida"
       >

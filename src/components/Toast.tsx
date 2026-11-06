@@ -35,10 +35,12 @@ export default function Toast({
     <div
       role="alert"
       aria-live="polite"
-      className="fixed bottom-6 left-1/2 z-50 flex items-center gap-3 animate-slide-in"
+      className="fixed left-1/2 z-50 flex items-center gap-3 animate-slide-in"
       style={{
         transform: "translateX(-50%)",
-        backgroundColor: "#303F49",
+        // Por encima del botón flotante de emergencia, que ocupa la esquina.
+        bottom: "calc(5.8rem + env(safe-area-inset-bottom))",
+        backgroundColor: "var(--cta-dark)",
         color: "#FBF9F3",
         borderRadius: "var(--r-md)",
         boxShadow: "var(--shadow-lg)",

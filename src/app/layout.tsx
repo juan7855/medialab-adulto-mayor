@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import EmergenciaFlotante from "@/components/EmergenciaFlotante";
 
 // Poppins, la tipografía del Figma. Sin 800: los pesos 800 del código caen
 // en 700 (Bold), que es el más grueso que usa el diseño.
@@ -30,7 +31,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="es" className={poppins.variable}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <EmergenciaFlotante />
+      </body>
     </html>
   );
 }

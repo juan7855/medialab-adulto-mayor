@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MessageCircleHeart } from "lucide-react";
 import { rem } from "@/lib/scale";
 import { ASISTENTE as asistente } from "@/lib/asistentes";
 
@@ -34,12 +35,22 @@ export default function TarjetaAsistente() {
         />
       </div>
 
+      {/* La acción principal del inicio: verde de la marca, grande y con sombra
+          para que sea lo primero que se ve dentro del bloque durazno. */}
       <Link
         href="/encuesta?nueva=1"
-        className="btn-dark pressable w-full mt-4"
-        style={{ minHeight: "3.8rem", fontSize: "var(--t-base)" }}
+        className="btn-cta pressable w-full mt-4 text-center"
+        style={{
+          minHeight: "4.3rem",
+          padding: "0.6rem 0.75rem",
+          fontSize: "var(--t-base)",
+          fontWeight: 700,
+          lineHeight: 1.2,
+          boxShadow: "0 6px 16px rgba(0, 154, 116, 0.32)",
+        }}
       >
-        Contarle cómo estoy
+        <MessageCircleHeart size={24} strokeWidth={2.2} aria-hidden="true" style={{ flexShrink: 0 }} />
+        <span>Contarle cómo estoy</span>
       </Link>
     </>
   );

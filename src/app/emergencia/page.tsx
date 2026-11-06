@@ -34,7 +34,6 @@ export default function EmergenciaPage() {
         accent={EMERGENCIA.accent}
         backHref="/inicio"
         backLabel="Hoy"
-        showEmergencia={false}
       />
 
       <main className="px-4 pt-4 flex flex-col gap-7" role="main">

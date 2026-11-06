@@ -14,8 +14,6 @@ interface PageHeaderProps {
   accent?: AccentName;
   backHref?: string;
   backLabel?: string;
-  /** Falso en la propia pantalla de emergencia. */
-  showEmergencia?: boolean;
 }
 
 /** Barra de navegación + título grande de la pantalla, como en el Figma. */
@@ -24,11 +22,10 @@ export default function PageHeader({
   subtitle,
   backHref = "/inicio",
   backLabel = "Hoy",
-  showEmergencia = true,
 }: PageHeaderProps) {
   return (
     <header role="banner">
-      <AppBar backHref={backHref} backLabel={backLabel} showEmergencia={showEmergencia} />
+      <AppBar backHref={backHref} backLabel={backLabel} />
 
       <div className="px-4 pt-3 pb-1">
         <h1 style={{ fontSize: "var(--t-xl)", fontWeight: 700 }}>{title}</h1>
