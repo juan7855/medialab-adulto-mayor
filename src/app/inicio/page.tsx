@@ -1,16 +1,6 @@
 import { rem } from "@/lib/scale";
 import Link from "next/link";
 import { eq } from "drizzle-orm";
-import {
-  Apple,
-  Brain,
-  CalendarCheck,
-  ClipboardList,
-  Dumbbell,
-  MessagesSquare,
-  Pill,
-  type LucideIcon,
-} from "lucide-react";
 import { db } from "@/db";
 import { patients } from "@/db/schema";
 import { redirect } from "next/navigation";
@@ -21,65 +11,38 @@ import CerrarSesion from "@/components/CerrarSesion";
 import Greeting from "@/components/Greeting";
 import ResumenHoy from "@/components/ResumenHoy";
 import EmergenciaBoton from "@/components/EmergenciaBoton";
-import { ACCENTS, COMUNIDAD, RUTINA, SECTIONS, type Section } from "@/lib/theme";
+import Gota, { type Esquina } from "@/components/Gota";
+import { COMUNIDAD, RUTINA, SECTIONS, type Section } from "@/lib/theme";
 
-/** Glifo de cada sección dentro de su gota de color. */
-const GLIFOS: Record<string, LucideIcon> = {
-  "/ejercicios": Dumbbell,
-  "/nutricion": Apple,
-  "/medicamentos": Pill,
-  "/cognitivo": Brain,
-  "/rutina": CalendarCheck,
-  "/comunidad": MessagesSquare,
+/** La esquina recta de cada gota, como las gira el Figma. */
+const ESQUINAS: Record<string, Esquina> = {
+  "/ejercicios": "abajo-der",
+  "/nutricion": "abajo-izq",
+  "/medicamentos": "abajo-der",
+  "/cognitivo": "arriba-izq",
+  "/rutina": "arriba-der",
+  "/comunidad": "abajo-izq",
 };
 
 /**
- * Ficha de sección: tarjeta blanca con una gota de color (la forma de la
- * mascota) y el nombre debajo. Dos por fila; el texto va a tamaño reducido
- * porque "Medicamentos" es la palabra más larga y debe caber en media pantalla.
+ * Ficha de sección del Figma: tarjeta blanca con borde arena, gota de color
+ * en un cuadro claro y el nombre debajo. Dos por fila; el texto va a tamaño
+ * reducido porque "Medicamentos" debe caber en media pantalla.
  */
 function SectionTile({ section }: { section: Section }) {
-  const Glifo = GLIFOS[section.href] ?? Dumbbell;
-  const tone = ACCENTS[section.accent];
-
   return (
     <Link
       href={section.href}
-      className="pressable flex flex-col justify-between gap-3 p-3 h-full"
+      className="card pressable flex flex-col justify-between gap-4 p-3.5 h-full"
       style={{
-        backgroundColor: "var(--surface)",
-        border: "var(--border-w) solid var(--line)",
         borderRadius: "var(--r-xl)",
-        boxShadow: "var(--shadow-sm)",
         textDecoration: "none",
         color: "inherit",
-        minHeight: rem(112),
+        minHeight: rem(118),
       }}
       aria-label={`${section.label}. ${section.description}`}
     >
-      <span
-        className="tile"
-        style={{
-          width: rem(50),
-          height: rem(50),
-          backgroundColor: tone.tint,
-          border: `1px solid ${tone.line}`,
-          borderRadius: "var(--r-md)",
-        }}
-        aria-hidden="true"
-      >
-        <span
-          className="tile"
-          style={{
-            width: "72%",
-            height: "72%",
-            backgroundColor: tone.solid,
-            borderRadius: "50% 50% 50% 14%",
-          }}
-        >
-          <Glifo color="#fff" strokeWidth={2.2} style={{ width: "60%", height: "60%" }} />
-        </span>
-      </span>
+      <Gota accent={section.accent} size={52} esquina={ESQUINAS[section.href]} enCuadro />
       <span style={{ fontSize: "var(--t-sm)", fontWeight: 600, lineHeight: 1.15 }}>
         {section.label}
       </span>
@@ -111,7 +74,7 @@ export default async function HomePage() {
 
       {/* Bienvenida: Panela habla con la persona */}
       <section
-        className="relative overflow-hidden p-4"
+        className="relative overflow-hidden p-5"
         style={{ backgroundColor: "var(--beige)", borderRadius: "var(--r-xl)" }}
         aria-label="Bienvenida"
       >
@@ -151,22 +114,6 @@ export default async function HomePage() {
         role="contentinfo"
       >
         Panela · Su salud, día a día
-        <Link
-          href="/encuesta?nueva=1"
-          className="pressable flex items-center gap-1.5 mx-auto"
-          style={{
-            color: "var(--ink-soft)",
-            fontSize: "var(--t-xs)",
-            fontWeight: 700,
-            textDecoration: "none",
-            border: "var(--border-w) solid var(--line-strong)",
-            borderRadius: "999px",
-            padding: `${rem(6)} ${rem(14)}`,
-          }}
-        >
-          <ClipboardList size={16} strokeWidth={2.2} aria-hidden="true" />
-          Volver a llenar encuesta
-        </Link>
         <CerrarSesion />
       </footer>
     </main>

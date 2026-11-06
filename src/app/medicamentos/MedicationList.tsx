@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { AlarmClock, Check, Clock, Pill } from "lucide-react";
+import { Check, Clock, Pill } from "lucide-react";
+import Gota from "@/components/Gota";
 import Toast, { type ToastTone } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { useToday } from "@/lib/today";
@@ -19,6 +20,23 @@ interface MedLog {
   medicationId: number;
   taken: boolean;
   takenAt: string | null;
+}
+
+/** "14:00" → "2:00 p. m.", como en el Figma. Si no hay hora, nada. */
+function horaLegible(time: string): string {
+  const m = /^(\d{1,2}):(\d{2})/.exec(time ?? "");
+  if (!m) return "";
+  const h = Number(m[1]);
+  const sufijo = h < 12 ? "a. m." : "p. m.";
+  return `${h % 12 === 0 ? 12 : h % 12}:${m[2]} ${sufijo}`;
+}
+
+/** Hora local en que se marcó: "7:05". */
+function horaDeMarca(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.getHours() % 12 === 0 ? 12 : d.getHours() % 12}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
 export default function MedicationList() {
@@ -131,94 +149,125 @@ export default function MedicationList() {
     );
   }
 
+  // El siguiente pendiente se resalta con borde naranja, como en el Figma.
+  const siguiente = medications.find((m) => !isTaken(m.id))?.id;
+
   return (
     <>
       <ul className="flex flex-col gap-3 list-none p-0 m-0" aria-label="Medicamentos de hoy">
         {medications.map((med, i) => {
           const taken = isTaken(med.id);
           const isSnoozed = snoozed.has(med.id);
-          // El color de cada medicamento viene de la base de datos.
-          const tileColor = taken ? "var(--green-solid)" : med.color;
+          const hora = horaLegible(med.time);
 
-          return (
-            <li
-              key={med.id}
-              className="card p-3.5 animate-rise"
-              style={{
-                animationDelay: `${i * 45}ms`,
-                backgroundColor: taken ? "var(--surface-soft)" : "var(--surface)",
-              }}
-              aria-label={`${med.name}, ${med.dose}, a las ${med.time}. ${taken ? "Tomado" : "Pendiente"}`}
-            >
-              <div className="flex items-center gap-3.5">
+          if (taken) {
+            const tomadoA = horaDeMarca(logs.find((l) => l.medicationId === med.id)?.takenAt);
+            return (
+              <li
+                key={med.id}
+                className="flex items-center gap-3.5 p-3.5 animate-rise"
+                style={{
+                  animationDelay: `${i * 45}ms`,
+                  backgroundColor: "var(--green-tint)",
+                  border: "2px solid var(--green-solid)",
+                  borderRadius: "var(--r-xl)",
+                }}
+                aria-label={`${med.name}${hora ? `, ${hora}` : ""}. Ya se lo tomó${tomadoA ? ` a las ${tomadoA}` : ""}.`}
+              >
                 <span
                   className="tile"
                   style={{
-                    width: rem(62),
-                    height: rem(62),
-                    borderRadius: rem(14),
-                    backgroundColor: tileColor,
+                    width: rem(46),
+                    height: rem(46),
+                    borderRadius: "999px",
+                    backgroundColor: "var(--green-solid)",
                   }}
                   aria-hidden="true"
                 >
-                  {taken ? (
-                    <Check strokeWidth={2.6} color="#FAF8F5" />
-                  ) : (
-                    <Pill strokeWidth={2} color="#FAF8F5" />
-                  )}
+                  <Check strokeWidth={3} color="#fff" />
                 </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block" style={{ fontSize: "var(--t-base)", fontWeight: 600 }}>
+                    {hora ? `${hora} · ` : ""}
+                    {med.name}
+                  </span>
+                  <span
+                    className="block mt-0.5"
+                    style={{ fontSize: "var(--t-sm)", fontWeight: 400, color: "var(--green-deep)" }}
+                  >
+                    {tomadoA ? `Se lo tomó a las ${tomadoA}` : "Ya se lo tomó"}
+                  </span>
+                </span>
+              </li>
+            );
+          }
+
+          const esSiguiente = med.id === siguiente;
+          return (
+            <li
+              key={med.id}
+              className="card p-4 animate-rise"
+              style={{
+                animationDelay: `${i * 45}ms`,
+                borderRadius: "var(--r-xl)",
+                border: esSiguiente ? "2px solid var(--orange-solid)" : undefined,
+              }}
+              aria-label={`${med.name}, ${med.dose}${hora ? `, a las ${hora}` : ""}. Pendiente`}
+            >
+              <div className="flex items-center gap-3.5">
+                <Gota accent="cyan" size={58} esquina="abajo-der" enCuadro />
 
                 <div className="flex-1 min-w-0">
-                  <div
-                    style={{
-                      fontSize: "var(--t-md)",
-                      fontWeight: 800,
-                      color: taken ? "var(--ink-mute)" : "var(--ink)",
-                      textDecoration: taken ? "line-through" : "none",
-                    }}
-                  >
+                  <div style={{ fontSize: "var(--t-md)", fontWeight: 600, lineHeight: 1.2 }}>
                     {med.name}
                   </div>
+                  {hora && (
+                    <span
+                      className="pill mt-2"
+                      style={
+                        esSiguiente
+                          ? { backgroundColor: "var(--orange-tint)", borderColor: "var(--orange-line)" }
+                          : undefined
+                      }
+                    >
+                      <Clock size={17} strokeWidth={2.2} aria-hidden="true" />
+                      {hora}
+                    </span>
+                  )}
                   <div
-                    className="mt-0.5"
-                    style={{ fontSize: "var(--t-xs)", fontWeight: 500, color: "var(--ink-mute)" }}
+                    className="mt-1.5"
+                    style={{ fontSize: "var(--t-sm)", fontWeight: 400, color: "var(--ink-mute)" }}
                   >
                     {med.dose}
                   </div>
-                  <span className="pill mt-2">
-                    <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
-                    {med.time}
-                  </span>
                 </div>
               </div>
 
-              {!taken && (
-                <div className="flex gap-2.5 mt-3.5">
-                  <button
-                    onClick={() => setConfirm({ medId: med.id, medName: med.name })}
-                    className="flex-1 btn-cta pressable"
-                    aria-label={`Marcar ${med.name} como tomado`}
-                  >
-                    <Check size={20} strokeWidth={2.6} aria-hidden="true" />
-                    Ya lo tomé
-                  </button>
+              <div className="flex gap-2.5 mt-4">
+                <button
+                  onClick={() => setConfirm({ medId: med.id, medName: med.name })}
+                  className="flex-1 btn-cta pressable"
+                  aria-label={`Marcar ${med.name} como tomado`}
+                >
+                  Ya lo tomé
+                </button>
 
-                  <button
-                    onClick={() => handleSnooze(med.id)}
-                    disabled={isSnoozed}
-                    className="btn-soft pressable"
-                    style={{ paddingInline: "1rem", opacity: isSnoozed ? 0.55 : 1 }}
-                    aria-label={
-                      isSnoozed
-                        ? "Recordatorio ya activado"
-                        : `Recordar ${med.name} en 10 minutos`
-                    }
-                  >
-                    <AlarmClock size={19} strokeWidth={2.2} aria-hidden="true" />
-                    10 min
-                  </button>
-                </div>
-              )}
+                <button
+                  onClick={() => handleSnooze(med.id)}
+                  disabled={isSnoozed}
+                  className="btn-soft pressable"
+                  style={{
+                    paddingInline: "1rem",
+                    color: isSnoozed ? "var(--ink-mute)" : undefined,
+                    borderColor: isSnoozed ? "var(--line)" : undefined,
+                  }}
+                  aria-label={
+                    isSnoozed ? "Recordatorio ya activado" : `Recordar ${med.name} en 10 minutos`
+                  }
+                >
+                  En 10 min
+                </button>
+              </div>
             </li>
           );
         })}

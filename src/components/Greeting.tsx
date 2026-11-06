@@ -35,11 +35,11 @@ export default function Greeting({ name }: { name: string }) {
       {/* El espacio duro reserva la altura y evita que el bloque salte al hidratar */}
       <span
         className="block"
-        style={{ fontSize: "var(--t-md)", fontWeight: 600, color: "var(--ink-soft)" }}
+        style={{ fontSize: "var(--t-md)", fontWeight: 400, color: "var(--ink-soft)" }}
       >
         {now ? `${greetingFor(now.getHours())},` : " "}
       </span>
-      <span className="block mt-1" style={{ fontSize: "var(--t-2xl)", fontWeight: 800 }}>
+      <span className="block mt-2" style={{ fontSize: "var(--t-2xl)", fontWeight: 700 }}>
         {name || " "}
       </span>
     </h1>

@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import { rem } from "@/lib/scale";
+import FilaLista from "./FilaLista";
 import { useToday } from "@/lib/today";
 
 /**
@@ -45,41 +43,12 @@ export default function ResumenHoy() {
       : `Hizo ${conteo.hechas} de ${conteo.total} cosas`;
 
   return (
-    <Link
+    <FilaLista
       href="/rutina"
-      className="pressable flex items-center gap-3 p-3.5"
-      style={{
-        backgroundColor: "var(--surface)",
-        border: "var(--border-w) solid var(--line)",
-        borderRadius: "var(--r-xl)",
-        boxShadow: "var(--shadow-sm)",
-        textDecoration: "none",
-        color: "inherit",
-      }}
-      aria-label={`Todo lo de hoy. ${texto}`}
-    >
-      <span
-        aria-hidden="true"
-        style={{
-          width: rem(44),
-          height: rem(44),
-          backgroundColor: "var(--orange-solid)",
-          borderRadius: "50% 50% 50% 12%",
-          flexShrink: 0,
-        }}
-      />
-      <span className="flex-1 min-w-0">
-        <span className="block" style={{ fontSize: "var(--t-md)", fontWeight: 800 }}>
-          Todo lo de hoy
-        </span>
-        <span
-          className="block mt-0.5"
-          style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}
-        >
-          {texto}
-        </span>
-      </span>
-      <ChevronRight size={24} strokeWidth={2.3} color="var(--ink-soft)" aria-hidden="true" />
-    </Link>
+      titulo="Todo lo de hoy"
+      subtitulo={texto}
+      accent="orange"
+      esquina="abajo-der"
+    />
   );
 }
