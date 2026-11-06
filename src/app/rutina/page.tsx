@@ -1,21 +1,18 @@
 import PageHeader from "@/components/PageHeader";
-import RutinaList from "./RutinaList";
-import { RUTINA } from "@/lib/theme";
+import RutinaHub from "./RutinaHub";
 
 export default function RutinaPage() {
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
-        title="Rutina"
-        subtitle="Su día, paso a paso"
-        iconSrc={RUTINA.icon}
-        accent={RUTINA.accent}
+        title="Todo lo de hoy"
+        subtitle="Toque una parte del día para ver qué le toca."
         backHref="/inicio"
         backLabel="Hoy"
       />
 
       <main className="px-4 pt-4" role="main">
-        <RutinaList />
+        <RutinaHub />
       </main>
     </div>
   );

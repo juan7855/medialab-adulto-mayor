@@ -1,6 +1,6 @@
 import PageHeader from "@/components/PageHeader";
 import MedicationList from "./MedicationList";
-import MedicationHistory from "./MedicationHistory";
+import FilaLista from "@/components/FilaLista";
 
 export default function MedicamentosPage() {
   return (
@@ -8,8 +8,8 @@ export default function MedicamentosPage() {
       <PageHeader
         title="Mis medicamentos"
         subtitle='Toque "Ya lo tomé" al tomárselo.'
-        backHref="/inicio"
-        backLabel="Hoy"
+        backHref="/rutina"
+        backLabel="Todo lo de hoy"
       />
 
       <main className="px-4 pt-4 flex flex-col gap-8" role="main">
@@ -17,14 +17,13 @@ export default function MedicamentosPage() {
           <MedicationList />
         </section>
 
-        <section aria-labelledby="titulo-historial">
-          <h2 id="titulo-historial" style={{ fontSize: "var(--t-lg)", fontWeight: 700 }}>
-            Los últimos días
-          </h2>
-          <div className="mt-3">
-            <MedicationHistory />
-          </div>
-        </section>
+        <FilaLista
+          href="/medicamentos/como-va"
+          titulo="Cómo va"
+          subtitulo="Los últimos 7 días"
+          accent="green"
+          esquina="arriba-der"
+        />
       </main>
     </div>
   );

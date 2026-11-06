@@ -12,7 +12,15 @@ import Greeting from "@/components/Greeting";
 import ResumenHoy from "@/components/ResumenHoy";
 import EmergenciaBoton from "@/components/EmergenciaBoton";
 import Gota, { type Esquina } from "@/components/Gota";
-import { COMUNIDAD, RUTINA, SECTIONS, type Section } from "@/lib/theme";
+import { COMUNIDAD, SECTIONS, type Section } from "@/lib/theme";
+
+/**
+ * Las cuatro fichas del inicio, en el orden del Figma (A02). Medicamentos y
+ * la rutina no van aquí: están dentro de "Todo lo de hoy", justo encima.
+ */
+const FICHAS: Section[] = ["/ejercicios", "/nutricion", "/comunidad", "/cognitivo"].map(
+  (href) => [...SECTIONS, COMUNIDAD].find((s) => s.href === href)!,
+);
 
 /** La esquina recta de cada gota, como las gira el Figma. */
 const ESQUINAS: Record<string, Esquina> = {
@@ -101,7 +109,7 @@ export default async function HomePage() {
       </div>
 
       <nav aria-label="Secciones principales" className="grid grid-cols-2 gap-3 mt-3">
-        {[...SECTIONS, RUTINA, COMUNIDAD].map((section, i) => (
+        {FICHAS.map((section, i) => (
           <div key={section.href} className="animate-rise" style={{ animationDelay: `${i * 40}ms` }}>
             <SectionTile section={section} />
           </div>

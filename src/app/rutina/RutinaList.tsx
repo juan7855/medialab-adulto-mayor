@@ -7,17 +7,12 @@ import {
   Check,
   CircleCheck,
   Clock,
-  CloudSun,
   CookingPot,
   Egg,
   Footprints,
-  Moon,
   Phone,
   Pill,
   Salad,
-  Sun,
-  Sunrise,
-  Sunset,
   Tv,
   Undo2,
   type LucideIcon,
@@ -26,6 +21,7 @@ import Toast, { type ToastTone } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import SectionTitle from "@/components/SectionTitle";
 import { useToday } from "@/lib/today";
+import { GROUPS, franjaDe } from "./franjas";
 import { ACCENTS, type AccentName } from "@/lib/theme";
 import { rem } from "@/lib/scale";
 
@@ -42,46 +38,6 @@ interface RoutineLog {
   activityId: number;
   completed: boolean;
   completedAt: string | null;
-}
-
-const GROUPS: { key: string; label: string; icon: LucideIcon; accent: AccentName }[] = [
-  { key: "amanecer", label: "Amanecer", icon: Sunrise, accent: "yellow" },
-  { key: "manana", label: "Mañana", icon: CloudSun, accent: "green" },
-  { key: "mediodia", label: "Mediodía", icon: Sun, accent: "orange" },
-  { key: "tarde", label: "Tarde", icon: Sunset, accent: "cyan" },
-  { key: "noche", label: "Noche", icon: Moon, accent: "purple" },
-  { key: "otros", label: "Durante el día", icon: Clock, accent: "blue" },
-];
-
-/**
- * Franja de una actividad. La plataforma del cuidador escribe la franja en
- * español ("Amanecer", "Mañana", "Mediodía", "Tarde", "Noche"); el seed
- * original la escribía en inglés ("morning"...). Se aceptan ambas, sin
- * importar mayúsculas ni tildes, y lo que no se reconozca cae en "otros"
- * para que ninguna actividad desaparezca de la pantalla.
- */
-const ALIAS_FRANJA: Record<string, string> = {
-  amanecer: "amanecer",
-  madrugada: "amanecer",
-  dawn: "amanecer",
-  manana: "manana",
-  morning: "manana",
-  mediodia: "mediodia",
-  noon: "mediodia",
-  tarde: "tarde",
-  afternoon: "tarde",
-  noche: "noche",
-  evening: "noche",
-  night: "noche",
-};
-
-function franjaDe(timeOfDay: string | null | undefined): string {
-  const clave = (timeOfDay ?? "")
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .trim()
-    .toLowerCase();
-  return ALIAS_FRANJA[clave] ?? "otros";
 }
 
 /**
@@ -110,7 +66,12 @@ function formatToday(iso: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-export default function RutinaList() {
+/**
+ * Lista de la rutina de hoy. Con `franja`, muestra sólo esa parte del día
+ * (pantalla /rutina/[franja]); así la persona ve pocas tareas a la vez en vez
+ * de una lista larga.
+ */
+export default function RutinaList({ franja }: { franja?: string }) {
   const date = useToday();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [logs, setLogs] = useState<RoutineLog[]>([]);
@@ -208,10 +169,20 @@ export default function RutinaList() {
     );
   }
 
-  const done = activities.filter((a) => isCompleted(a.id)).length;
-  const total = activities.length;
+  // En la pantalla de una franja, el progreso cuenta sólo esa franja.
+  const enVista = franja ? activities.filter((a) => franjaDe(a.timeOfDay) === franja) : activities;
+  const done = enVista.filter((a) => isCompleted(a.id)).length;
+  const total = enVista.length;
   const percent = total > 0 ? Math.round((done / total) * 100) : 0;
   const allDone = done === total;
+
+  if (franja && total === 0) {
+    return (
+      <div className="card p-6 text-center">
+        <p style={{ fontSize: "var(--t-sm)", fontWeight: 600 }}>No hay nada para esta parte del día.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-7">
@@ -264,7 +235,7 @@ export default function RutinaList() {
       </div>
 
       {/* Actividades por franja horaria */}
-      {GROUPS.map((group) => {
+      {GROUPS.filter((g) => !franja || g.key === franja).map((group) => {
         const items = activities
           .filter((a) => franjaDe(a.timeOfDay) === group.key)
           .sort((a, b) => (a.scheduledTime ?? "").localeCompare(b.scheduledTime ?? ""));
@@ -273,11 +244,13 @@ export default function RutinaList() {
 
         return (
           <section key={group.key} aria-label={`Actividades: ${group.label}`}>
-            <SectionTitle icon={group.icon} accent={group.accent}>
-              {group.label}
-            </SectionTitle>
+            {!franja && (
+              <SectionTitle icon={group.icon} accent={group.accent}>
+                {group.label}
+              </SectionTitle>
+            )}
 
-            <ul className="flex flex-col gap-2.5 mt-3 list-none p-0 m-0">
+            <ul className={`flex flex-col gap-2.5 list-none p-0 m-0 ${franja ? "" : "mt-3"}`}>
               {items.map((activity) => {
                 const completed = isCompleted(activity.id);
                 const ActivityIcon = ACTIVITY_ICONS[activity.emoji] ?? group.icon;
@@ -287,7 +260,9 @@ export default function RutinaList() {
                     key={activity.id}
                     className="card flex items-center gap-2.5 p-3.5"
                     style={{
-                      backgroundColor: completed ? "var(--surface-soft)" : "var(--surface)",
+                      borderRadius: "var(--r-xl)",
+                      backgroundColor: completed ? "var(--green-tint)" : "var(--surface)",
+                      borderColor: completed ? "var(--green-solid)" : undefined,
                     }}
                   >
                     <span
@@ -313,8 +288,7 @@ export default function RutinaList() {
                           fontSize: "var(--t-sm)",
                           fontWeight: 800,
                           lineHeight: 1.25,
-                          color: completed ? "var(--ink-mute)" : "var(--ink)",
-                          textDecoration: completed ? "line-through" : "none",
+                          color: "var(--ink)",
                         }}
                       >
                         {activity.title}

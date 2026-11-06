@@ -28,8 +28,8 @@ export default async function RecipeDetailPage({ params }: Props) {
         subtitle={`${recipe.difficulty} · ${recipe.servings}`}
         icon={recipe.icon}
         accent={recipe.accent}
-        backHref="/nutricion"
-        backLabel="Nutrición"
+        backHref="/nutricion/recetas"
+        backLabel="Recetas"
       />
 
       <main className="px-4 pt-3 flex flex-col gap-5" role="main">
