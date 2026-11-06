@@ -22,7 +22,7 @@ export default async function EjerciciosPage() {
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
         backHref="/inicio"
-        backLabel="Inicio"
+        backLabel="Hoy"
       />
 
       <main className="px-4 pt-4" role="main">

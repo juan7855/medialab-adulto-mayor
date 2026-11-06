@@ -87,7 +87,7 @@ export default function MedicationHistory() {
             className="flex items-center gap-3"
             style={{
               backgroundColor: "var(--surface)",
-              border: "1px solid var(--line)",
+              border: "var(--border-w) solid var(--line)",
               borderRadius: "var(--r-md)",
               padding: "0.7rem 0.85rem",
             }}

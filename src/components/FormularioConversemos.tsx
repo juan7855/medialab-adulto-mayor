@@ -95,7 +95,7 @@ export default function FormularioConversemos() {
             fontFamily: "inherit",
             color: "var(--ink)",
             backgroundColor: "var(--surface-soft)",
-            border: "1px solid var(--line-strong)",
+            border: "var(--border-w) solid var(--line-strong)",
             borderRadius: "var(--r-md)",
             resize: "none",
             minHeight: rem(140),

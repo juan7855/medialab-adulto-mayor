@@ -70,7 +70,7 @@ export default function PantallaGracias({ name }: { name: string }) {
             width: "1rem",
             height: "1rem",
             backgroundColor: "var(--surface)",
-            border: "1px solid var(--line)",
+            border: "var(--border-w) solid var(--line)",
             borderRight: "none",
             borderBottom: "none",
             transform: "rotate(45deg)",

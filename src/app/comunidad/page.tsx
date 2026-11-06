@@ -19,7 +19,7 @@ export default async function ComunidadPage() {
         iconSrc={COMUNIDAD.icon}
         accent={COMUNIDAD.accent}
         backHref="/inicio"
-        backLabel="Inicio"
+        backLabel="Hoy"
       />
 
       <main className="px-4 pt-4" role="main">

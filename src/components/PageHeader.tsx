@@ -1,53 +1,45 @@
 import type { LucideIcon } from "lucide-react";
 import AppBar from "./AppBar";
-import IconTile from "./IconTile";
-import SectionIcon from "./SectionIcon";
 import type { AccentName } from "@/lib/theme";
 
 interface PageHeaderProps {
   title: string;
   subtitle?: string;
-  /** Ficha diseñada de la sección (tiene prioridad sobre `icon`). */
+  /**
+   * Ya no se pintan: en el Figma el título va solo, sin ficha de icono. Se
+   * conservan para no tocar cada pantalla y por si se quiere volver atrás.
+   */
   iconSrc?: string;
-  /** Icono de Lucide, para pantallas de detalle sin ficha propia. */
   icon?: LucideIcon;
-  accent: AccentName;
+  accent?: AccentName;
   backHref?: string;
   backLabel?: string;
+  /** Falso en la propia pantalla de emergencia. */
+  showEmergencia?: boolean;
 }
 
-/** Barra de navegación + título de sección con su ficha de icono. */
+/** Barra de navegación + título grande de la pantalla, como en el Figma. */
 export default function PageHeader({
   title,
   subtitle,
-  iconSrc,
-  icon,
-  accent,
   backHref = "/inicio",
-  backLabel = "Inicio",
+  backLabel = "Hoy",
+  showEmergencia = true,
 }: PageHeaderProps) {
   return (
     <header role="banner">
-      <AppBar backHref={backHref} backLabel={backLabel} showHome={backHref !== "/inicio"} />
+      <AppBar backHref={backHref} backLabel={backLabel} showEmergencia={showEmergencia} />
 
-      <div className="flex items-center gap-2.5 px-4 pt-5 pb-1">
-        {iconSrc ? (
-          <SectionIcon src={iconSrc} size={50} />
-        ) : icon ? (
-          <IconTile icon={icon} accent={accent} size={50} strokeWidth={1.9} />
-        ) : null}
-
-        <div className="min-w-0">
-          <h1 style={{ fontSize: "var(--t-xl)", fontWeight: 800 }}>{title}</h1>
-          {subtitle && (
-            <p
-              className="mt-1"
-              style={{ fontSize: "var(--t-xs)", color: "var(--ink-mute)", fontWeight: 600 }}
-            >
-              {subtitle}
-            </p>
-          )}
-        </div>
+      <div className="px-4 pt-3 pb-1">
+        <h1 style={{ fontSize: "var(--t-xl)", fontWeight: 700 }}>{title}</h1>
+        {subtitle && (
+          <p
+            className="mt-2"
+            style={{ fontSize: "var(--t-sm)", color: "var(--ink-mute)", fontWeight: 400 }}
+          >
+            {subtitle}
+          </p>
+        )}
       </div>
     </header>
   );

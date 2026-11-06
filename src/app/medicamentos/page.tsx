@@ -18,7 +18,7 @@ export default function MedicamentosPage() {
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
         backHref="/inicio"
-        backLabel="Inicio"
+        backLabel="Hoy"
       />
 
       <main className="px-4 pt-4 flex flex-col gap-7" role="main">

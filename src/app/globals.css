@@ -2,49 +2,53 @@
 
 /* ---------------------------------------------------------------------------
    Panela — identidad visual
-   Guía: Imagenes/identidad visual/identidad_visual_panela.pdf
+   Fuente: Figma "Panela · Mockups", pantallas mobile (Imagenes/figma pantallas
+   mobile). Los colores salen medidos de esas pantallas.
 
-   Fórmula: fondo marfil + verde protagonista + turquesa y naranja como
-   acentos + tipografía redondeada + tarjetas suaves + mascota ilustrada.
-   El verde marca la acción principal; el coral queda reservado para
-   emergencias. El texto va SIEMPRE en tinta oscura, nunca en un acento.
-   Profundidad discreta: cambios de superficie y bordes finos, no sombras.
+   Fórmula: fondo crema + tarjetas blancas con borde arena + verde para la
+   acción principal + tinta casi negra para la acción fuerte + rojo SOLO para
+   emergencia. Los iconos son gotas de color (la forma de la mascota).
+   El texto va en tinta oscura; sólo el verde profundo se usa en texto.
+   Profundidad: bordes y cambios de superficie, no sombras.
 
    Tipografía deliberadamente grande: los usuarios tienen más de 65 años.
 --------------------------------------------------------------------------- */
 
 :root {
   /* --- Superficies ------------------------------------------------------ */
-  --bg: #F5F1E6;          /* marfil: fondo global */
+  --bg: #FBF6EC;          /* crema: fondo global */
   --surface: #FFFFFF;     /* tarjetas y contenedores */
-  --surface-soft: #FBF9F3;/* zonas secundarias dentro de una tarjeta */
-  --beige: #E9DFC9;       /* bloques destacados y superficies secundarias */
-  --surface-cool: #DDEFF2;/* turquesa suave, para bloques destacados */
+  --surface-soft: #F4EADB;/* arena: botones suaves, barra vacía */
+  --beige: #FBE9D3;       /* durazno: bloque de bienvenida y destacados */
+  --beige-deep: #F6D9B7;  /* círculo decorativo sobre el durazno */
+  --surface-cool: #DCEEF3;/* azul suave, para bloques destacados */
 
   /* --- Texto ------------------------------------------------------------ */
-  --ink: #303F49;
-  --ink-soft: #46545E;
-  --ink-mute: #5F6A66;
+  --ink: #1B1B1B;
+  --ink-soft: #3A3A3A;
+  --ink-mute: #6B6B6B;
 
   /* --- Líneas ----------------------------------------------------------- */
-  --line: #E9DFC9;
-  --line-strong: #D6CBB0;
+  --line: #EADFCB;
+  --line-strong: #D8CCB6;
+  --border-w: 1.5px;
 
   /* --- Acentos ---------------------------------------------------------- */
-  /* Cada acento: `solid` (color vivo de la paleta), `tint` (lavado claro
-     para fondos) y `line` (borde). Ninguno se usa para texto. */
-  --green-solid: #31836F;  --green-tint: #E1EFEA;  --green-line: #B5D5CB;
-  --green-deep: #31836F;
-  --orange-solid: #D58C56; --orange-tint: #F8EADF;  --orange-line: #EBCDB3;
-  --cyan-solid: #329CAF;   --cyan-tint: #DDEFF2;    --cyan-line: #A9D5DD;
-  --blue-solid: #4B7F9A;   --blue-tint: #E1ECF1;    --blue-line: #B3CBD8;
-  --purple-solid: #6E8B82; --purple-tint: #ECEFEE;  --purple-line: #D0D8D4;
-  --red-solid: #B85F59;    --red-tint: #F6E4E2;     --red-line: #E3BDB9;
-  --yellow-solid: #C2A05A; --yellow-tint: #F6F0E1;  --yellow-line: #DDD0B2;
+  /* Cada acento: `solid` (gota de color), `tint` (lavado claro para fondos)
+     y `line` (borde). Ninguno se usa para texto salvo --green-deep. */
+  --green-solid: #009A74;  --green-tint: #D6EFE7;  --green-line: #A8DCCB;
+  --green-deep: #00785A;   /* verde para texto: "Se lo tomó a las 7:05" */
+  --orange-solid: #E09339; --orange-tint: #FBE9D3;  --orange-line: #F0C99A;
+  --cyan-solid: #4399B2;   --cyan-tint: #DCEEF3;    --cyan-line: #A9D3E0;
+  --blue-solid: #4399B2;   --blue-tint: #DCEEF3;    --blue-line: #A9D3E0;
+  --purple-solid: #B6B7B9; --purple-tint: #EDEDEE;  --purple-line: #D6D7D9; /* gris */
+  --red-solid: #C8412B;    --red-tint: #F8E1DC;     --red-line: #E8B3A9;
+  --yellow-solid: #E09339; --yellow-tint: #FBE9D3;  --yellow-line: #F0C99A;
 
   /* --- Llamadas a la acción -------------------------------------------- */
-  --cta: #31836F;          /* verde: texto blanco encima */
-  --cta-hi: #D58C56;       /* naranja: acento secundario */
+  --cta: #009A74;          /* verde: texto blanco encima */
+  --cta-dark: #1E2B28;     /* tinta: acción fuerte ("Empezar", "Contarle cómo estoy") */
+  --cta-hi: #E09339;       /* naranja: acento secundario */
 
   /* --- Escala tipográfica ---------------------------------------------- */
   --t-xs: 0.82rem;   /* 18px */
@@ -56,16 +60,17 @@
   --t-2xl: 2.1rem;   /* 46px */
 
   /* --- Radios ----------------------------------------------------------- */
-  --r-sm: 0.65rem;
-  --r-md: 0.95rem;
-  --r-lg: 1rem;     /* tarjetas: 16–24px */
-  --r-xl: 1.25rem;
+  --r-sm: 0.75rem;
+  --r-md: 1rem;
+  --r-lg: 1.15rem;  /* tarjetas: ~24px, como en el Figma */
+  --r-xl: 1.4rem;
   --r-pill: 999px;  /* botones tipo píldora */
 
   /* --- Sombras: muy discretas y cálidas ----------------------------------- */
-  --shadow-sm: 0 1px 2px rgba(80, 64, 30, 0.05);
-  --shadow: 0 1px 2px rgba(80, 64, 30, 0.04), 0 3px 8px rgba(80, 64, 30, 0.04);
-  --shadow-lg: 0 2px 4px rgba(80, 64, 30, 0.05), 0 8px 20px rgba(80, 64, 30, 0.07);
+  /* El Figma no usa sombras: la tarjeta se separa por su borde arena. */
+  --shadow-sm: none;
+  --shadow: none;
+  --shadow-lg: 0 6px 18px rgba(30, 43, 40, 0.12); /* sólo botones flotantes */
 
   /* Objetivo táctil mínimo */
   --touch: 3.2rem;
@@ -109,7 +114,7 @@ body {
   color: var(--ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-size: var(--t-base);
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
   /* Una palabra que no quepa nunca debe salirse de su contenedor.
      Aquí NO se usa hyphens: auto. Con el diccionario de español instalado
@@ -121,7 +126,7 @@ body {
 }
 
 h1, h2, h3 {
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
   line-height: 1.14;
   margin: 0;
 }
@@ -159,7 +164,7 @@ a[role="button"] {
 .card {
   background: var(--surface);
   border-radius: var(--r-lg);
-  border: 1px solid var(--line);
+  border: var(--border-w) solid var(--line);
   box-shadow: var(--shadow);
 }
 
@@ -169,7 +174,7 @@ a[role="button"] {
   align-items: center;
   gap: 0.4rem;
   border-radius: 999px;
-  border: 1px solid var(--line-strong);
+  border: var(--border-w) solid var(--line-strong);
   background: var(--surface-soft);
   padding: 0.3rem 0.72rem;
   font-size: var(--t-xs);
@@ -184,9 +189,8 @@ a[role="button"] {
   align-items: center;
   gap: 0.35rem;
   background: var(--surface);
-  border: 1px solid var(--line-strong);
+  border: var(--border-w) solid var(--line);
   border-radius: var(--r-pill);
-  box-shadow: var(--shadow-sm);
   padding: 0.5rem 0.85rem;
   font-size: var(--t-sm);
   font-weight: 700;
@@ -211,21 +215,37 @@ a[role="button"] {
   background: var(--cta);
   color: #fff;
   font-size: var(--t-sm);
-  font-weight: 800;
+  font-weight: 700;
   text-decoration: none;
 }
 
-/* Botón secundario */
+/* Acción fuerte en tinta oscura: "Empezar", "Contarle cómo estoy" */
+.btn-dark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.4rem;
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--cta-dark);
+  color: #fff;
+  font-size: var(--t-sm);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Botón secundario: blanco con borde arena */
 .btn-soft {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   min-height: 3.4rem;
-  border: 1px solid var(--line-strong);
+  border: var(--border-w) solid var(--line-strong);
   border-radius: var(--r-pill);
-  background: var(--surface-soft);
-  color: var(--ink-soft);
+  background: var(--surface);
+  color: var(--ink);
   font-size: var(--t-sm);
   font-weight: 700;
   text-decoration: none;

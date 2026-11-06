@@ -50,7 +50,7 @@ export default function ResumenHoy() {
       className="pressable flex items-center gap-3 p-3.5"
       style={{
         backgroundColor: "var(--surface)",
-        border: "1px solid var(--line)",
+        border: "var(--border-w) solid var(--line)",
         borderRadius: "var(--r-xl)",
         boxShadow: "var(--shadow-sm)",
         textDecoration: "none",

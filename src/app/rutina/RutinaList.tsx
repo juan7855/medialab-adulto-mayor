@@ -351,7 +351,7 @@ export default function RutinaList() {
                         flexShrink: 0,
                         borderRadius: "999px",
                         backgroundColor: completed ? "var(--surface-soft)" : "var(--cta)",
-                        border: completed ? "1px solid var(--line-strong)" : "none",
+                        border: completed ? "var(--border-w) solid var(--line-strong)" : "none",
                         color: completed ? "var(--ink-soft)" : "#fff",
                       }}
                       aria-label={

@@ -146,7 +146,7 @@ export default function TecladoNumerico() {
             minHeight: rem(76),
             borderRadius: "var(--r-lg)",
             backgroundColor: "var(--surface-soft)",
-            border: "1px solid var(--line-strong)",
+            border: "var(--border-w) solid var(--line-strong)",
             color: "var(--ink-soft)",
             opacity: comprobando || digitos.length === 0 ? 0.4 : 1,
           }}

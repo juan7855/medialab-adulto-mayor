@@ -20,7 +20,7 @@ export interface Accent {
   line: string;
   /**
    * Color del glifo que va encima de `solid`. Casi siempre crema, como en las
-   * fichas diseñadas; el amarillo es demasiado claro y necesita tinta oscura.
+   * fichas diseñadas.
    */
   glyph: string;
 }
@@ -34,7 +34,7 @@ export const ACCENTS: Record<AccentName, Accent> = {
   blue: { solid: "var(--blue-solid)", tint: "var(--blue-tint)", line: "var(--blue-line)", glyph: CREAM },
   purple: { solid: "var(--purple-solid)", tint: "var(--purple-tint)", line: "var(--purple-line)", glyph: CREAM },
   red: { solid: "var(--red-solid)", tint: "var(--red-tint)", line: "var(--red-line)", glyph: CREAM },
-  yellow: { solid: "var(--yellow-solid)", tint: "var(--yellow-tint)", line: "var(--yellow-line)", glyph: "var(--ink)" },
+  yellow: { solid: "var(--yellow-solid)", tint: "var(--yellow-tint)", line: "var(--yellow-line)", glyph: CREAM },
 };
 
 /**
@@ -69,8 +69,9 @@ export interface Section {
 }
 
 /**
- * El acento de cada sección es el color de fondo de su propia ficha, para que
- * la pantalla entera se lea como una sola familia.
+ * El acento de cada sección sigue el Figma: Ejercicios verde, Nutrición
+ * naranja, Medicamentos y Comunidad azul, Mente activa gris, "Todo lo de hoy"
+ * naranja.
  */
 export const SECTIONS: Section[] = [
   {
@@ -99,7 +100,7 @@ export const SECTIONS: Section[] = [
     label: "Mente activa",
     description: "Memoria y atención",
     icon: "/iconos/cognitivo.png",
-    accent: "blue",
+    accent: "purple",
   },
 ];
 
@@ -108,7 +109,7 @@ export const RUTINA: Section = {
   label: "Rutina",
   description: "Su día, paso a paso",
   icon: "/iconos/rutina.svg",
-  accent: "purple",
+  accent: "orange",
 };
 
 export const COMUNIDAD: Section = {
@@ -116,7 +117,7 @@ export const COMUNIDAD: Section = {
   label: "Comunidad",
   description: "Foro y mensajes con otros",
   icon: "/iconos/comunidad.svg",
-  accent: "yellow",
+  accent: "cyan",
 };
 
 export const EMERGENCIA: Section = {

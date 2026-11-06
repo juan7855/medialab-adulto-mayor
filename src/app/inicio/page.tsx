@@ -20,7 +20,8 @@ import TarjetaAsistente from "@/components/TarjetaAsistente";
 import CerrarSesion from "@/components/CerrarSesion";
 import Greeting from "@/components/Greeting";
 import ResumenHoy from "@/components/ResumenHoy";
-import { ACCENTS, COMUNIDAD, EMERGENCIA, RUTINA, SECTIONS, type Section } from "@/lib/theme";
+import EmergenciaBoton from "@/components/EmergenciaBoton";
+import { ACCENTS, COMUNIDAD, RUTINA, SECTIONS, type Section } from "@/lib/theme";
 
 /** Glifo de cada sección dentro de su gota de color. */
 const GLIFOS: Record<string, LucideIcon> = {
@@ -47,7 +48,7 @@ function SectionTile({ section }: { section: Section }) {
       className="pressable flex flex-col justify-between gap-3 p-3 h-full"
       style={{
         backgroundColor: "var(--surface)",
-        border: "1px solid var(--line)",
+        border: "var(--border-w) solid var(--line)",
         borderRadius: "var(--r-xl)",
         boxShadow: "var(--shadow-sm)",
         textDecoration: "none",
@@ -79,35 +80,9 @@ function SectionTile({ section }: { section: Section }) {
           <Glifo color="#fff" strokeWidth={2.2} style={{ width: "60%", height: "60%" }} />
         </span>
       </span>
-      <span style={{ fontSize: "var(--t-sm)", fontWeight: 800, lineHeight: 1.15 }}>
+      <span style={{ fontSize: "var(--t-sm)", fontWeight: 600, lineHeight: 1.15 }}>
         {section.label}
       </span>
-    </Link>
-  );
-}
-
-/** Emergencia: botón compacto en coral arriba a la derecha, siempre a la vista. */
-function EmergenciaBoton() {
-  return (
-    <Link
-      href={EMERGENCIA.href}
-      className="pressable flex items-center gap-2"
-      style={{
-        backgroundColor: "var(--red-solid)",
-        borderRadius: "999px",
-        padding: `${rem(8)} ${rem(14)}`,
-        color: "#fff",
-        textDecoration: "none",
-        fontSize: "var(--t-sm)",
-        fontWeight: 800,
-      }}
-      aria-label={`${EMERGENCIA.label}. ${EMERGENCIA.description}`}
-    >
-      <span
-        aria-hidden="true"
-        style={{ width: rem(10), height: rem(10), borderRadius: "999px", backgroundColor: "#fff" }}
-      />
-      {EMERGENCIA.label}
     </Link>
   );
 }
@@ -129,7 +104,7 @@ export default async function HomePage() {
       <div className="flex items-center justify-between gap-2 pt-6 pb-4 px-1">
         <div className="flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element -- logo local */}
-          <img src="/logo/panela-logo.png" alt="Panela" style={{ height: rem(30), width: "auto" }} />
+          <img src="/logo/panela-logo.png" alt="Panela" style={{ height: rem(34), width: "auto" }} />
         </div>
         <EmergenciaBoton />
       </div>
@@ -144,12 +119,12 @@ export default async function HomePage() {
           aria-hidden="true"
           style={{
             position: "absolute",
-            top: "-2.2rem",
-            right: "-1.6rem",
-            width: rem(120),
-            height: rem(120),
-            borderRadius: "999px",
-            backgroundColor: "rgba(255, 255, 255, 0.35)",
+            top: 0,
+            right: 0,
+            width: rem(130),
+            height: rem(110),
+            borderRadius: `0 0 0 ${rem(110)}`,
+            backgroundColor: "var(--beige-deep)",
           }}
         />
         <div className="relative">
@@ -184,7 +159,7 @@ export default async function HomePage() {
             fontSize: "var(--t-xs)",
             fontWeight: 700,
             textDecoration: "none",
-            border: "1px solid var(--line-strong)",
+            border: "var(--border-w) solid var(--line-strong)",
             borderRadius: "999px",
             padding: `${rem(6)} ${rem(14)}`,
           }}

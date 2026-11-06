@@ -59,7 +59,7 @@ export default async function NutricionPage() {
         iconSrc={SECTION.icon}
         accent={SECTION.accent}
         backHref="/inicio"
-        backLabel="Inicio"
+        backLabel="Hoy"
       />
 
       <main className="px-4 pt-4 flex flex-col gap-7" role="main">
@@ -130,7 +130,7 @@ export default async function NutricionPage() {
                 className="flex items-start gap-2.5 p-3.5"
                 style={{
                   backgroundColor: "var(--surface)",
-                  border: "1px solid var(--line)",
+                  border: "var(--border-w) solid var(--line)",
                   borderRadius: "var(--r-md)",
                   fontSize: "var(--t-sm)",
                   fontWeight: 500,

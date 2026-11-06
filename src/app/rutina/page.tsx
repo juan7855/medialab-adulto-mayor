@@ -11,7 +11,7 @@ export default function RutinaPage() {
         iconSrc={RUTINA.icon}
         accent={RUTINA.accent}
         backHref="/inicio"
-        backLabel="Inicio"
+        backLabel="Hoy"
       />
 
       <main className="px-4 pt-4" role="main">

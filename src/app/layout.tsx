@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
-import { Nunito } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-const manrope = Nunito({
+// Poppins, la tipografía del Figma. Sin 800: los pesos 800 del código caen
+// en 700 (Bold), que es el más grueso que usa el diseño.
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   variable: "--font-sans",
 });
@@ -22,12 +24,12 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 2,
   userScalable: true,
-  themeColor: "#F5F1E6",
+  themeColor: "#FBF6EC",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="es" className={manrope.variable}>
+    <html lang="es" className={poppins.variable}>
       <body>{children}</body>
     </html>
   );
