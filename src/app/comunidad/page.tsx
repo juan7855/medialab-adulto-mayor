@@ -4,6 +4,7 @@ import { obtenerPacienteId } from "@/lib/auth";
 import { esMiembroComunidad, listarPostsForo } from "@/lib/comunidad";
 import PageHeader from "@/components/PageHeader";
 import Fecha from "@/components/Fecha";
+import FotoDePost from "@/components/FotoDePost";
 import { COMUNIDAD } from "@/lib/theme";
 
 export default async function ComunidadPage() {
@@ -82,12 +83,15 @@ export default async function ComunidadPage() {
                           <Fecha iso={post.createdAt} />
                         </span>
                       </div>
-                      <p
-                        className="mt-1.5"
-                        style={{ fontSize: "var(--t-md)", fontWeight: 500, lineHeight: 1.4 }}
-                      >
-                        {post.content}
-                      </p>
+                      {post.content && (
+                        <p
+                          className="mt-1.5"
+                          style={{ fontSize: "var(--t-md)", fontWeight: 500, lineHeight: 1.4 }}
+                        >
+                          {post.content}
+                        </p>
+                      )}
+                      {post.foto && <FotoDePost postId={post.id} foto={post.foto} modo="feed" />}
                       <span
                         className="block mt-2"
                         style={{ fontSize: "var(--t-xs)", fontWeight: 700, color: "var(--ink-mute)" }}

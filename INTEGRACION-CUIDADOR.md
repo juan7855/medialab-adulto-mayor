@@ -99,6 +99,15 @@ community_posts / community_comments / community_messages
   ... (contenido; ver schema.ts para todas las columnas)
   hidden          boolean not null default false   -- solo en posts/comments
 
+community_post_images                -- la foto de un post, si lleva una
+  id         serial primary key
+  post_id    integer not null unique references community_posts(id)
+  mime       text not null           -- "image/jpeg" | "image/png" | "image/webp"
+  data       text not null           -- la imagen en base64, ya reducida
+  width      integer not null
+  height     integer not null
+  created_at timestamp
+
 community_reports
   id                        serial primary key
   reporter_patient_id       integer not null references patients(id)
@@ -117,6 +126,12 @@ Para tu pantalla de reportes:
 2. Para mostrar qué se reportó, según `target_type` consulta la tabla
    correspondiente (`community_posts`, `community_comments` o
    `community_messages`) filtrando por `id = target_id`.
+   Un post puede llevar una foto, y casi siempre es lo que se reporta: para
+   verla, `select mime, data from community_post_images where post_id = $1` y
+   píntala como `data:<mime>;base64,<data>`. Ocultar el post (`hidden = true`)
+   ya deja de servirla en la app del paciente; la fila se queda, por si hay
+   que volver a mirarla. Si alguna vez borras un post de verdad, borra antes
+   su fila de `community_post_images` (la FK lo exige).
 3. Si decides ocultarlo (sólo aplica a post/comment — los mensajes de DM no
    tienen `hidden`, ya que son privados entre dos personas):
    ```sql

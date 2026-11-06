@@ -62,6 +62,16 @@ Debe responder `{"ok":true}`.
 
 ## Notas
 
+- Las fotos de la comunidad viven en `community_post_images`. Esa tabla se
+  crea con SQL directo, no con `db:push` (que podría tocar columnas que la
+  plataforma del cuidador agregó a mano):
+
+  ```bash
+  npx tsx src/db/crear-tabla-fotos.ts
+  ```
+
+  Es idempotente, y hay que correrlo **antes** de desplegar el foro con fotos:
+  sin esa tabla, la pantalla de comunidad falla al consultar.
 - Si cambias el schema en `src/db/schema.ts`, corre `npm run db:push` de nuevo.
   Vercel no ejecuta migraciones en el build.
 - `next build` funciona sin `DATABASE_URL`; la conexión se abre en la primera

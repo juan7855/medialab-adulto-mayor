@@ -5,6 +5,7 @@ import {
   communityConversations,
   communityMessages,
   communityPosts,
+  communityPostImages,
   communityComments,
   patients,
 } from "@/db/schema";
@@ -24,6 +25,14 @@ export async function esMiembroComunidad(patientId: number): Promise<boolean> {
   return filas.length > 0;
 }
 
+/** Lo que el feed necesita saber de la foto de un post: que existe y qué
+ *  forma tiene, para reservarle el hueco antes de que cargue. Los bytes se
+ *  piden aparte, a /api/comunidad/posts/[id]/imagen. */
+export interface FotoDePost {
+  width: number;
+  height: number;
+}
+
 export interface PostResumen {
   id: number;
   content: string;
@@ -31,12 +40,13 @@ export interface PostResumen {
   authorId: number;
   authorName: string;
   commentCount: number;
+  foto: FotoDePost | null;
 }
 
 /** El feed del foro: posts no ocultos, con el nombre del autor y cuántos
  *  comentarios tiene cada uno. Usado por la página y por su API. */
 export async function listarPostsForo(): Promise<PostResumen[]> {
-  return db
+  const filas = await db
     .select({
       id: communityPosts.id,
       content: communityPosts.content,
@@ -44,16 +54,26 @@ export async function listarPostsForo(): Promise<PostResumen[]> {
       authorId: communityPosts.patientId,
       authorName: patients.name,
       commentCount: sql<number>`count(${communityComments.id})::int`,
+      fotoAncho: communityPostImages.width,
+      fotoAlto: communityPostImages.height,
     })
     .from(communityPosts)
     .innerJoin(patients, eq(patients.id, communityPosts.patientId))
+    // Como máximo una fila por post (post_id es único), así que este join no
+    // duplica nada y el count de comentarios sigue siendo correcto.
+    .leftJoin(communityPostImages, eq(communityPostImages.postId, communityPosts.id))
     .leftJoin(
       communityComments,
       and(eq(communityComments.postId, communityPosts.id), eq(communityComments.hidden, false)),
     )
     .where(eq(communityPosts.hidden, false))
-    .groupBy(communityPosts.id, patients.name)
+    .groupBy(communityPosts.id, patients.name, communityPostImages.width, communityPostImages.height)
     .orderBy(desc(communityPosts.createdAt));
+
+  return filas.map(({ fotoAncho, fotoAlto, ...post }) => ({
+    ...post,
+    foto: fotoAncho !== null && fotoAlto !== null ? { width: fotoAncho, height: fotoAlto } : null,
+  }));
 }
 
 export interface ComentarioResumen {
@@ -70,6 +90,7 @@ export interface PostDetalle {
   createdAt: Date | null;
   authorId: number;
   authorName: string;
+  foto: FotoDePost | null;
 }
 
 /** Un post con sus comentarios, o null si no existe / está oculto. Un post
@@ -79,20 +100,29 @@ export interface PostDetalle {
 export async function obtenerPostConComentarios(
   postId: number,
 ): Promise<{ post: PostDetalle; comentarios: ComentarioResumen[] } | null> {
-  const [post] = await db
+  const [fila] = await db
     .select({
       id: communityPosts.id,
       content: communityPosts.content,
       createdAt: communityPosts.createdAt,
       authorId: communityPosts.patientId,
       authorName: patients.name,
+      fotoAncho: communityPostImages.width,
+      fotoAlto: communityPostImages.height,
     })
     .from(communityPosts)
     .innerJoin(patients, eq(patients.id, communityPosts.patientId))
+    .leftJoin(communityPostImages, eq(communityPostImages.postId, communityPosts.id))
     .where(and(eq(communityPosts.id, postId), eq(communityPosts.hidden, false)))
     .limit(1);
 
-  if (!post) return null;
+  if (!fila) return null;
+
+  const { fotoAncho, fotoAlto, ...resto } = fila;
+  const post: PostDetalle = {
+    ...resto,
+    foto: fotoAncho !== null && fotoAlto !== null ? { width: fotoAncho, height: fotoAlto } : null,
+  };
 
   const comentarios = await db
     .select({
@@ -108,6 +138,23 @@ export async function obtenerPostConComentarios(
     .orderBy(asc(communityComments.createdAt));
 
   return { post, comentarios };
+}
+
+/** Los bytes de la foto de un post, para la ruta que la sirve. Null si el
+ *  post no existe, está oculto o no lleva foto: un post oculto por moderación
+ *  no debe seguir sirviendo su imagen. */
+export async function obtenerImagenDePost(
+  postId: number,
+): Promise<{ mime: string; bytes: Buffer } | null> {
+  const [fila] = await db
+    .select({ mime: communityPostImages.mime, data: communityPostImages.data })
+    .from(communityPostImages)
+    .innerJoin(communityPosts, eq(communityPosts.id, communityPostImages.postId))
+    .where(and(eq(communityPostImages.postId, postId), eq(communityPosts.hidden, false)))
+    .limit(1);
+
+  if (!fila) return null;
+  return { mime: fila.mime, bytes: Buffer.from(fila.data, "base64") };
 }
 
 export interface ConversacionResumen {

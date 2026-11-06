@@ -3,6 +3,7 @@ import { obtenerPacienteId } from "@/lib/auth";
 import { esMiembroComunidad, obtenerPostConComentarios } from "@/lib/comunidad";
 import PageHeader from "@/components/PageHeader";
 import Fecha from "@/components/Fecha";
+import FotoDePost from "@/components/FotoDePost";
 import BotonReportar from "@/components/BotonReportar";
 import FormularioComentario from "@/components/FormularioComentario";
 import { COMUNIDAD } from "@/lib/theme";
@@ -43,9 +44,12 @@ export default async function PostPage({ params }: { params: Promise<{ postId: s
               <Fecha iso={post.createdAt} />
             </span>
           </div>
-          <p className="mt-1.5" style={{ fontSize: "var(--t-md)", fontWeight: 500, lineHeight: 1.4 }}>
-            {post.content}
-          </p>
+          {post.content && (
+            <p className="mt-1.5" style={{ fontSize: "var(--t-md)", fontWeight: 500, lineHeight: 1.4 }}>
+              {post.content}
+            </p>
+          )}
+          {post.foto && <FotoDePost postId={post.id} foto={post.foto} modo="detalle" />}
           {post.authorId !== patientId && (
             <div className="mt-2.5">
               <BotonReportar targetType="post" targetId={post.id} compact />

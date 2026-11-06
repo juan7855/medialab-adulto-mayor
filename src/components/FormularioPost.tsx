@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
+import SelectorDeFoto from "@/components/SelectorDeFoto";
+import { cuerpoDeFoto, type FotoElegida } from "@/lib/foto-navegador";
 import { rem } from "@/lib/scale";
 
 const LARGO_MAXIMO = 500;
@@ -10,6 +12,7 @@ const LARGO_MAXIMO = 500;
 export default function FormularioPost() {
   const router = useRouter();
   const [texto, setTexto] = useState("");
+  const [foto, setFoto] = useState<FotoElegida | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +24,10 @@ export default function FormularioPost() {
       const res = await fetch("/api/comunidad/posts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: texto }),
+        body: JSON.stringify({
+          content: texto,
+          imagen: foto ? cuerpoDeFoto(foto) : undefined,
+        }),
       });
       if (!res.ok) throw new Error("respuesta no válida");
       router.push("/comunidad");
@@ -41,7 +47,7 @@ export default function FormularioPost() {
         value={texto}
         onChange={(e) => setTexto(e.target.value)}
         maxLength={LARGO_MAXIMO}
-        rows={6}
+        rows={5}
         placeholder="¿Qué quiere contarle a la comunidad?"
         autoFocus
         className="card"
@@ -53,9 +59,11 @@ export default function FormularioPost() {
           fontFamily: "inherit",
           color: "var(--ink)",
           resize: "none",
-          minHeight: rem(200),
+          minHeight: rem(170),
         }}
       />
+
+      <SelectorDeFoto foto={foto} onCambio={setFoto} deshabilitado={guardando} />
 
       <p
         className="mt-2 px-1"
@@ -72,7 +80,7 @@ export default function FormularioPost() {
 
       <button
         onClick={() => void publicar()}
-        disabled={guardando || texto.trim().length === 0}
+        disabled={guardando || (texto.trim().length === 0 && foto === null)}
         className="btn-cta pressable w-full mt-2"
         style={{ minHeight: rem(84), fontSize: "var(--t-lg)", opacity: guardando ? 0.6 : 1 }}
       >

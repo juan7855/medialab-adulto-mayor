@@ -346,6 +346,27 @@ export const communityPosts = pgTable("community_posts", {
   hidden: boolean("hidden").notNull().default(false),
 });
 
+// La foto de un post, si lleva una. Tabla aparte y no una columna en
+// community_posts a propósito: los bytes son lo más pesado de la comunidad y
+// el feed nunca los necesita (sólo saber si hay foto y de qué forma es, para
+// no mover la pantalla mientras carga). Así ninguna consulta del foro
+// arrastra cientos de kilobytes sin querer.
+//
+// data guarda la imagen en base64, ya reducida por el navegador de quien
+// publica (ver src/lib/imagenes.ts). Para una app familiar con pocas fotos
+// al día esto evita montar almacenamiento de archivos aparte; si algún día
+// son muchas, lo que cambia es esta tabla por un bucket, no el resto.
+export const communityPostImages = pgTable("community_post_images", {
+  id: serial("id").primaryKey(),
+  // Único: un post lleva como máximo una foto.
+  postId: integer("post_id").notNull().unique().references(() => communityPosts.id),
+  mime: text("mime").notNull(), // "image/jpeg" | "image/png" | "image/webp"
+  data: text("data").notNull(), // base64, sin el prefijo "data:...;base64,"
+  width: integer("width").notNull(),
+  height: integer("height").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const communityComments = pgTable("community_comments", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").notNull().references(() => communityPosts.id),
