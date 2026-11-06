@@ -13,13 +13,13 @@ import ResumenHoy from "@/components/ResumenHoy";
 import Gota, { type Esquina } from "@/components/Gota";
 import { COMUNIDAD, SECTIONS, type Section } from "@/lib/theme";
 
-/**
- * Las cuatro fichas del inicio, en el orden del Figma (A02). Medicamentos y
- * la rutina no van aquí: están dentro de "Todo lo de hoy", justo encima.
- */
-const FICHAS: Section[] = ["/ejercicios", "/nutricion", "/comunidad", "/cognitivo"].map(
-  (href) => [...SECTIONS, COMUNIDAD].find((s) => s.href === href)!,
-);
+const FICHAS: Section[] = [
+  "/ejercicios",
+  "/nutricion",
+  "/medicamentos",
+  "/comunidad",
+  "/cognitivo",
+].map((href) => [...SECTIONS, COMUNIDAD].find((s) => s.href === href)!);
 
 /** La esquina recta de cada gota, como las gira el Figma. */
 const ESQUINAS: Record<string, Esquina> = {
