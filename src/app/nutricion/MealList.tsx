@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Check, Clock, Undo2, UtensilsCrossed } from "lucide-react";
+import { Check, CircleDashed, Clock, Undo2, UtensilsCrossed } from "lucide-react";
 import Toast, { type ToastTone } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import IconTile from "@/components/IconTile";
 import { useToday } from "@/lib/today";
 import { rem } from "@/lib/scale";
 import { ACCENTS } from "@/lib/theme";
-import { MEAL_ICONS, MEAL_ICON_FALLBACK, type Meal } from "./comidas";
+import { acentoPendiente, iconoDe, nombreEnPregunta, type Meal } from "./comidas";
 
 interface MealLog {
   mealId: number;
@@ -116,14 +116,34 @@ export default function MealList({ meals }: { meals: Meal[] }) {
     );
   }
 
+  // Cuántas quedan por marcar: así la persona ve de entrada que hay algo que
+  // hacer, sin tener que deducirlo del color de las tarjetas.
+  const pendientes = meals.filter((meal) => !(logOf(meal.id)?.eaten ?? false)).length;
+
   return (
     <>
+      <p
+        className="mb-3.5"
+        style={{ fontSize: "var(--t-sm)", fontWeight: 700, color: "var(--ink)" }}
+        aria-live="polite"
+      >
+        {pendientes === 0
+          ? "Ya marcó todas las comidas de hoy."
+          : pendientes === 1
+            ? "Le falta 1 comida por marcar."
+            : `Le faltan ${pendientes} comidas por marcar.`}
+      </p>
+
       <div className="flex flex-col gap-3.5">
         {meals.map((meal) => {
           const log = logOf(meal.id);
           const eaten = log?.eaten ?? false;
           const hour = formatHour(log?.eatenAt ?? null);
-          const tone = eaten ? ACCENTS.green : ACCENTS[meal.accent];
+          // El verde es el color de "ya comió" en toda la app: mientras la
+          // comida está por marcar se pinta del color de su momento del día,
+          // nunca de verde (ver acentoPendiente en comidas.ts).
+          const pendingAccent = acentoPendiente(meal);
+          const tone = eaten ? ACCENTS.green : ACCENTS[pendingAccent];
 
           return (
             <article
@@ -133,7 +153,7 @@ export default function MealList({ meals }: { meals: Meal[] }) {
                 overflow: "hidden",
                 backgroundColor: eaten ? "var(--surface-soft)" : "var(--surface)",
               }}
-              aria-label={`${meal.name}. ${eaten ? "Ya comido" : "Pendiente"}`}
+              aria-label={`${meal.name}. ${eaten ? "Ya comido" : "Por marcar"}`}
             >
               {/* Portada teñida con la ficha del plato */}
               <div
@@ -145,8 +165,8 @@ export default function MealList({ meals }: { meals: Meal[] }) {
                 }}
               >
                 <IconTile
-                  icon={eaten ? Check : (MEAL_ICONS[meal.emoji] ?? MEAL_ICON_FALLBACK)}
-                  accent={eaten ? "green" : meal.accent}
+                  icon={eaten ? Check : iconoDe(meal)}
+                  accent={eaten ? "green" : pendingAccent}
                   size={62}
                   strokeWidth={eaten ? 2.6 : 1.8}
                 />
@@ -163,10 +183,27 @@ export default function MealList({ meals }: { meals: Meal[] }) {
                   {meal.name}
                 </h3>
 
-                <span className="pill mt-2">
-                  <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
-                  {meal.time}
-                </span>
+                {/* La hora y, mientras esté pendiente, el estado escrito: el
+                    color por sí solo no basta para saber si falta marcarla. */}
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <span className="pill">
+                    <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
+                    {meal.time}
+                  </span>
+
+                  {!eaten && (
+                    <span
+                      className="pill"
+                      style={{
+                        backgroundColor: tone.tint,
+                        borderColor: tone.line,
+                      }}
+                    >
+                      <CircleDashed size={15} strokeWidth={2.4} aria-hidden="true" />
+                      Por marcar
+                    </span>
+                  )}
+                </div>
 
                 <ul className="flex flex-col gap-2 mt-3.5 list-none p-0 m-0">
                   {meal.items.map((item) => (
@@ -214,7 +251,7 @@ export default function MealList({ meals }: { meals: Meal[] }) {
                       onClick={() => void setEaten(meal, false)}
                       className="btn-soft pressable"
                       style={{ paddingInline: "1rem" }}
-                      aria-label={`Desmarcar ${meal.article}`}
+                      aria-label={`Desmarcar ${nombreEnPregunta(meal)}`}
                     >
                       <Undo2 size={19} strokeWidth={2.2} aria-hidden="true" />
                       Deshacer
@@ -224,7 +261,7 @@ export default function MealList({ meals }: { meals: Meal[] }) {
                   <button
                     onClick={() => setConfirm(meal)}
                     className="btn-cta pressable w-full mt-4"
-                    aria-label={`Marcar ${meal.article} como comido`}
+                    aria-label={`Marcar ${nombreEnPregunta(meal)} como comido`}
                   >
                     <Check size={20} strokeWidth={2.6} aria-hidden="true" />
                     Listo, ya comí
@@ -238,13 +275,13 @@ export default function MealList({ meals }: { meals: Meal[] }) {
 
       {confirm && (
         <ConfirmDialog
-          message={`¿Ya comió ${confirm.article}?`}
+          message={`¿Ya comió ${nombreEnPregunta(confirm)}?`}
           onConfirm={() => void setEaten(confirm, true)}
           onCancel={() => setConfirm(null)}
           confirmLabel="Sí, ya comí"
           cancelLabel="Todavía no"
           icon={UtensilsCrossed}
-          accent={confirm.accent}
+          accent={acentoPendiente(confirm)}
         />
       )}
 
