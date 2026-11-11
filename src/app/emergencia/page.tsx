@@ -3,6 +3,7 @@ import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
 import IconTile from "@/components/IconTile";
 import { EMERGENCIA, type AccentName } from "@/lib/theme";
+import LlamadaAvisada from "./LlamadaAvisada";
 
 const CONTACTS: {
   name: string;
@@ -38,8 +39,9 @@ export default function EmergenciaPage() {
 
       <main className="px-4 pt-4 flex flex-col gap-7" role="main">
         {/* Llamada al 123, la línea única de emergencias en Colombia */}
-        <a
+        <LlamadaAvisada
           href="tel:123"
+          aviso={{ tipo: "123" }}
           className="pressable flex flex-col items-center justify-center gap-2 p-6"
           style={{
             backgroundColor: "var(--red-solid)",
@@ -58,7 +60,7 @@ export default function EmergenciaPage() {
           <span style={{ fontSize: "var(--t-xs)", fontWeight: 600, opacity: 0.9 }}>
             Emergencia médica
           </span>
-        </a>
+        </LlamadaAvisada>
 
         {/* Qué hacer */}
         <section aria-label="Qué hacer en una emergencia">
@@ -102,8 +104,9 @@ export default function EmergenciaPage() {
           <ul className="flex flex-col gap-3 mt-3 list-none p-0 m-0">
             {CONTACTS.map((contact) => (
               <li key={contact.phone}>
-                <a
+                <LlamadaAvisada
                   href={`tel:${contact.phone}`}
+                  aviso={{ tipo: "contacto", contacto: contact.name, rol: contact.role }}
                   className="card pressable flex items-center gap-3.5 p-3.5"
                   style={{ textDecoration: "none", color: "inherit" }}
                   aria-label={`Llamar a ${contact.name}, ${contact.role}, teléfono ${contact.phone}`}
@@ -144,7 +147,7 @@ export default function EmergenciaPage() {
                   >
                     <Phone size={22} strokeWidth={2.3} />
                   </span>
-                </a>
+                </LlamadaAvisada>
               </li>
             ))}
           </ul>
