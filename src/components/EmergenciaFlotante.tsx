@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Phone } from "lucide-react";
 import { EMERGENCIA } from "@/lib/theme";
 
@@ -17,7 +18,23 @@ import { EMERGENCIA } from "@/lib/theme";
  */
 export default function EmergenciaFlotante() {
   const ruta = usePathname();
-  if (ruta === "/" || ruta.startsWith("/emergencia")) return null;
+
+  // Con el teclado abierto (p. ej. escribiendo un DM) "position: fixed" se
+  // vuelve errático en los navegadores móviles: el botón puede terminar
+  // flotando encima de la caja de texto en vez de debajo del teclado. Más
+  // simple y confiable que perseguir esa posición es ocultarlo mientras se
+  // escribe, y mostrarlo de nuevo al cerrar el teclado.
+  const [tecladoAbierto, setTecladoAbierto] = useState(false);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const revisar = () => setTecladoAbierto(vv.height < window.innerHeight * 0.75);
+    revisar();
+    vv.addEventListener("resize", revisar);
+    return () => vv.removeEventListener("resize", revisar);
+  }, []);
+
+  if (ruta === "/" || ruta.startsWith("/emergencia") || tecladoAbierto) return null;
 
   // En un chat la caja de escribir va fija abajo: el botón sube por encima.
   const enChat = /^\/comunidad\/mensajes\/\d+/.test(ruta);
