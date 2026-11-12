@@ -9,7 +9,6 @@ import { encuestaCompleta } from "@/lib/encuesta-servidor";
 import TarjetaAsistente from "@/components/TarjetaAsistente";
 import CerrarSesion from "@/components/CerrarSesion";
 import Greeting from "@/components/Greeting";
-import ResumenHoy from "@/components/ResumenHoy";
 import Gota, { type Esquina } from "@/components/Gota";
 import { COMUNIDAD, SECTIONS, type Section } from "@/lib/theme";
 
@@ -102,11 +101,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <div className="mt-4">
-        <ResumenHoy />
-      </div>
-
-      <nav aria-label="Secciones principales" className="grid grid-cols-2 gap-3 mt-3">
+      <nav aria-label="Secciones principales" className="grid grid-cols-2 gap-3 mt-4">
         {FICHAS.map((section, i) => (
           <div key={section.href} className="animate-rise" style={{ animationDelay: `${i * 40}ms` }}>
             <SectionTile section={section} />
