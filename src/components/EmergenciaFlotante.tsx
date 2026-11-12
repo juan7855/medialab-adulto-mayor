@@ -40,11 +40,8 @@ export default function EmergenciaFlotante() {
     };
   }, []);
 
-  if (ruta === "/" || ruta.startsWith("/emergencia") || escribiendo) return null;
-
-  // En un chat la caja de escribir va fija abajo: el botón sube por encima.
   const enChat = /^\/comunidad\/mensajes\/\d+/.test(ruta);
-  const abajo = enChat ? "6.2rem" : "1rem";
+  if (ruta === "/" || ruta.startsWith("/emergencia") || enChat || escribiendo) return null;
 
   return (
     <>
@@ -55,7 +52,7 @@ export default function EmergenciaFlotante() {
         style={{
           position: "fixed",
           zIndex: 45,
-          bottom: `calc(${abajo} + env(safe-area-inset-bottom))`,
+          bottom: `calc(1rem + env(safe-area-inset-bottom))`,
           // El cuerpo mide como mucho 480px y va centrado: el botón se alinea
           // con su borde derecho, no con el de una pantalla ancha.
           right: "max(1rem, calc((100vw - 480px) / 2 + 1rem))",
