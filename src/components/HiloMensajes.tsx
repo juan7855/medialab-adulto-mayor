@@ -118,7 +118,7 @@ export default function HiloMensajes({ conversationId, miId, otroId, otroNombre 
         )}
       </main>
 
-      <div className="sticky bottom-0 px-4 pt-2 pb-4" style={{ backgroundColor: "var(--bg)" }}>
+      <div className="sticky bottom-0 px-4 pt-2" style={{ backgroundColor: "var(--bg)", paddingBottom: "calc(1rem + env(safe-area-inset-bottom))" }}>
         {error && (
           <p role="alert" className="mb-1.5" style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--red-solid)" }}>
             {error}

@@ -41,18 +41,22 @@ export default function EmergenciaFlotante() {
   }, []);
 
   const enChat = /^\/comunidad\/mensajes\/\d+/.test(ruta);
-  if (ruta === "/" || ruta.startsWith("/emergencia") || enChat || escribiendo) return null;
+  if (ruta === "/" || ruta.startsWith("/emergencia") || escribiendo) return null;
+
+  // En un hilo de DM hay una barra de texto fija abajo (~5 rem de alto);
+  // el botón sube por encima de ella para que no se superpongan.
+  const abajo = enChat ? "5.5rem" : "1rem";
 
   return (
     <>
-      <div aria-hidden="true" style={{ height: "5.5rem" }} />
+      <div aria-hidden="true" style={{ height: enChat ? "9.5rem" : "5.5rem" }} />
       <Link
         href={EMERGENCIA.href}
         className="pressable flex items-center gap-2"
         style={{
           position: "fixed",
           zIndex: 45,
-          bottom: `calc(1rem + env(safe-area-inset-bottom))`,
+          bottom: `calc(${abajo} + env(safe-area-inset-bottom))`,
           // El cuerpo mide como mucho 480px y va centrado: el botón se alinea
           // con su borde derecho, no con el de una pantalla ancha.
           right: "max(1rem, calc((100vw - 480px) / 2 + 1rem))",
