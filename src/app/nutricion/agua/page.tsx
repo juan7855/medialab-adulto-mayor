@@ -6,7 +6,7 @@ export default function AguaPage() {
     <div className="min-h-screen pb-10">
       <PageHeader
         title="El agua de hoy"
-        subtitle="Toque un vaso cada vez que tome uno."
+        subtitle="Toque el vaso que marque cuántos lleva tomados hoy."
         backHref="/nutricion"
         backLabel="Nutrición"
       />

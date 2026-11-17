@@ -1,12 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { GlassWater, Minus, Plus } from "lucide-react";
+import { GlassWater } from "lucide-react";
 import Toast from "@/components/Toast";
 import { useToday } from "@/lib/today";
 
 const GOAL = 8;
-const MAX = 12;
 
 export default function WaterTracker() {
   const date = useToday();
@@ -37,7 +36,7 @@ export default function WaterTracker() {
   }, [fetchWater]);
 
   const updateWater = async (next: number) => {
-    if (!date || next < 0 || next > MAX) return;
+    if (!date || next < 0 || next > GOAL) return;
     const previous = glasses;
     setGlasses(next);
 
@@ -55,6 +54,14 @@ export default function WaterTracker() {
     } catch {
       setGlasses(previous);
     }
+  };
+
+  // Tocar un vaso marca hasta ahí cuántos lleva. Tocar el último que ya
+  // estaba marcado lo desmarca a él solo, para poder corregirse sin un
+  // botón aparte.
+  const tocarVaso = (indice: number) => {
+    const valor = indice + 1;
+    void updateWater(valor === glasses ? valor - 1 : valor);
   };
 
   const percentage = Math.min((glasses / GOAL) * 100, 100);
@@ -85,26 +92,49 @@ export default function WaterTracker() {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Vasos */}
-      <div
-        className="flex justify-between"
-        role="img"
+      {/* Vasos: cada uno es un botón, no solo un dibujo */}
+      <fieldset
+        className="m-0 p-0 grid grid-cols-4 gap-2.5"
+        style={{ border: 0 }}
         aria-label={`${glasses} de ${GOAL} vasos de agua`}
       >
         {Array.from({ length: GOAL }).map((_, i) => {
           const filled = i < glasses;
           return (
-            <GlassWater
+            <button
               key={i}
-              size={26}
-              strokeWidth={filled ? 2.2 : 1.7}
-              color={filled ? "var(--blue-solid)" : "var(--line-strong)"}
-              aria-hidden="true"
-              style={{ transition: "color 0.25s ease" }}
-            />
+              type="button"
+              onClick={() => tocarVaso(i)}
+              className="flex flex-col items-center justify-center gap-1 pressable"
+              style={{
+                minHeight: "3.6rem",
+                borderRadius: "var(--r-lg)",
+                backgroundColor: filled ? "var(--blue-tint)" : "var(--surface)",
+                border: `var(--border-w) solid ${filled ? "var(--blue-solid)" : "var(--line)"}`,
+              }}
+              aria-pressed={filled}
+              aria-label={`Vaso ${i + 1} de ${GOAL}${filled ? ", tomado" : ""}`}
+            >
+              <GlassWater
+                size={24}
+                strokeWidth={filled ? 2.3 : 1.7}
+                color={filled ? "var(--blue-solid)" : "var(--line-strong)"}
+                aria-hidden="true"
+                style={{ transition: "color 0.25s ease" }}
+              />
+              <span
+                style={{
+                  fontSize: "var(--t-xs)",
+                  fontWeight: 700,
+                  color: filled ? "var(--blue-solid)" : "var(--ink-mute)",
+                }}
+              >
+                {i + 1}
+              </span>
+            </button>
           );
         })}
-      </div>
+      </fieldset>
 
       {/* Barra de progreso */}
       <div
@@ -136,38 +166,10 @@ export default function WaterTracker() {
           className="mt-2 text-center"
           style={{ fontSize: "var(--t-xs)", fontWeight: 700, color: "var(--ink-mute)" }}
         >
-          {reached ? "¡Meta del día alcanzada!" : `Meta: ${GOAL} vasos`}
+          {reached
+            ? "¡Meta del día alcanzada!"
+            : `${glasses} de ${GOAL} vasos`}
         </p>
-      </div>
-
-      {/* Controles */}
-      <div className="flex items-center justify-between gap-3">
-        <button
-          onClick={() => void updateWater(glasses - 1)}
-          disabled={glasses <= 0}
-          aria-label="Quitar un vaso de agua"
-          className="btn-soft pressable"
-          style={{ width: "3.6rem", opacity: glasses <= 0 ? 0.4 : 1 }}
-        >
-          <Minus size={24} strokeWidth={2.6} aria-hidden="true" />
-        </button>
-
-        <div className="text-center" aria-live="polite" aria-atomic="true">
-          <div style={{ fontSize: "var(--t-xl)", fontWeight: 800, lineHeight: 1 }}>{glasses}</div>
-          <div style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
-            {glasses === 1 ? "vaso" : "vasos"}
-          </div>
-        </div>
-
-        <button
-          onClick={() => void updateWater(glasses + 1)}
-          disabled={glasses >= MAX}
-          aria-label="Agregar un vaso de agua"
-          className="btn-cta pressable"
-          style={{ width: "3.6rem", opacity: glasses >= MAX ? 0.4 : 1 }}
-        >
-          <Plus size={24} strokeWidth={2.6} aria-hidden="true" />
-        </button>
       </div>
 
       {toast && <Toast message={toast} tone="success" onClose={() => setToast(null)} />}
