@@ -320,6 +320,27 @@ export const foodGroupLogs = pgTable("food_group_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Recetas que el propio paciente agrega, además del puñado fijo que trae la
+// app (ver src/app/nutricion/receta/data.ts). emoji sigue el mismo patrón
+// emoji → icono que el resto del catálogo de este paciente.
+//
+// Tabla creada con SQL directo (no con drizzle-kit push), mismo motivo que
+// food_groups: ver src/db/crear-tabla-recetas.ts.
+export const recipes = pgTable("recipes", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull().references(() => patients.id),
+  name: text("name").notNull(),
+  emoji: text("emoji").notNull().default("🍽️"),
+  accent: text("accent").notNull().default("orange"),
+  time: text("time").notNull().default(""),
+  difficulty: text("difficulty").notNull().default("Fácil"),
+  servings: text("servings").notNull().default(""),
+  ingredients: text("ingredients").array().notNull(),
+  steps: text("steps").array().notNull(),
+  tip: text("tip"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // ---------------------------------------------------------------------------
 // Comunidad: foro y mensajes directos entre pacientes.
 //

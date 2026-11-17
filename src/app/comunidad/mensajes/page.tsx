@@ -4,6 +4,7 @@ import { obtenerPacienteId } from "@/lib/auth";
 import { listarConversaciones } from "@/lib/comunidad";
 import PageHeader from "@/components/PageHeader";
 import Fecha from "@/components/Fecha";
+import Avatar from "@/components/Avatar";
 import { COMUNIDAD } from "@/lib/theme";
 
 export default async function MensajesPage() {
@@ -42,9 +43,12 @@ export default async function MensajesPage() {
                   className="card pressable flex items-center gap-3 p-3.5"
                   style={{ textDecoration: "none", color: "inherit" }}
                 >
+                  <Avatar patientId={c.otroPacienteId} name={c.otroNombre} size={38} />
                   <span className="flex-1 min-w-0">
                     <span className="flex items-center justify-between gap-2">
-                      <span style={{ fontSize: "var(--t-sm)", fontWeight: 800 }}>{c.otroNombre}</span>
+                      <span className="truncate" style={{ fontSize: "var(--t-sm)", fontWeight: 800 }}>
+                        {c.otroNombre}
+                      </span>
                       {c.ultimoMensajeFecha && (
                         <span style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
                           <Fecha iso={c.ultimoMensajeFecha} />

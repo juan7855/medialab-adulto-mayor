@@ -4,6 +4,7 @@ import { esMiembroComunidad, obtenerPostConComentarios } from "@/lib/comunidad";
 import PageHeader from "@/components/PageHeader";
 import Fecha from "@/components/Fecha";
 import FotoDePost from "@/components/FotoDePost";
+import Avatar from "@/components/Avatar";
 import BotonReportar from "@/components/BotonReportar";
 import FormularioComentario from "@/components/FormularioComentario";
 import { COMUNIDAD } from "@/lib/theme";
@@ -39,8 +40,13 @@ export default async function PostPage({ params }: { params: Promise<{ postId: s
       <main className="px-4 pt-4" role="main">
         <div className="card p-3.5">
           <div className="flex items-center justify-between gap-2">
-            <span style={{ fontSize: "var(--t-sm)", fontWeight: 800 }}>{post.authorName}</span>
-            <span style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
+            <span className="flex items-center gap-2 min-w-0">
+              <Avatar patientId={post.authorId} name={post.authorName} size={32} />
+              <span className="truncate" style={{ fontSize: "var(--t-sm)", fontWeight: 800 }}>
+                {post.authorName}
+              </span>
+            </span>
+            <span className="flex-shrink-0" style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
               <Fecha iso={post.createdAt} />
             </span>
           </div>
@@ -65,8 +71,13 @@ export default async function PostPage({ params }: { params: Promise<{ postId: s
           {comentarios.map((c) => (
             <li key={c.id} className="card p-3">
               <div className="flex items-center justify-between gap-2">
-                <span style={{ fontSize: "var(--t-xs)", fontWeight: 800 }}>{c.authorName}</span>
-                <span style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
+                <span className="flex items-center gap-1.5 min-w-0">
+                  <Avatar patientId={c.authorId} name={c.authorName} size={24} />
+                  <span className="truncate" style={{ fontSize: "var(--t-xs)", fontWeight: 800 }}>
+                    {c.authorName}
+                  </span>
+                </span>
+                <span className="flex-shrink-0" style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
                   <Fecha iso={c.createdAt} />
                 </span>
               </div>

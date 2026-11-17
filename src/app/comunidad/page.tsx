@@ -5,6 +5,7 @@ import { esMiembroComunidad, listarPostsForo } from "@/lib/comunidad";
 import PageHeader from "@/components/PageHeader";
 import Fecha from "@/components/Fecha";
 import FotoDePost from "@/components/FotoDePost";
+import Avatar from "@/components/Avatar";
 import { COMUNIDAD } from "@/lib/theme";
 
 export default async function ComunidadPage() {
@@ -76,10 +77,19 @@ export default async function ComunidadPage() {
                       style={{ textDecoration: "none", color: "inherit" }}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <span style={{ fontSize: "var(--t-sm)", fontWeight: 800 }}>
-                          {post.authorName}
+                        <span className="flex items-center gap-2 min-w-0">
+                          <Avatar patientId={post.authorId} name={post.authorName} size={30} />
+                          <span
+                            className="truncate"
+                            style={{ fontSize: "var(--t-sm)", fontWeight: 800 }}
+                          >
+                            {post.authorName}
+                          </span>
                         </span>
-                        <span style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}>
+                        <span
+                          className="flex-shrink-0"
+                          style={{ fontSize: "var(--t-xs)", fontWeight: 600, color: "var(--ink-mute)" }}
+                        >
                           <Fecha iso={post.createdAt} />
                         </span>
                       </div>

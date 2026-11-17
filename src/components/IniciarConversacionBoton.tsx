@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
+import Avatar from "./Avatar";
 
 interface IniciarConversacionBotonProps {
   patientId: number;
@@ -41,7 +42,12 @@ export default function IniciarConversacionBoton({ patientId, name }: IniciarCon
         className="card pressable w-full flex items-center justify-between gap-3 p-3.5"
         style={{ opacity: cargando ? 0.6 : 1 }}
       >
-        <span style={{ fontSize: "var(--t-md)", fontWeight: 700 }}>{name}</span>
+        <span className="flex items-center gap-3 min-w-0">
+          <Avatar patientId={patientId} name={name} size={36} />
+          <span className="truncate" style={{ fontSize: "var(--t-md)", fontWeight: 700 }}>
+            {name}
+          </span>
+        </span>
         <ChevronRight size={20} strokeWidth={2.3} color="var(--ink-mute)" aria-hidden="true" />
       </button>
       {error && (

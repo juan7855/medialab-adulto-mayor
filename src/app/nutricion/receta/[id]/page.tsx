@@ -1,22 +1,78 @@
 import { notFound } from "next/navigation";
-import { Carrot, Clock, ListChecks, Lightbulb, Utensils } from "lucide-react";
+import { eq, and } from "drizzle-orm";
+import { Carrot, ChefHat, Clock, ListChecks, Lightbulb, Utensils, type LucideIcon } from "lucide-react";
+import { db } from "@/db";
+import { recipes as recipesTable } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
 import IconTile from "@/components/IconTile";
 import { RECIPES } from "../data";
-import { ACCENTS } from "@/lib/theme";
+import { ACCENTS, type AccentName } from "@/lib/theme";
 
 interface Props {
   params: Promise<{ id: string }>;
+}
+
+interface RecetaParaMostrar {
+  name: string;
+  icon: LucideIcon;
+  accent: AccentName;
+  time: string;
+  difficulty: string;
+  servings: string;
+  ingredients: string[];
+  steps: string[];
+  tip: string | null;
+  esPropia: boolean;
 }
 
 export async function generateStaticParams() {
   return RECIPES.map((recipe) => ({ id: recipe.id }));
 }
 
+// El catálogo fijo se pre-renderiza (generateStaticParams, arriba). Un id
+// que no esté ahí — una receta propia, numérica, de la tabla recipes — cae
+// por default a dynamicParams (true): se resuelve en cada visita, igual que
+// el resto del contenido propio de cada paciente.
+
+async function buscarReceta(id: string): Promise<RecetaParaMostrar | null> {
+  const fija = RECIPES.find((r) => r.id === id);
+  if (fija) {
+    return { ...fija, esPropia: false };
+  }
+
+  const recipeId = Number(id);
+  if (!Number.isInteger(recipeId)) return null;
+
+  const patientId = await obtenerPacienteId();
+  if (patientId === null) return null;
+
+  const [propia] = await db
+    .select()
+    .from(recipesTable)
+    .where(and(eq(recipesTable.id, recipeId), eq(recipesTable.patientId, patientId)))
+    .limit(1);
+
+  if (!propia) return null;
+
+  return {
+    name: propia.name,
+    icon: ChefHat,
+    accent: "purple",
+    time: propia.time,
+    difficulty: propia.difficulty,
+    servings: propia.servings,
+    ingredients: propia.ingredients,
+    steps: propia.steps,
+    tip: propia.tip,
+    esPropia: true,
+  };
+}
+
 export default async function RecipeDetailPage({ params }: Props) {
   const { id } = await params;
-  const recipe = RECIPES.find((r) => r.id === id);
+  const recipe = await buscarReceta(id);
   if (!recipe) return notFound();
 
   const tone = ACCENTS[recipe.accent];
@@ -25,7 +81,7 @@ export default async function RecipeDetailPage({ params }: Props) {
     <div className="min-h-screen pb-10">
       <PageHeader
         title={recipe.name}
-        subtitle={`${recipe.difficulty} · ${recipe.servings}`}
+        subtitle={[recipe.difficulty, recipe.servings].filter(Boolean).join(" · ")}
         icon={recipe.icon}
         accent={recipe.accent}
         backHref="/nutricion/recetas"
@@ -48,17 +104,26 @@ export default async function RecipeDetailPage({ params }: Props) {
 
         {/* Metadatos */}
         <div className="flex flex-wrap gap-2 px-1">
-          <span className="pill">
-            <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
-            {recipe.time}
-          </span>
-          <span className="pill">
-            <Utensils size={15} strokeWidth={2.2} aria-hidden="true" />
-            {recipe.servings}
-          </span>
+          {recipe.time && (
+            <span className="pill">
+              <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
+              {recipe.time}
+            </span>
+          )}
+          {recipe.servings && (
+            <span className="pill">
+              <Utensils size={15} strokeWidth={2.2} aria-hidden="true" />
+              {recipe.servings}
+            </span>
+          )}
           <span className="pill" style={{ backgroundColor: tone.tint, borderColor: tone.line }}>
             {recipe.difficulty}
           </span>
+          {recipe.esPropia && (
+            <span className="pill" style={{ backgroundColor: tone.tint, borderColor: tone.line }}>
+              Su receta
+            </span>
+          )}
         </div>
 
         {/* Ingredientes */}
@@ -128,27 +193,29 @@ export default async function RecipeDetailPage({ params }: Props) {
         </section>
 
         {/* Consejo */}
-        <div
-          className="flex items-start gap-2.5 p-3.5"
-          style={{
-            backgroundColor: "var(--yellow-tint)",
-            border: "1px solid var(--yellow-line)",
-            borderRadius: "var(--r-lg)",
-          }}
-          role="note"
-          aria-label="Consejo de la receta"
-        >
-          <Lightbulb
-            size={22}
-            strokeWidth={2}
-            color="var(--ink-soft)"
-            aria-hidden="true"
-            style={{ flexShrink: 0, marginTop: 1 }}
-          />
-          <p style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-soft)" }}>
-            {recipe.tip}
-          </p>
-        </div>
+        {recipe.tip && (
+          <div
+            className="flex items-start gap-2.5 p-3.5"
+            style={{
+              backgroundColor: "var(--yellow-tint)",
+              border: "1px solid var(--yellow-line)",
+              borderRadius: "var(--r-lg)",
+            }}
+            role="note"
+            aria-label="Consejo de la receta"
+          >
+            <Lightbulb
+              size={22}
+              strokeWidth={2}
+              color="var(--ink-soft)"
+              aria-hidden="true"
+              style={{ flexShrink: 0, marginTop: 1 }}
+            />
+            <p style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-soft)" }}>
+              {recipe.tip}
+            </p>
+          </div>
+        )}
       </main>
     </div>
   );
