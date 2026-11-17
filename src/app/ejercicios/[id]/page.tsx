@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
-import { and, eq } from "drizzle-orm";
+import { and, eq, asc } from "drizzle-orm";
 import { Clock, ListChecks, TriangleAlert } from "lucide-react";
 import { db } from "@/db";
-import { exercises } from "@/db/schema";
+import { exercises, routines, routineExercises } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
 import ActivityTimer from "@/components/ActivityTimer";
+import RoutineSession, { type ParadaRutina } from "../RoutineSession";
 import { accentDeNivel, EXERCISE_ICONS, EXERCISE_ICON_FALLBACK, formatDuration } from "../data";
 import { ACCENTS } from "@/lib/theme";
 
@@ -37,11 +38,72 @@ export default async function ExerciseDetailPage({ params }: Props) {
   const tone = ACCENTS[accent];
   const Icon = EXERCISE_ICONS[exercise.emoji] ?? EXERCISE_ICON_FALLBACK;
 
+  let rutinaNombre: string | null = null;
+  let paradas: ParadaRutina[] = [];
+
+  if (exercise.routineId) {
+    const [rutina] = await db.select().from(routines).where(eq(routines.id, exercise.routineId)).limit(1);
+    rutinaNombre = rutina?.name ?? null;
+
+    const principales = await db
+      .select()
+      .from(routineExercises)
+      .where(eq(routineExercises.routineId, exercise.routineId))
+      .orderBy(asc(routineExercises.orderIndex));
+
+    // El calentamiento y el cierre vienen de Rutina 3 (Movilidad), no de la
+    // rutina principal, así que cada uno se busca por su propio id.
+    const calentamiento = exercise.warmupExerciseId
+      ? (await db.select().from(routineExercises).where(eq(routineExercises.id, exercise.warmupExerciseId)).limit(1))[0]
+      : undefined;
+    const cierre = exercise.cooldownExerciseId
+      ? (await db.select().from(routineExercises).where(eq(routineExercises.id, exercise.cooldownExerciseId)).limit(1))[0]
+      : undefined;
+
+    paradas = [
+      ...(calentamiento
+        ? [
+            {
+              etiqueta: "Calentamiento" as const,
+              posicion: null,
+              name: calentamiento.name,
+              variant: calentamiento.variant,
+              objective: calentamiento.objective,
+              steps: calentamiento.steps,
+              videoUrl: calentamiento.videoUrl,
+            },
+          ]
+        : []),
+      ...principales.map((ej) => ({
+        etiqueta: null,
+        posicion: ej.orderIndex,
+        name: ej.name,
+        variant: ej.variant,
+        objective: ej.objective,
+        steps: ej.steps,
+        videoUrl: ej.videoUrl,
+      })),
+      ...(cierre
+        ? [
+            {
+              etiqueta: "Cierre" as const,
+              posicion: null,
+              name: cierre.name,
+              variant: cierre.variant,
+              objective: cierre.objective,
+              steps: cierre.steps,
+              videoUrl: cierre.videoUrl,
+            },
+          ]
+        : []),
+    ];
+  }
+
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
         title={exercise.name}
-        subtitle={exercise.description}
+        subtitle={rutinaNombre ?? exercise.description}
         icon={Icon}
         accent={accent}
         backHref="/ejercicios"
@@ -71,40 +133,51 @@ export default async function ExerciseDetailPage({ params }: Props) {
         </section>
 
         {/* Pasos */}
-        <section aria-label="Pasos del ejercicio">
-          <SectionTitle icon={ListChecks} accent={accent}>
-            Pasos a seguir
-          </SectionTitle>
+        {paradas.length > 0 ? (
+          <section aria-label="Ejercicios de la rutina">
+            <SectionTitle icon={ListChecks} accent={accent}>
+              La rutina paso a paso
+            </SectionTitle>
+            <div className="mt-3">
+              <RoutineSession paradas={paradas} accent={accent} />
+            </div>
+          </section>
+        ) : (
+          <section aria-label="Pasos del ejercicio">
+            <SectionTitle icon={ListChecks} accent={accent}>
+              Pasos a seguir
+            </SectionTitle>
 
-          <ol className="flex flex-col gap-2 mt-3 list-none p-0 m-0">
-            {exercise.steps.map((step, i) => (
-              <li key={i} className="card flex items-start gap-3.5 p-3.5">
-                <span
-                  style={{
-                    width: 38,
-                    height: 38,
-                    flexShrink: 0,
-                    borderRadius: "999px",
-                    backgroundColor: tone.tint,
-                    border: `1px solid ${tone.line}`,
-                    color: "var(--ink)",
-                    fontSize: "var(--t-sm)",
-                    fontWeight: 800,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                  aria-hidden="true"
-                >
-                  {i + 1}
-                </span>
-                <span style={{ fontSize: "var(--t-sm)", fontWeight: 500, lineHeight: 1.45 }}>
-                  {step}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
+            <ol className="flex flex-col gap-2 mt-3 list-none p-0 m-0">
+              {exercise.steps.map((step, i) => (
+                <li key={i} className="card flex items-start gap-3.5 p-3.5">
+                  <span
+                    style={{
+                      width: 38,
+                      height: 38,
+                      flexShrink: 0,
+                      borderRadius: "999px",
+                      backgroundColor: tone.tint,
+                      border: `1px solid ${tone.line}`,
+                      color: "var(--ink)",
+                      fontSize: "var(--t-sm)",
+                      fontWeight: 800,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    aria-hidden="true"
+                  >
+                    {i + 1}
+                  </span>
+                  <span style={{ fontSize: "var(--t-sm)", fontWeight: 500, lineHeight: 1.45 }}>
+                    {step}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
 
         {/* Advertencia */}
         <div

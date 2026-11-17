@@ -62,4 +62,5 @@ export interface Exercise {
   description: string;
   steps: string[];
   tip: string;
+  routineId: number | null;
 }

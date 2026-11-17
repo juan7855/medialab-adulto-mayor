@@ -85,6 +85,7 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
           </h2>
           <p className="mt-1.5" style={{ fontSize: "var(--t-sm)", color: "var(--ink-soft)" }}>
             {formatDuration(deHoy.durationSeconds)}
+            {deHoy.routineId && " · 6 ejercicios con video"}
           </p>
           <Link
             href={`/ejercicios/${deHoy.id}`}

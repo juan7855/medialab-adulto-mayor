@@ -245,6 +245,41 @@ export const exercises = pgTable("exercises", {
   intensity: text("intensity").notNull().default("Suave"),
   icon: text("icon").notNull().default("Footprints"),
   items: jsonb("items"),
+  // Si el ejercicio del día es una de las 5 Rutinas ilustradas (ver
+  // routines/routineExercises abajo), queda enlazado aquí y la ficha del
+  // día muestra los 6 ejercicios de la rutina con video, en vez del texto
+  // libre de `steps`. Los días simples ("Caminata", "Descanso") se quedan
+  // en null y siguen mostrando sólo el texto de siempre.
+  routineId: integer("routine_id").references(() => routines.id),
+  // Calentamiento y cierre: un ejercicio real de Rutina 3 (Movilidad) al
+  // inicio y otro al final, en vez del texto "Movilidad previa/final".
+  warmupExerciseId: integer("warmup_exercise_id").references(() => routineExercises.id),
+  cooldownExerciseId: integer("cooldown_exercise_id").references(() => routineExercises.id),
+});
+
+/**
+ * Catálogo de las 5 Rutinas ilustradas (ver recursos/Rutinas_con_avatares.docx).
+ * Es contenido genérico, no por paciente: el mismo Rutina 1 sirve para
+ * cualquier paciente al que el cuidador se la asigne un día (exercises.routineId).
+ */
+export const routines = pgTable("routines", {
+  id: serial("id").primaryKey(),
+  number: integer("number").notNull().unique(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+/** Los 6 ejercicios de cada Rutina, en orden, con su video de demostración. */
+export const routineExercises = pgTable("routine_exercises", {
+  id: serial("id").primaryKey(),
+  routineId: integer("routine_id").notNull().references(() => routines.id),
+  orderIndex: integer("order_index").notNull(),
+  name: text("name").notNull(),
+  variant: text("variant"),
+  objective: text("objective").notNull(),
+  steps: text("steps").array().notNull(),
+  videoUrl: text("video_url"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Catálogo de actividades de Mente Activa de este paciente. Sin
