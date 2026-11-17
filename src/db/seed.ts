@@ -1,6 +1,6 @@
 import "./load-env";
 import { db } from "./index";
-import { patients, medications, routineActivities, exercises, cognitiveActivities, meals } from "./schema";
+import { patients, medications, routineActivities, exercises, cognitiveActivities, meals, foodGroups } from "./schema";
 import { eq } from "drizzle-orm";
 
 /**
@@ -418,6 +418,63 @@ async function seed() {
     console.log("✅ Menú sembrado");
   } else {
     console.log("⏭ Este paciente ya tiene menú");
+  }
+
+  // Grupos de alimentos ("Lo que comí"). Genéricos aquí porque este script no
+  // conoce la condición del paciente; el cuidador los puede afinar luego
+  // desde su plataforma, igual que el resto del contenido sembrado.
+  const existingFoodGroups = await db
+    .select()
+    .from(foodGroups)
+    .where(eq(foodGroups.patientId, patientId))
+    .limit(1);
+
+  if (existingFoodGroups.length === 0) {
+    await db.insert(foodGroups).values([
+      {
+        patientId,
+        name: "Carbohidratos",
+        emoji: "🍞",
+        description: "Arroz, papa, pan integral o avena, en porciones moderadas.",
+        accent: "yellow",
+        sortOrder: 1,
+      },
+      {
+        patientId,
+        name: "Proteínas",
+        emoji: "🍗",
+        description: "Pollo, pescado, huevo o leguminosas, preparados en casa.",
+        accent: "red",
+        sortOrder: 2,
+      },
+      {
+        patientId,
+        name: "Frutas y verduras",
+        emoji: "🍎",
+        description: "Variadas y frescas, en cada comida.",
+        accent: "green",
+        sortOrder: 3,
+      },
+      {
+        patientId,
+        name: "Lácteos",
+        emoji: "🥛",
+        description: "Leche o yogur, con moderación.",
+        accent: "cyan",
+        sortOrder: 4,
+      },
+      {
+        patientId,
+        name: "Grasas saludables",
+        emoji: "🥑",
+        description: "Aceite de oliva, aguacate o frutos secos, con moderación.",
+        accent: "purple",
+        sortOrder: 5,
+      },
+    ]);
+    console.log("✅ Grupos de alimentos sembrados");
+  } else {
+    console.log("⏭ Este paciente ya tiene grupos de alimentos");
   }
 
   console.log("🌱 Listo.");
