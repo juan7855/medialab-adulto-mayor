@@ -165,11 +165,14 @@ async function subirArchivo(
 }
 
 async function main() {
-  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseUrlRaw = process.env.SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) {
+  if (!supabaseUrlRaw || !serviceKey) {
     throw new Error("Faltan SUPABASE_URL y/o SUPABASE_SERVICE_ROLE_KEY en .env.local");
   }
+  // Por si quedó pegado el snippet de la API ("…supabase.co/rest/v1/") en
+  // vez del campo "Project URL": sólo importa el origen (protocolo + host).
+  const supabaseUrl = new URL(supabaseUrlRaw).origin;
 
   await asegurarBucket(supabaseUrl, serviceKey);
 
