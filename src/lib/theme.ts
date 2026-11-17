@@ -70,8 +70,7 @@ export interface Section {
 
 /**
  * El acento de cada sección sigue el Figma: Ejercicios verde, Nutrición
- * naranja, Medicamentos y Comunidad azul, Mente activa gris, "Todo lo de hoy"
- * naranja.
+ * naranja, Medicamentos y Comunidad azul, Mente activa gris.
  */
 export const SECTIONS: Section[] = [
   {
@@ -103,14 +102,6 @@ export const SECTIONS: Section[] = [
     accent: "purple",
   },
 ];
-
-export const RUTINA: Section = {
-  href: "/rutina",
-  label: "Rutina",
-  description: "Su día, paso a paso",
-  icon: "/iconos/rutina.svg",
-  accent: "orange",
-};
 
 export const COMUNIDAD: Section = {
   href: "/comunidad",

@@ -26,7 +26,6 @@ const ESQUINAS: Record<string, Esquina> = {
   "/nutricion": "abajo-izq",
   "/medicamentos": "abajo-der",
   "/cognitivo": "arriba-izq",
-  "/rutina": "arriba-der",
   "/comunidad": "abajo-izq",
 };
 

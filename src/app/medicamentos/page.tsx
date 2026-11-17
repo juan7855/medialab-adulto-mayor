@@ -8,8 +8,8 @@ export default function MedicamentosPage() {
       <PageHeader
         title="Mis medicamentos"
         subtitle='Toque "Ya lo tomé" al tomárselo.'
-        backHref="/rutina"
-        backLabel="Todo lo de hoy"
+        backHref="/inicio"
+        backLabel="Hoy"
       />
 
       <main className="px-4 pt-4 flex flex-col gap-8" role="main">
