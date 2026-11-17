@@ -140,7 +140,7 @@ export default function FoodGroupList({ groups }: { groups: FoodGroup[] }) {
             <li key={group.id}>
               <button
                 onClick={() => void toggle(group, !eaten)}
-                className="card pressable w-full text-left flex items-center gap-3.5 p-4"
+                className="card pressable w-full text-left p-4"
                 style={{
                   backgroundColor: eaten ? "var(--green-tint)" : "var(--surface)",
                   border: `2px solid ${eaten ? "var(--green-solid)" : "var(--line)"}`,
@@ -148,38 +148,42 @@ export default function FoodGroupList({ groups }: { groups: FoodGroup[] }) {
                 aria-pressed={eaten}
                 aria-label={`${group.name}. ${group.description}. ${eaten ? "Ya lo comió, toque para desmarcar." : "Por marcar, toque para marcar como comido."}`}
               >
-                <IconTile icon={eaten ? Check : Icon} accent={eaten ? "green" : group.accent} size={54} />
-
-                <span className="flex-1 min-w-0">
-                  <span className="block" style={{ fontSize: "var(--t-md)", fontWeight: 700 }}>
+                <div className="flex items-center gap-3.5">
+                  <IconTile icon={eaten ? Check : Icon} accent={eaten ? "green" : group.accent} size={50} />
+                  <span className="flex-1 min-w-0" style={{ fontSize: "var(--t-md)", fontWeight: 700 }}>
                     {group.name}
                   </span>
-                  <span
-                    className="block mt-1"
-                    style={{ fontSize: "var(--t-sm)", fontWeight: 400, color: "var(--ink-mute)" }}
-                  >
-                    {group.description}
-                  </span>
-                </span>
+                </div>
+
+                <p
+                  className="mt-3"
+                  style={{ fontSize: "var(--t-sm)", fontWeight: 400, color: "var(--ink-mute)", lineHeight: 1.4 }}
+                >
+                  {group.description}
+                </p>
 
                 <span
-                  className="pill flex-shrink-0"
-                  style={
-                    eaten
-                      ? { backgroundColor: "var(--green-tint)", borderColor: "var(--green-line)", color: "var(--green-deep)" }
-                      : { backgroundColor: tone.tint, borderColor: tone.line }
-                  }
+                  className="flex items-center justify-center gap-2 mt-4"
+                  style={{
+                    minHeight: "2.8rem",
+                    borderRadius: "var(--r-pill)",
+                    fontSize: "var(--t-sm)",
+                    fontWeight: 700,
+                    backgroundColor: eaten ? "var(--green-tint)" : tone.tint,
+                    border: `var(--border-w) solid ${eaten ? "var(--green-line)" : tone.line}`,
+                    color: eaten ? "var(--green-deep)" : "var(--ink)",
+                  }}
                   aria-hidden="true"
                 >
                   {eaten ? (
                     <>
-                      <Undo2 size={16} strokeWidth={2.2} />
+                      <Undo2 size={17} strokeWidth={2.2} />
                       Deshacer
                     </>
                   ) : (
                     <>
-                      <Check size={16} strokeWidth={2.2} />
-                      Marcar
+                      <Check size={17} strokeWidth={2.2} />
+                      Marcar como comido
                     </>
                   )}
                 </span>
