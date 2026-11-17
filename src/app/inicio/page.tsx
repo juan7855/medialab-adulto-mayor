@@ -32,13 +32,14 @@ const ESQUINAS: Record<string, Esquina> = {
 /**
  * Ficha de sección del Figma: tarjeta blanca con borde arena, gota de color
  * en un cuadro claro y el nombre debajo. Dos por fila; el texto va a tamaño
- * reducido porque "Medicamentos" debe caber en media pantalla.
+ * reducido (--t-xs, no --t-sm) porque a ese tamaño "Medicamentos" partía a
+ * la mitad ("Medicament-os") al no caber en una sola línea.
  */
 function SectionTile({ section }: { section: Section }) {
   return (
     <Link
       href={section.href}
-      className="card pressable flex flex-col justify-between gap-4 p-3.5 h-full"
+      className="card pressable flex flex-col justify-between gap-4 p-3 h-full"
       style={{
         borderRadius: "var(--r-xl)",
         textDecoration: "none",
@@ -48,7 +49,7 @@ function SectionTile({ section }: { section: Section }) {
       aria-label={`${section.label}. ${section.description}`}
     >
       <Gota accent={section.accent} size={52} esquina={ESQUINAS[section.href]} enCuadro />
-      <span style={{ fontSize: "var(--t-sm)", fontWeight: 600, lineHeight: 1.15 }}>
+      <span style={{ fontSize: "var(--t-xs)", fontWeight: 600, lineHeight: 1.15 }}>
         {section.label}
       </span>
     </Link>
