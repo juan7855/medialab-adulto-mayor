@@ -3,23 +3,20 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import FilaLista from "@/components/FilaLista";
-import { nivelesDe, formatDuration, type Exercise, type Level } from "./data";
+import { formatDuration, type Exercise } from "./data";
 
 const ESQUINAS = ["abajo-der", "abajo-izq", "arriba-der", "arriba-izq"] as const;
 const COLORES = ["orange", "cyan", "green", "purple"] as const;
 
+const DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+
 /**
- * Ejercicios, como en el Figma (A06): el ejercicio de hoy destacado en un
- * bloque verde claro con "Empezar", y el resto en filas cortas. Si el
- * cuidador definió más de una intensidad, se elige arriba.
+ * Ejercicios: el de hoy destacado arriba, y el resto de la semana en filas
+ * cortas abajo. Antes había pestañas de intensidad (Descanso/Suave/
+ * Moderada) que mezclaban el contenido viejo con las Rutinas; se quitaron
+ * — el día ya dice de por sí si toca caminar, descansar o hacer la rutina.
  */
 export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
-  const niveles = nivelesDe(exercises);
-  // El de hoy es el que coincide con el día real (0=domingo…6=sábado, igual
-  // que Date#getDay), no "el primero que haya" — si no, el bloque de arriba
-  // mostraba cualquier cosa (el primero de la pestaña "Descanso") sin
-  // importar qué día fuera.
-  //
   // El día se calcula en el navegador, no al renderizar en el servidor: el
   // servidor puede estar en otro huso horario y adivinar mal cerca de la
   // medianoche. Arranca en null (mismo resultado en servidor y cliente,
@@ -32,10 +29,6 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
   // primero que haya en vez de dejar la tarjeta vacía.
   const deHoy = exercises.find((ex) => ex.dayOfWeek === hoyDiaSemana) ?? exercises[0];
 
-  const [elegido, setLevel] = useState<Level | null>(null);
-  const nivelPorDefecto = deHoy && niveles.includes(deHoy.level) ? deHoy.level : (niveles[0] ?? "");
-  const level = elegido && niveles.includes(elegido) ? elegido : nivelPorDefecto;
-
   if (exercises.length === 0) {
     return (
       <div className="card p-6 text-center" style={{ borderRadius: "var(--r-xl)" }}>
@@ -47,41 +40,16 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
     );
   }
 
-  // El resto de la lista deja afuera el de hoy (ya está destacado arriba)
-  // aunque su intensidad no sea la de la pestaña activa.
-  const resto = exercises.filter((ex) => ex.level === level && ex.id !== deHoy?.id);
+  // El resto de la semana, ordenado desde mañana hacia adelante (y cerrando
+  // con los días previos a hoy): así se lee como "qué sigue".
+  const base = hoyDiaSemana ?? 0;
+  const resto = exercises
+    .filter((ex) => ex.id !== deHoy?.id)
+    .slice()
+    .sort((a, b) => ((a.dayOfWeek - base + 7) % 7) - ((b.dayOfWeek - base + 7) % 7));
 
   return (
     <>
-      {niveles.length > 1 && (
-        <div className="flex flex-wrap gap-2.5 mb-4" role="tablist" aria-label="Elegir intensidad">
-          {niveles.map((option) => {
-            const active = option === level;
-            return (
-              <button
-                key={option}
-                role="tab"
-                aria-selected={active}
-                onClick={() => setLevel(option)}
-                className="flex-1 pressable"
-                style={{
-                  minHeight: "var(--touch)",
-                  borderRadius: "var(--r-pill)",
-                  fontSize: "var(--t-sm)",
-                  fontWeight: 600,
-                  backgroundColor: active ? "var(--cta-dark)" : "var(--surface)",
-                  color: active ? "#fff" : "var(--ink)",
-                  border: `var(--border-w) solid ${active ? "var(--cta-dark)" : "var(--line)"}`,
-                  textTransform: "capitalize",
-                }}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
       {deHoy && (
         <section
           className="p-5"
@@ -117,20 +85,28 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
       )}
 
       {resto.length > 0 && (
-        <ul className="flex flex-col gap-3 mt-4 list-none p-0 m-0" aria-label="Más ejercicios">
-          {resto.map((ex, i) => (
-            <li key={ex.id} className="animate-rise" style={{ animationDelay: `${i * 45}ms` }}>
-              <FilaLista
-                href={`/ejercicios/${ex.id}`}
-                titulo={ex.name}
-                subtitulo={formatDuration(ex.durationSeconds)}
-                accent={COLORES[i % COLORES.length]}
-                esquina={ESQUINAS[i % ESQUINAS.length]}
-                ariaLabel={`${ex.name}. ${ex.description}. Duración ${formatDuration(ex.durationSeconds)}`}
-              />
-            </li>
-          ))}
-        </ul>
+        <>
+          <h2
+            className="mt-5 mb-2 px-1"
+            style={{ fontSize: "var(--t-sm)", fontWeight: 800, color: "var(--ink-soft)" }}
+          >
+            Esta semana
+          </h2>
+          <ul className="flex flex-col gap-3 list-none p-0 m-0" aria-label="Resto de la semana">
+            {resto.map((ex, i) => (
+              <li key={ex.id} className="animate-rise" style={{ animationDelay: `${i * 45}ms` }}>
+                <FilaLista
+                  href={`/ejercicios/${ex.id}`}
+                  titulo={ex.name}
+                  subtitulo={`${DIAS[ex.dayOfWeek]} · ${formatDuration(ex.durationSeconds)}`}
+                  accent={COLORES[i % COLORES.length]}
+                  esquina={ESQUINAS[i % ESQUINAS.length]}
+                  ariaLabel={`${ex.name} el ${DIAS[ex.dayOfWeek]}. Duración ${formatDuration(ex.durationSeconds)}`}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </>
   );

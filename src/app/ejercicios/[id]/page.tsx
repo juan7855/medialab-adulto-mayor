@@ -6,7 +6,6 @@ import { exercises, routines, routineExercises } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
-import ActivityTimer from "@/components/ActivityTimer";
 import RoutineSession, { type ParadaRutina } from "../RoutineSession";
 import { accentDeNivel, EXERCISE_ICONS, EXERCISE_ICON_FALLBACK, formatDuration } from "../data";
 import { ACCENTS } from "@/lib/theme";
@@ -111,26 +110,14 @@ export default async function ExerciseDetailPage({ params }: Props) {
       />
 
       <main className="px-4 pt-3 flex flex-col gap-4" role="main">
-        {/* Metadatos */}
+        {/* Metadatos: duración de referencia, sin cronómetro — para rutinas
+            largas con video, la persona avanza a su propio ritmo. */}
         <div className="flex gap-2 px-1">
-          <span className="pill" style={{ backgroundColor: tone.tint, borderColor: tone.line }}>
-            {exercise.level}
-          </span>
           <span className="pill">
             <Clock size={15} strokeWidth={2.2} aria-hidden="true" />
             {formatDuration(exercise.durationSeconds)}
           </span>
         </div>
-
-        {/* Temporizador */}
-        <section className="card" aria-label="Temporizador">
-          <ActivityTimer
-            totalSeconds={exercise.durationSeconds}
-            exerciseName={exercise.name}
-            exerciseId={String(exercise.id)}
-            accent={accent}
-          />
-        </section>
 
         {/* Pasos */}
         {paradas.length > 0 ? (
