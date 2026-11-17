@@ -286,6 +286,40 @@ export const meals = pgTable("meals", {
   tone: text("tone").notNull().default("emerald"),
 });
 
+// Grupos principales de alimentos de este paciente (Carbohidratos, Proteínas,
+// Frutas y verduras, Lácteos, Grasas saludables...). Reemplaza en "Lo que
+// comí" el plato fijo del menú: la persona marca qué grupos incluyó en lo que
+// comió hoy, no un plato puntual. description trae la guía propia de este
+// paciente (qué preferir según su condición), no una lista de platos.
+//
+// Tabla creada con SQL directo (no con drizzle-kit push, que podría tocar
+// columnas que la plataforma del cuidador agregó a mano — ver el comentario
+// al inicio de este archivo), igual que community_post_images y
+// survey_responses: ver src/db/crear-tabla-grupos-alimentos.ts.
+export const foodGroups = pgTable("food_groups", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull().references(() => patients.id),
+  name: text("name").notNull(), // "Carbohidratos"
+  emoji: text("emoji").notNull(),
+  description: text("description").notNull(),
+  accent: text("accent").notNull().default("orange"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Qué grupos marcó la persona cada día. Se puede marcar y desmarcar cuando
+// quiera (mismo patrón que mealLogs/medicationLogs): no hay nada que impida
+// corregir un error.
+export const foodGroupLogs = pgTable("food_group_logs", {
+  id: serial("id").primaryKey(),
+  patientId: integer("patient_id").notNull().references(() => patients.id),
+  foodGroupId: integer("food_group_id").notNull().references(() => foodGroups.id),
+  date: date("date").notNull(),
+  eaten: boolean("eaten").notNull().default(false),
+  eatenAt: timestamp("eaten_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // ---------------------------------------------------------------------------
 // Comunidad: foro y mensajes directos entre pacientes.
 //

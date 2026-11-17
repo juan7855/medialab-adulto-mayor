@@ -1,30 +1,30 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { meals as mealsTable } from "@/db/schema";
+import { foodGroups as foodGroupsTable } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
-import MealList from "../MealList";
+import FoodGroupList from "../FoodGroupList";
 import { accentOf } from "@/lib/theme";
 
 export default async function MenuPage() {
   // middleware.ts ya garantiza que hay sesión antes de llegar aquí.
   const patientId = (await obtenerPacienteId())!;
-  const menu = await db
+  const grupos = await db
     .select()
-    .from(mealsTable)
-    .where(eq(mealsTable.patientId, patientId))
-    .orderBy(mealsTable.id);
+    .from(foodGroupsTable)
+    .where(eq(foodGroupsTable.patientId, patientId))
+    .orderBy(foodGroupsTable.sortOrder, foodGroupsTable.id);
 
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
         title="Lo que comí"
-        subtitle="Marque cada comida cuando la termine."
+        subtitle="Marque los grupos de alimentos que ya comió hoy."
         backHref="/nutricion"
         backLabel="Nutrición"
       />
       <main className="px-4 pt-4" role="main">
-        <MealList meals={menu.map((m) => ({ ...m, accent: accentOf(m.accent) }))} />
+        <FoodGroupList groups={grupos.map((g) => ({ ...g, accent: accentOf(g.accent) }))} />
       </main>
     </div>
   );
