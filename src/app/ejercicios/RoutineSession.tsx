@@ -26,17 +26,14 @@ export default function RoutineSession({ paradas, accent }: { paradas: ParadaRut
       {paradas.map((parada, i) => (
         <li key={i} className="card p-3.5">
           <span
-            className="inline-block"
+            className="pill"
             style={{
-              fontSize: "var(--t-xs)",
               fontWeight: 800,
               letterSpacing: "0.03em",
               textTransform: "uppercase",
               color: "var(--ink)",
               backgroundColor: tone.tint,
-              border: `1px solid ${tone.line}`,
-              borderRadius: "var(--r-pill)",
-              padding: "0.2rem 0.65rem",
+              borderColor: tone.line,
             }}
           >
             {parada.etiqueta ?? `Ejercicio ${parada.posicion} de 6`}
@@ -52,14 +49,22 @@ export default function RoutineSession({ paradas, accent }: { paradas: ParadaRut
           )}
 
           {parada.videoUrl && (
-            <video
-              className="mt-3 w-full block"
-              style={{ borderRadius: "var(--r-lg)", backgroundColor: "var(--ink)" }}
-              src={parada.videoUrl}
-              controls
-              playsInline
-              preload="metadata"
-            />
+            // Mismo marco que las fotos de Comunidad (FotoDePost): borde y
+            // radio --r-md anidado dentro de la tarjeta --r-lg, en vez de un
+            // reproductor nativo pegado sin más al borde de la tarjeta.
+            <div
+              className="mt-3 overflow-hidden"
+              style={{ border: "1px solid var(--line)", borderRadius: "var(--r-md)" }}
+            >
+              <video
+                className="w-full block"
+                style={{ backgroundColor: "var(--ink)" }}
+                src={parada.videoUrl}
+                controls
+                playsInline
+                preload="metadata"
+              />
+            </div>
           )}
 
           <p className="mt-3" style={{ fontSize: "var(--t-sm)", fontWeight: 600, color: "var(--ink-soft)" }}>
