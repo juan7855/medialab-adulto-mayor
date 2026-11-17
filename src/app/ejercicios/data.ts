@@ -63,4 +63,5 @@ export interface Exercise {
   steps: string[];
   tip: string;
   routineId: number | null;
+  dayOfWeek: number;
 }

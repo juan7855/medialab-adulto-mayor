@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import FilaLista from "@/components/FilaLista";
 import { nivelesDe, formatDuration, type Exercise, type Level } from "./data";
@@ -15,8 +15,26 @@ const COLORES = ["orange", "cyan", "green", "purple"] as const;
  */
 export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
   const niveles = nivelesDe(exercises);
+  // El de hoy es el que coincide con el día real (0=domingo…6=sábado, igual
+  // que Date#getDay), no "el primero que haya" — si no, el bloque de arriba
+  // mostraba cualquier cosa (el primero de la pestaña "Descanso") sin
+  // importar qué día fuera.
+  //
+  // El día se calcula en el navegador, no al renderizar en el servidor: el
+  // servidor puede estar en otro huso horario y adivinar mal cerca de la
+  // medianoche. Arranca en null (mismo resultado en servidor y cliente,
+  // nada de "hydration mismatch") y se corrige apenas monta.
+  const [hoyDiaSemana, setHoyDiaSemana] = useState<number | null>(null);
+  useEffect(() => {
+    setHoyDiaSemana(new Date().getDay());
+  }, []);
+  // Antes de montar (o si por algún hueco de datos nada coincide), se cae al
+  // primero que haya en vez de dejar la tarjeta vacía.
+  const deHoy = exercises.find((ex) => ex.dayOfWeek === hoyDiaSemana) ?? exercises[0];
+
   const [elegido, setLevel] = useState<Level | null>(null);
-  const level = elegido && niveles.includes(elegido) ? elegido : (niveles[0] ?? "");
+  const nivelPorDefecto = deHoy && niveles.includes(deHoy.level) ? deHoy.level : (niveles[0] ?? "");
+  const level = elegido && niveles.includes(elegido) ? elegido : nivelPorDefecto;
 
   if (exercises.length === 0) {
     return (
@@ -29,8 +47,9 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
     );
   }
 
-  const visible = exercises.filter((ex) => ex.level === level);
-  const [deHoy, ...resto] = visible;
+  // El resto de la lista deja afuera el de hoy (ya está destacado arriba)
+  // aunque su intensidad no sea la de la pestaña activa.
+  const resto = exercises.filter((ex) => ex.level === level && ex.id !== deHoy?.id);
 
   return (
     <>
