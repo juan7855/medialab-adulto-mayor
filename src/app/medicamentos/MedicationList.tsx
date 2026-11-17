@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Check, Clock, Pill } from "lucide-react";
+import { Check, Clock, Pill, Undo2 } from "lucide-react";
 import Gota from "@/components/Gota";
 import Toast, { type ToastTone } from "@/components/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -71,29 +71,33 @@ export default function MedicationList() {
     void fetchData();
   }, [fetchData]);
 
-  const markTaken = async (medId: number) => {
+  const setTaken = async (medId: number, taken: boolean) => {
     setConfirm(null);
     if (!date) return;
     const previous = [...logs];
+    const stamp = taken ? new Date().toISOString() : null;
 
     setLogs((current) => {
-      const stamp = new Date().toISOString();
       const exists = current.find((log) => log.medicationId === medId);
       if (exists) {
         return current.map((log) =>
-          log.medicationId === medId ? { ...log, taken: true, takenAt: stamp } : log,
+          log.medicationId === medId ? { ...log, taken, takenAt: stamp } : log,
         );
       }
-      return [...current, { medicationId: medId, taken: true, takenAt: stamp }];
+      return [...current, { medicationId: medId, taken, takenAt: stamp }];
     });
 
     try {
       await fetch("/api/medicamentos/logs", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ medicationId: medId, date, taken: true }),
+        body: JSON.stringify({ medicationId: medId, date, taken }),
       });
-      setToast({ msg: "Medicamento registrado", tone: "success" });
+      setToast(
+        taken
+          ? { msg: "Medicamento registrado", tone: "success" }
+          : { msg: "Medicamento desmarcado", tone: "info" },
+      );
     } catch {
       setLogs(previous);
       setToast({ msg: "No se pudo guardar. Intente de nuevo.", tone: "error" });
@@ -165,7 +169,7 @@ export default function MedicationList() {
             return (
               <li
                 key={med.id}
-                className="flex items-center gap-3.5 p-3.5 animate-rise"
+                className="flex flex-col gap-3 p-3.5 animate-rise"
                 style={{
                   animationDelay: `${i * 45}ms`,
                   backgroundColor: "var(--green-tint)",
@@ -174,30 +178,42 @@ export default function MedicationList() {
                 }}
                 aria-label={`${med.name}${hora ? `, ${hora}` : ""}. Ya se lo tomó${tomadoA ? ` a las ${tomadoA}` : ""}.`}
               >
-                <span
-                  className="tile"
-                  style={{
-                    width: rem(46),
-                    height: rem(46),
-                    borderRadius: "999px",
-                    backgroundColor: "var(--green-solid)",
-                  }}
-                  aria-hidden="true"
-                >
-                  <Check strokeWidth={3} color="#fff" />
-                </span>
-                <span className="flex-1 min-w-0">
-                  <span className="block" style={{ fontSize: "var(--t-base)", fontWeight: 600 }}>
-                    {hora ? `${hora} · ` : ""}
-                    {med.name}
-                  </span>
+                <div className="flex items-center gap-3.5">
                   <span
-                    className="block mt-0.5"
-                    style={{ fontSize: "var(--t-sm)", fontWeight: 400, color: "var(--green-deep)" }}
+                    className="tile"
+                    style={{
+                      width: rem(46),
+                      height: rem(46),
+                      borderRadius: "999px",
+                      backgroundColor: "var(--green-solid)",
+                    }}
+                    aria-hidden="true"
                   >
-                    {tomadoA ? `Se lo tomó a las ${tomadoA}` : "Ya se lo tomó"}
+                    <Check strokeWidth={3} color="#fff" />
                   </span>
-                </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block" style={{ fontSize: "var(--t-base)", fontWeight: 600 }}>
+                      {hora ? `${hora} · ` : ""}
+                      {med.name}
+                    </span>
+                    <span
+                      className="block mt-0.5"
+                      style={{ fontSize: "var(--t-sm)", fontWeight: 400, color: "var(--green-deep)" }}
+                    >
+                      {tomadoA ? `Se lo tomó a las ${tomadoA}` : "Ya se lo tomó"}
+                    </span>
+                  </span>
+                </div>
+
+                <button
+                  onClick={() => void setTaken(med.id, false)}
+                  className="btn-soft pressable self-start"
+                  style={{ paddingInline: "1rem" }}
+                  aria-label={`Desmarcar ${med.name}, por si se equivocó`}
+                >
+                  <Undo2 size={19} strokeWidth={2.2} aria-hidden="true" />
+                  Deshacer
+                </button>
               </li>
             );
           }
@@ -276,7 +292,7 @@ export default function MedicationList() {
       {confirm && (
         <ConfirmDialog
           message={`¿Tomó ${confirm.medName}?`}
-          onConfirm={() => void markTaken(confirm.medId)}
+          onConfirm={() => void setTaken(confirm.medId, true)}
           onCancel={() => setConfirm(null)}
           confirmLabel="Sí, ya lo tomé"
           cancelLabel="Todavía no"

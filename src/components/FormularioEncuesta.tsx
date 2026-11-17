@@ -9,9 +9,10 @@ import { rem } from "@/lib/scale";
 
 /**
  * Encuesta de bienestar, una pregunta por pantalla (Figma A04/A05): barra de
- * progreso, Panela hace la pregunta y la persona toca un número. Al tocarlo
- * pasa sola a la siguiente; con la última se envía. Así no hay que bajar por
- * una página larga ni buscar el botón de enviar al final.
+ * progreso, Panela hace la pregunta y la persona toca un número. Tocarlo solo
+ * marca la respuesta — puede cambiarla tocando otro número — y un botón
+ * aparte avanza a la siguiente pregunta (o envía, en la última). No avanza
+ * solo: así no se pasa de pregunta por error antes de estar seguro.
  */
 export default function FormularioEncuesta() {
   const router = useRouter();
@@ -46,15 +47,20 @@ export default function FormularioEncuesta() {
     }
   };
 
+  const esUltima = paso === total - 1;
+
   const elegir = (n: number) => {
     if (enviando) return;
-    const nuevos = { ...puntajes, [pregunta.clave]: n };
-    setPuntajes(nuevos);
-    // Una pausa corta para que la persona vea su respuesta marcada.
-    window.setTimeout(() => {
-      if (paso < total - 1) setPaso(paso + 1);
-      else if (PREGUNTAS.every((p) => nuevos[p.clave] !== undefined)) void enviar(nuevos);
-    }, 350);
+    setPuntajes((actuales) => ({ ...actuales, [pregunta.clave]: n }));
+  };
+
+  const avanzar = () => {
+    if (enviando || valor === null) return;
+    if (!esUltima) {
+      setPaso(paso + 1);
+      return;
+    }
+    if (PREGUNTAS.every((p) => puntajes[p.clave] !== undefined)) void enviar(puntajes);
   };
 
   return (
@@ -170,8 +176,22 @@ export default function FormularioEncuesta() {
         style={{ fontSize: "var(--t-sm)", color: "var(--ink-mute)" }}
         aria-live="polite"
       >
-        {enviando ? "Guardando…" : "Toque un número. Se guarda solo."}
+        {enviando
+          ? "Guardando…"
+          : valor === null
+            ? "Toque un número para responder."
+            : "Puede cambiar su respuesta, o tocar el botón para continuar."}
       </p>
+
+      <button
+        type="button"
+        onClick={avanzar}
+        disabled={valor === null || enviando}
+        className="btn-cta pressable w-full mt-4"
+        style={{ minHeight: "3.6rem", fontSize: "var(--t-base)", opacity: valor === null ? 0.5 : 1 }}
+      >
+        {esUltima ? "Enviar" : "Siguiente"}
+      </button>
 
       {paso > 0 && !enviando && (
         <button
