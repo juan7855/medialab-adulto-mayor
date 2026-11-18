@@ -64,6 +64,9 @@ export interface Exercise {
   tip: string;
   routineId: number | null;
   routineNumber: number | null;
+  /** Posición de esta rutina dentro del plan del paciente (1, 2, 3…). */
+  ordenRutina: number | null;
+  totalRutinas: number | null;
   dayOfWeek: number;
 }
 
@@ -81,8 +84,29 @@ const NOMBRE_RUTINA: Record<number, string> = {
   5: "Integración y coordinación",
 };
 
-/** Título de la tarjeta: en días de rutina, el nombre descriptivo; en los demás, el suyo. */
-export function tituloDeEjercicio(ex: Pick<Exercise, "name" | "routineNumber">): string {
+/**
+ * Numera las rutinas del paciente en el orden de la semana (lunes primero),
+ * sólo entre las que él tiene: si le tocan la 1, la 3 y la 5 del documento,
+ * para él son "1 de 3", "2 de 3" y "3 de 3", sin huecos que confundan.
+ */
+export function numeraRutinas(
+  filas: { id: number; routineId: number | null; dayOfWeek: number }[],
+): Map<number, { orden: number; total: number }> {
+  const conRutina = filas
+    .filter((f) => f.routineId != null)
+    .sort((a, b) => ((a.dayOfWeek + 6) % 7) - ((b.dayOfWeek + 6) % 7));
+  return new Map(conRutina.map((f, i) => [f.id, { orden: i + 1, total: conRutina.length }]));
+}
+
+/**
+ * Título de la tarjeta: en días de rutina, "Rutina N de M · Nombre" con la
+ * numeración del propio paciente; en los demás días, su nombre tal cual.
+ */
+export function tituloDeEjercicio(
+  ex: Pick<Exercise, "name" | "routineNumber" | "ordenRutina" | "totalRutinas">,
+): string {
   if (ex.routineNumber == null) return ex.name;
-  return NOMBRE_RUTINA[ex.routineNumber] ?? ex.name;
+  const nombre = NOMBRE_RUTINA[ex.routineNumber] ?? ex.name;
+  if (ex.ordenRutina == null || ex.totalRutinas == null) return nombre;
+  return `Rutina ${ex.ordenRutina} de ${ex.totalRutinas} · ${nombre}`;
 }

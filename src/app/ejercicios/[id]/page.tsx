@@ -7,7 +7,7 @@ import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import SectionTitle from "@/components/SectionTitle";
 import RoutineSession, { type ParadaRutina } from "../RoutineSession";
-import { accentDeNivel, EXERCISE_ICONS, EXERCISE_ICON_FALLBACK, formatDuration, tituloDeEjercicio } from "../data";
+import { accentDeNivel, EXERCISE_ICONS, EXERCISE_ICON_FALLBACK, formatDuration, numeraRutinas, tituloDeEjercicio } from "../data";
 import { ACCENTS } from "@/lib/theme";
 
 interface Props {
@@ -40,11 +40,21 @@ export default async function ExerciseDetailPage({ params }: Props) {
   let rutinaNombre: string | null = null;
   let numeroRutina: number | null = null;
   let paradas: ParadaRutina[] = [];
+  let ordenRutina: number | null = null;
+  let totalRutinas: number | null = null;
 
   if (exercise.routineId) {
     const [rutina] = await db.select().from(routines).where(eq(routines.id, exercise.routineId)).limit(1);
     rutinaNombre = rutina?.name ?? null;
     numeroRutina = rutina?.number ?? null;
+
+    const delPlan = await db
+      .select({ id: exercises.id, routineId: exercises.routineId, dayOfWeek: exercises.dayOfWeek })
+      .from(exercises)
+      .where(eq(exercises.patientId, patientId));
+    const orden = numeraRutinas(delPlan).get(exercise.id);
+    ordenRutina = orden?.orden ?? null;
+    totalRutinas = orden?.total ?? null;
 
     const principales = await db
       .select()
@@ -103,7 +113,12 @@ export default async function ExerciseDetailPage({ params }: Props) {
   return (
     <div className="min-h-screen pb-10">
       <PageHeader
-        title={tituloDeEjercicio({ name: exercise.name, routineNumber: numeroRutina })}
+        title={tituloDeEjercicio({
+          name: exercise.name,
+          routineNumber: numeroRutina,
+          ordenRutina,
+          totalRutinas,
+        })}
         subtitle={rutinaNombre ?? exercise.description}
         icon={Icon}
         accent={accent}

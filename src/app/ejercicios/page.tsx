@@ -4,6 +4,7 @@ import { exercises, routines } from "@/db/schema";
 import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
 import ExerciseList from "./ExerciseList";
+import { numeraRutinas } from "./data";
 
 export default async function EjerciciosPage() {
   // middleware.ts ya garantiza que hay sesión antes de llegar aquí.
@@ -12,9 +13,12 @@ export default async function EjerciciosPage() {
   const numeroDeRutina = new Map(
     (await db.select().from(routines)).map((r) => [r.id, r.number] as const),
   );
+  const orden = numeraRutinas(filas);
   const catalogo = filas.map((ex) => ({
     ...ex,
     routineNumber: ex.routineId != null ? (numeroDeRutina.get(ex.routineId) ?? null) : null,
+    ordenRutina: orden.get(ex.id)?.orden ?? null,
+    totalRutinas: orden.get(ex.id)?.total ?? null,
   }));
 
   return (
