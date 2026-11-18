@@ -63,5 +63,26 @@ export interface Exercise {
   steps: string[];
   tip: string;
   routineId: number | null;
+  routineNumber: number | null;
   dayOfWeek: number;
+}
+
+/** Nombre corto oficial de cada Rutina (recursos/Rutinas_con_avatares.docx). */
+const RUTINA_CORTA: Record<number, string> = {
+  1: "Equilibrio",
+  2: "Fuerza funcional",
+  3: "Movilidad",
+  4: "Estabilidad",
+  5: "Integración",
+};
+
+/**
+ * Lo que ve la persona como título: en días de rutina, siempre "Rutina N ·
+ * Nombre" con el mismo texto para todos, sin importar cómo esté escrita la
+ * fila en la base. Los días simples conservan su nombre.
+ */
+export function tituloDeEjercicio(ex: Pick<Exercise, "name" | "routineNumber">): string {
+  if (ex.routineNumber == null) return ex.name;
+  const corta = RUTINA_CORTA[ex.routineNumber];
+  return corta ? `Rutina ${ex.routineNumber} · ${corta}` : ex.name;
 }

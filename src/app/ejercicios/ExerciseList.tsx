@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import FilaLista from "@/components/FilaLista";
-import { formatDuration, type Exercise } from "./data";
+import { formatDuration, tituloDeEjercicio, type Exercise } from "./data";
 
 const ESQUINAS = ["abajo-der", "abajo-izq", "arriba-der", "arriba-izq"] as const;
 const COLORES = ["orange", "cyan", "green", "purple"] as const;
@@ -40,13 +40,13 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
     );
   }
 
-  // El resto de la semana, ordenado desde mañana hacia adelante (y cerrando
-  // con los días previos a hoy): así se lee como "qué sigue".
-  const base = hoyDiaSemana ?? 0;
+  // El resto de la semana en orden de calendario, de lunes a domingo, para
+  // que la lista se lea igual para todos y no cambie según el día.
+  const ordenDeSemana = (dia: number) => (dia + 6) % 7;
   const resto = exercises
     .filter((ex) => ex.id !== deHoy?.id)
     .slice()
-    .sort((a, b) => ((a.dayOfWeek - base + 7) % 7) - ((b.dayOfWeek - base + 7) % 7));
+    .sort((a, b) => ordenDeSemana(a.dayOfWeek) - ordenDeSemana(b.dayOfWeek));
 
   return (
     <>
@@ -68,7 +68,7 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
             El ejercicio de hoy
           </p>
           <h2 className="mt-1.5" style={{ fontSize: "var(--t-lg)", fontWeight: 700 }}>
-            {deHoy.name}
+            {tituloDeEjercicio(deHoy)}
           </h2>
           <p className="mt-1.5" style={{ fontSize: "var(--t-sm)", color: "var(--ink-soft)" }}>
             {formatDuration(deHoy.durationSeconds)}
@@ -97,11 +97,11 @@ export default function ExerciseList({ exercises }: { exercises: Exercise[] }) {
               <li key={ex.id} className="animate-rise" style={{ animationDelay: `${i * 45}ms` }}>
                 <FilaLista
                   href={`/ejercicios/${ex.id}`}
-                  titulo={ex.name}
+                  titulo={tituloDeEjercicio(ex)}
                   subtitulo={`${DIAS[ex.dayOfWeek]} · ${formatDuration(ex.durationSeconds)}`}
                   accent={COLORES[i % COLORES.length]}
                   esquina={ESQUINAS[i % ESQUINAS.length]}
-                  ariaLabel={`${ex.name} el ${DIAS[ex.dayOfWeek]}. Duración ${formatDuration(ex.durationSeconds)}`}
+                  ariaLabel={`${tituloDeEjercicio(ex)} el ${DIAS[ex.dayOfWeek]}. Duración ${formatDuration(ex.durationSeconds)}`}
                 />
               </li>
             ))}
