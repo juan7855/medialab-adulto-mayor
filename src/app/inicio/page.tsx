@@ -9,7 +9,7 @@ import { encuestaCompleta } from "@/lib/encuesta-servidor";
 import TarjetaAsistente from "@/components/TarjetaAsistente";
 import CerrarSesion from "@/components/CerrarSesion";
 import Greeting from "@/components/Greeting";
-import Gota, { type Esquina } from "@/components/Gota";
+import IconoSeccion from "@/components/IconoSeccion";
 import { COMUNIDAD, SECTIONS, type Section } from "@/lib/theme";
 
 const FICHAS: Section[] = [
@@ -20,20 +20,11 @@ const FICHAS: Section[] = [
   "/cognitivo",
 ].map((href) => [...SECTIONS, COMUNIDAD].find((s) => s.href === href)!);
 
-/** La esquina recta de cada gota, como las gira el Figma. */
-const ESQUINAS: Record<string, Esquina> = {
-  "/ejercicios": "abajo-der",
-  "/nutricion": "abajo-izq",
-  "/medicamentos": "abajo-der",
-  "/cognitivo": "arriba-izq",
-  "/comunidad": "abajo-izq",
-};
-
 /**
- * Ficha de sección del Figma: tarjeta blanca con borde arena, gota de color
- * en un cuadro claro y el nombre debajo. Dos por fila; el texto va a tamaño
- * reducido (--t-xs, no --t-sm) porque a ese tamaño "Medicamentos" partía a
- * la mitad ("Medicament-os") al no caber en una sola línea.
+ * Ficha de sección del Figma: tarjeta blanca con borde arena, icono simple de
+ * la sección en un cuadro claro y el nombre debajo. Dos por fila; el texto va
+ * a tamaño reducido (--t-xs, no --t-sm) porque a ese tamaño "Medicamentos"
+ * partía a la mitad ("Medicament-os") al no caber en una sola línea.
  */
 function SectionTile({ section }: { section: Section }) {
   return (
@@ -48,7 +39,7 @@ function SectionTile({ section }: { section: Section }) {
       }}
       aria-label={`${section.label}. ${section.description}`}
     >
-      <Gota accent={section.accent} size={52} esquina={ESQUINAS[section.href]} enCuadro />
+      <IconoSeccion href={section.href} accent={section.accent} size={52} />
       <span style={{ fontSize: "var(--t-xs)", fontWeight: 600, lineHeight: 1.15 }}>
         {section.label}
       </span>
