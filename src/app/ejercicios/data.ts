@@ -67,22 +67,22 @@ export interface Exercise {
   dayOfWeek: number;
 }
 
-/** Nombre corto oficial de cada Rutina (recursos/Rutinas_con_avatares.docx). */
-const RUTINA_CORTA: Record<number, string> = {
-  1: "Equilibrio",
+/**
+ * Nombre descriptivo de cada rutina para la persona. El número de la rutina
+ * (recursos/Rutinas_con_avatares.docx) no se muestra: cada paciente recibe
+ * un grupo distinto, y ver "Rutina 5" sin la 1 le hace pensar que se saltó
+ * algo.
+ */
+const NOMBRE_RUTINA: Record<number, string> = {
+  1: "Equilibrio al caminar",
   2: "Fuerza funcional",
-  3: "Movilidad",
-  4: "Estabilidad",
-  5: "Integración",
+  3: "Movilidad y coordinación",
+  4: "Estabilidad de piernas",
+  5: "Integración y coordinación",
 };
 
-/**
- * Lo que ve la persona como título: en días de rutina, siempre "Rutina N ·
- * Nombre" con el mismo texto para todos, sin importar cómo esté escrita la
- * fila en la base. Los días simples conservan su nombre.
- */
+/** Título de la tarjeta: en días de rutina, el nombre descriptivo; en los demás, el suyo. */
 export function tituloDeEjercicio(ex: Pick<Exercise, "name" | "routineNumber">): string {
   if (ex.routineNumber == null) return ex.name;
-  const corta = RUTINA_CORTA[ex.routineNumber];
-  return corta ? `Rutina ${ex.routineNumber} · ${corta}` : ex.name;
+  return NOMBRE_RUTINA[ex.routineNumber] ?? ex.name;
 }
