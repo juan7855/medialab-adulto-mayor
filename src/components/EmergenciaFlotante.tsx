@@ -41,7 +41,10 @@ export default function EmergenciaFlotante() {
   }, []);
 
   const enChat = /^\/comunidad\/mensajes\/\d+/.test(ruta);
-  if (ruta === "/" || ruta.startsWith("/emergencia") || escribiendo) return null;
+  // Tampoco aparece en las páginas internas del facilitador (/admin/…):
+  // esas no tienen sesión y no son parte de la experiencia del adulto mayor.
+  if (ruta === "/" || ruta.startsWith("/emergencia") || ruta.startsWith("/admin") || escribiendo)
+    return null;
 
   // En un hilo de DM hay una barra de texto fija abajo (~5 rem de alto);
   // el botón sube por encima de ella para que no se superpongan.

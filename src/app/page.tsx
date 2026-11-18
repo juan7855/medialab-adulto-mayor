@@ -1,5 +1,6 @@
 import { rem } from "@/lib/scale";
 import TecladoNumerico from "@/components/TecladoNumerico";
+import BotonReiniciarDemo from "@/components/BotonReiniciarDemo";
 
 export default function AccesoPage() {
   return (
@@ -27,11 +28,12 @@ export default function AccesoPage() {
       </div>
 
       <footer
-        className="text-center mt-auto pt-9"
+        className="text-center mt-auto pt-9 flex flex-col items-center"
         style={{ fontSize: "var(--t-xs)", color: "var(--ink-mute)", fontWeight: 500 }}
         role="contentinfo"
       >
-        Panela · Su salud, día a día
+        <span>Panela · Su salud, día a día</span>
+        <BotonReiniciarDemo />
       </footer>
     </main>
   );
