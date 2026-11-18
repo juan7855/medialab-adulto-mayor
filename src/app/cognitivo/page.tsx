@@ -1,35 +1,27 @@
+import { asc, eq } from "drizzle-orm";
+import { db } from "@/db";
+import { cognitiveActivities } from "@/db/schema";
+import { obtenerPacienteId } from "@/lib/auth";
 import PageHeader from "@/components/PageHeader";
-import FilaLista from "@/components/FilaLista";
-import { TIPOS_JUEGO } from "./contenido";
-import type { Esquina } from "@/components/Gota";
-import type { AccentName } from "@/lib/theme";
+import CognitiveList from "./CognitiveList";
 
-const ESQUINAS: Esquina[] = ["abajo-der", "arriba-izq", "abajo-izq"];
-const ACENTOS: AccentName[] = ["green", "orange", "cyan"];
+// El catálogo es propio de cada paciente: se resuelve por sesión en cada visita.
+export const dynamic = "force-dynamic";
 
-export default function CognitivoPage() {
+export default async function CognitivoPage() {
+  const patientId = (await obtenerPacienteId())!;
+  const juegos = await db
+    .select()
+    .from(cognitiveActivities)
+    .where(eq(cognitiveActivities.patientId, patientId))
+    .orderBy(asc(cognitiveActivities.id));
+
   return (
     <div className="min-h-screen pb-10">
       <PageHeader title="Mente activa" backHref="/inicio" backLabel="Hoy" />
 
-      <main className="px-4 pt-4 flex flex-col gap-3" role="main">
-        {TIPOS_JUEGO.map((juego, i) => (
-          <FilaLista
-            key={juego.slug}
-            href={`/cognitivo/${juego.slug}`}
-            titulo={juego.titulo}
-            subtitulo={juego.subtitulo}
-            accent={ACENTOS[i]}
-            esquina={ESQUINAS[i]}
-          />
-        ))}
-
-        <p
-          className="text-center mt-4"
-          style={{ fontSize: "var(--t-sm)", color: "var(--ink-mute)" }}
-        >
-          Sin reloj ni puntaje. Juegue con calma.
-        </p>
+      <main className="px-4 pt-4" role="main">
+        <CognitiveList activities={juegos} />
       </main>
     </div>
   );
