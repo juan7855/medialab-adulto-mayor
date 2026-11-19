@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { patients } from "@/db/schema";
+import { patients, surveyResponses } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { crearSesion } from "@/lib/auth";
+
+/** Perfiles demo de las pruebas de usuario: don Álvaro (5) y doña Marta (4). */
+const IDS_DEMO = [4, 5];
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,6 +23,13 @@ export async function POST(req: NextRequest) {
       // Mismo mensaje que si el formato fuera inválido: no hay que revelar
       // si el pin existe o no.
       return NextResponse.json({ error: "Clave inválida" }, { status: 401 });
+    }
+
+    // En los perfiles demo la encuesta de bienestar se vuelve a pedir en cada
+    // ingreso, para que las pruebas de usuario empiecen siempre desde ella.
+    // Sólo toca los IDs demo; los pacientes reales conservan su respuesta.
+    if (IDS_DEMO.includes(paciente.id)) {
+      await db.delete(surveyResponses).where(eq(surveyResponses.patientId, paciente.id));
     }
 
     await crearSesion(paciente.id);
